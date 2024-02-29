@@ -1,0 +1,117 @@
+<manifest xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!--인터넷 액세스 허용-->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <!--파일 읽기 엑세스 허용-->
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <!--파일 쓰기 액세스 허용-->
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <!--오디오 읽기 액세스 허용-->
+    <uses-permission android:name="android.permission.READ_MEDIA_AUDIO" />
+    <!--이미지 읽기 액세스 허용-->
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+    <!--비디오 읽기 액세스 허용-->
+    <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" />
+    <!--카메라 액세스 허용-->
+    <uses-permission android:name="android.permission.CAMERA" />
+    <!--파일 위치 액세스 허용-->
+    <uses-permission android:name="android.permission.ACCESS_MEDIA_LOCATION" />
+    <!--진동 액세스 허용-->
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <!--화면 깨우기 액세스 허용-->
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <!--백그라운드 부팅 엑세스 액세스 허용-->
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <!--오디오 기록 액세스 허용-->
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <!--네트워크 상태 엑세스 허용-->
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
+    <application
+        android:usesCleartextTraffic="true"
+        android:label="${app_name}"
+        android:name="${applicationName}"
+        android:icon="@mipmap/ic_launcher">
+
+        <!--<activity
+                android:name="com.aboutyou.dart_packages.sign_in_with_apple.SignInWithAppleCallback"
+                android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:scheme="signinwithapple" />
+                <data android:path="callback" /> &lt;!&ndash; 여기에 callback 추가 &ndash;&gt;
+            </intent-filter>
+        </activity>-->
+
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:launchMode="singleTop"
+            android:theme="@style/LaunchTheme"
+            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
+            android:hardwareAccelerated="true"
+            android:windowSoftInputMode="adjustResize">
+            <meta-data
+                android:name="io.flutter.embedding.android.NormalTheme"
+                android:resource="@style/NormalTheme"
+                />
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity>
+
+        <meta-data
+            android:name="flutterEmbedding"
+            android:value="2" />
+
+        <!--파이어베이스 메세지 아이콘-->
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_icon"
+            android:resource="@mipmap/ic_launcher" />
+        <!--파이어베이스 기본 알림 채널-->
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_channel_id"
+            android:value="${applicationId}" />
+        <!--파일 다운로드-->
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.flutter_inappwebview.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/provider_paths" />
+        </provider>
+
+        <!--<activity
+                android:name="com.kakao.sdk.flutter.AuthCodeCustomTabsActivity"
+                android:exported="true">
+            <intent-filter android:label="flutter_web_auth">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                &lt;!&ndash; "kakao${YOUR_NATIVE_APP_KEY}://oauth" 형식의 앱 실행 스킴 설정 &ndash;&gt;
+                &lt;!&ndash; 카카오 로그인 Redirect URI &ndash;&gt;
+                <data android:scheme="kakao${kakao_native_app_key}" android:host="oauth"/>
+            </intent-filter>
+        </activity>-->
+        <!--<meta-data
+                android:name="com.naver.sdk.clientId"
+                android:value="${naver_client_id}" />
+        <meta-data
+                android:name="com.naver.sdk.clientSecret"
+                android:value="${naver_secret}" />
+        <meta-data
+                android:name="com.naver.sdk.clientName"
+                android:value="${naver_client_name}" />
+        <meta-data
+                android:name="com.kakao.sdk.AppKey"
+                android:value="${kakao_native_app_key}" />-->
+    </application>
+</manifest>

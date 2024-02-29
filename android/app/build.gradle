@@ -1,0 +1,136 @@
+//plugins {
+//    id "com.android.application"
+//    id "kotlin-android"
+//    id "dev.flutter.flutter-gradle-plugin"
+//    id 'com.google.gms.google-services'
+//}
+
+def localProperties = new Properties()
+def localPropertiesFile = rootProject.file('local.properties')
+if (localPropertiesFile.exists()) {
+    localPropertiesFile.withReader('UTF-8') { reader ->
+        localProperties.load(reader)
+    }
+}
+
+def flutterRoot = localProperties.getProperty('flutter.sdk')
+if (flutterRoot == null) {
+    throw new FileNotFoundException("Flutter SDK not found. Define location with flutter.sdk in the local.properties file.")
+}
+
+def prodProperties = new Properties()
+def prodPropertiesFile = rootProject.file('prod.properties')
+if (prodPropertiesFile.exists()) {
+    prodPropertiesFile.withReader('UTF-8') { reader ->
+        prodProperties.load(reader)
+    }
+}
+
+def devProperties = new Properties()
+def devPropertiesFile = rootProject.file('dev.properties')
+if (devPropertiesFile.exists()) {
+    devPropertiesFile.withReader('UTF-8') { reader ->
+        devProperties.load(reader)
+    }
+}
+
+def flutterVersionCode = localProperties.getProperty('flutter.versionCode')
+if (flutterVersionCode == null) {
+    flutterVersionCode = '1'
+}
+
+def flutterVersionName = localProperties.getProperty('flutter.versionName')
+if (flutterVersionName == null) {
+    flutterVersionName = '1.0'
+}
+
+apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
+apply plugin: 'com.google.gms.google-services'
+
+android {
+    namespace "com.sanggong.toyou"
+    compileSdkVersion 34
+    ndkVersion flutter.ndkVersion
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
+
+    sourceSets {
+        main.java.srcDirs += 'src/main/kotlin'
+    }
+
+    defaultConfig {
+        applicationId "com.sanggong.toyou"
+        minSdkVersion 21
+        targetSdkVersion flutter.targetSdkVersion
+        versionCode flutterVersionCode.toInteger()
+        versionName flutterVersionName
+        multiDexEnabled true
+    }
+
+    signingConfigs {
+        prod {
+            storeFile file(prodProperties["storeFile"])
+            storePassword prodProperties['storePassword']
+            keyAlias prodProperties['keyAlias']
+            keyPassword prodProperties['keyPassword']
+        }
+        dev {
+            storeFile file(devProperties['storeFile'])
+            storePassword devProperties['storePassword']
+            keyAlias devProperties['keyAlias']
+            keyPassword devProperties['keyPassword']
+        }
+    }
+
+    flavorDimensions "default"
+    productFlavors {
+        prod {
+            dimension "default"
+            manifestPlaceholders = [
+                    app_name: "투유텔레콤",
+            ]
+            signingConfig signingConfigs.prod
+        }
+        dev {
+            dimension "default"
+            applicationIdSuffix ".dev"
+            manifestPlaceholders = [
+                    app_name: "(dev) 투유텔레콤",
+            ]
+            signingConfig signingConfigs.dev
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled true
+            debuggable false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+
+        debug {
+            minifyEnabled false
+            debuggable true
+        }
+    }
+}
+
+flutter {
+    source '../..'
+}
+
+dependencies {
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    implementation platform('com.google.firebase:firebase-bom:32.6.0')
+    implementation 'com.google.firebase:firebase-messaging'
+    implementation 'com.google.firebase:firebase-analytics'
+}
