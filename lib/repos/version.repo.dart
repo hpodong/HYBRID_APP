@@ -17,6 +17,6 @@ class VersionRepo extends Config{
       "type": Platform.isAndroid ? 1 : 2,
       "os": Platform.isAndroid ? "AOS" : "IOS"
     };
-    return Request.post('$HOST_NAME/include/api/getAppVersion.php', body: body);
+    return Request.post('${getUrl()}/include/api/getAppVersion.php', body: body);
   }
 }

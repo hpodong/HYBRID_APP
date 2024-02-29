@@ -18,7 +18,7 @@ class Request {
     if (suffix.startsWith("http")) {
       url = suffix;
     } else {
-      url = "${_config.HOST_NAME}$suffix";
+      url = "${_config.getUrl()}$suffix";
     }
     accessToken ??= await _config.GET_TOKEN(TokenType.accessToken);
     if (params != null && params.isNotEmpty) {

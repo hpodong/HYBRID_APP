@@ -1,25 +1,13 @@
-import 'dart:convert';
 import 'dart:io';
-import 'dart:typed_data';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
-import 'package:flutter_naver_login/flutter_naver_login.dart';
-import 'package:google_sign_in/google_sign_in.dart';
-import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
 import 'package:open_filex/open_filex.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:share_plus/share_plus.dart';
-import 'package:sign_in_with_apple/sign_in_with_apple.dart';
-import 'package:soccerdiary/configs/socials/apple.config.dart';
-import 'package:soccerdiary/configs/socials/kakao.config.dart';
-import 'package:soccerdiary/configs/socials/naver.config.dart';
 import 'package:soccerdiary/controllers/version.controller.dart';
-import 'package:soccerdiary/customs/custom.dart';
 import 'package:uni_links/uni_links.dart';
 import '../configs/config/config.dart';
-import '../configs/socials/google.config.dart';
 import '../controllers/device.controller.dart';
 import '../controllers/inapp-web.controller.dart';
 import '../controllers/notification.controller.dart';
@@ -88,7 +76,7 @@ class _WebViewPageState extends State<WebViewPage> {
         shouldOverrideUrlLoading: _shouldOverrideUrlLoading,
         onLoadResource: _onLoadResource,
         initialUrlRequest: URLRequest(
-            url: WebUri(Config.instance.HOST_NAME),
+            url: WebUri(Config.instance.getUrl()),
             headers: _initialHeader
         ),
         initialSettings: InAppWebViewSettings(
@@ -136,21 +124,11 @@ class _WebViewPageState extends State<WebViewPage> {
 
     if(webUri != null) {
       final String url = webUri.toString();
-      if(!url.startsWith(Config.instance.HOST_NAME) && !url.contains("youtube")){
+      if(webUri.host != Config.instance.HOST_NAME && !url.contains("youtube")){
         if(action.isForMainFrame) await openURL(url);
-        return NavigationActionPolicy.CANCEL;
-      } else if(url.startsWith("${Config.instance.HOST_NAME}/login/submit") && action.request.method == "post"){
         return NavigationActionPolicy.CANCEL;
       } else if(url.endsWith(".pdf") || url.endsWith(".hwp") || url.endsWith(".docx") || url.endsWith(".xlsx") || url.endsWith(".hwpx")){
         return _fileDownload(url);
-      } else if(url.startsWith("https://oursoccer.net/mypage/setting") && action.request.url?.queryParameters["version"] == null) {
-        final VersionController vc = VersionController.of(context);
-        final URLRequest ureq = URLRequest(
-          url: WebUri("$url?version=${vc.info?.version}&buildNum=${vc.info?.buildNumber}"),
-        );
-        ctr.loadUrl(urlRequest: ureq);
-
-        return NavigationActionPolicy.ALLOW;
       } else {
         return NavigationActionPolicy.ALLOW;
       }
@@ -195,132 +173,6 @@ class _WebViewPageState extends State<WebViewPage> {
   void _onConsoleMessage(InAppWebViewController ctr, ConsoleMessage cm) async{
     final String msg = cm.message;
     log(cm.message);
-    switch(msg) {
-      case "google-login":
-        await CustomOverlay.indicator(context, _googleLogin());
-        break;
-      case "apple-login":
-        await CustomOverlay.indicator(context, _appleLogin());
-        break;
-      case "naver-login":
-        await CustomOverlay.indicator(context, _naverLogin());
-        break;
-      case "kakao-login":
-        await CustomOverlay.indicator(context, _kakaoLogin());
-        break;
-      case "share":
-        if(Platform.isAndroid) {
-          final WebUri? curUri = await ctr.getUrl();
-          if(curUri != null) {
-            await Share.shareUri(curUri.uriValue);
-          }
-        } else {
-          ctr.evaluateJavascript(source: "navigator.share");
-        }
-        break;
-    }
-  }
-
-  Future<void> _googleLogin() async {
-    final GoogleConfig gc = GoogleConfig();
-    final GoogleSignInAccount? ga = await gc.login();
-    log(ga);
-    if(ga != null) {
-      final Map<String, dynamic> body = <String, dynamic>{
-        "gg_email": ga.email,
-        "channel": "4"
-      };
-      final String bodyData = Uri(queryParameters: body).query;
-      log("${Config.instance.HOST_NAME}/api/sns/login/google.php");
-      await _inAppWebCtr.webViewCtr.postUrl(
-          url: WebUri("${Config.instance.HOST_NAME}/api/sns/login/google.php"),
-          postData: Uint8List.fromList(utf8.encode(bodyData))
-      );
-    }
-  }
-
-  Future<void> _appleLogin() async {
-    final AppleConfig ac = AppleConfig();
-    final AuthorizationCredentialAppleID? aa = await ac.login();
-    log("AuthorizationCredentialAppleID: $aa");
-
-    String? email = aa?.email;
-    String name = "";
-    if(aa?.givenName != null) name += aa?.givenName ?? "";
-    if(aa?.familyName != null) name += aa?.familyName ?? "";
-
-    if(aa != null && email == null) {
-      final List<String> jwt = aa.identityToken?.split('.') ?? [];
-      String payload = jwt[1];
-      payload = base64.normalize(payload);
-    
-      final List<int> jsonData = base64.decode(payload);
-      final userInfo = jsonDecode(utf8.decode(jsonData));
-      print(userInfo);
-
-      email = userInfo['email'];
-    }
-
-    if(email != null) {
-      final Map<String, dynamic> body = <String, dynamic>{
-        "apple_email": email,
-        "name": name,
-        "channel": "5"
-      };
-
-      final String bodyData = Uri(queryParameters: body).query;
-
-      await _inAppWebCtr.webViewCtr.postUrl(
-          url: WebUri("${Config.instance.HOST_NAME}/api/sns/login/apple.php"),
-          postData: Uint8List.fromList(utf8.encode(bodyData))
-      );
-    }
-  }
-  Future<void> _naverLogin() async {
-    final NaverConfig nc = NaverConfig();
-    final NaverAccountResult? na = await nc.login();
-
-    log("NAVER RESULT: ${na}");
-
-    if(na != null) {
-      String? email = na?.email;
-      String? name = na?.name;
-
-      final Map<String, dynamic> body = <String, dynamic>{
-        "email": email,
-        "name": name
-      };
-
-      final String bodyData = Uri(queryParameters: body).query;
-
-      await _inAppWebCtr.webViewCtr.postUrl(
-          url: WebUri("${Config.instance.HOST_NAME}/api/sns/login/naver.php"),
-          postData: Uint8List.fromList(utf8.encode(bodyData))
-      );
-    }
-  }
-
-  Future<void> _kakaoLogin() async {
-    final KakaoConfig nc = KakaoConfig();
-    final User? na = await nc.login();
-    final Account? account = na?.kakaoAccount;
-
-    if(account != null) {
-      String? email = account.email;
-      String? name = account.name;
-
-      final Map<String, dynamic> body = <String, dynamic>{
-        "email": email,
-        "name": name
-      };
-
-      final String bodyData = Uri(queryParameters: body).query;
-
-      await _inAppWebCtr.webViewCtr.postUrl(
-          url: WebUri("${Config.instance.HOST_NAME}/api/sns/login/kakao.php"),
-          postData: Uint8List.fromList(utf8.encode(bodyData))
-      );
-    }
   }
 
   Future<NavigationActionPolicy> _fileDownload(String? url) async {
