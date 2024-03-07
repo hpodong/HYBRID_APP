@@ -14,9 +14,8 @@ class VersionRepo extends Config{
     final Map<String, dynamic> body = <String, dynamic>{
       "version": version.trim(),
       "build": buildNumber,
-      "type": Platform.isAndroid ? 1 : 2,
       "os": Platform.isAndroid ? "AOS" : "IOS"
     };
-    return Request.post('${getUrl()}/include/api/getAppVersion.php', body: body);
+    return Request.post('${getUrl()}/api/app/version/check.php', body: body);
   }
 }

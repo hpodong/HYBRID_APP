@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:provider/provider.dart';
-import 'package:soccerdiary/repos/version.repo.dart';
+import 'package:toyou/repos/version.repo.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../configs/config/config.dart';
@@ -19,7 +19,6 @@ class VersionController extends ChangeNotifier {
   PackageInfo? _info;
   PackageInfo? get info => _info;
   set info(PackageInfo? info) {
-    debugPrint("VERSION INFO: $info");
     _info = info;
     notifyListeners();
   }
@@ -37,14 +36,33 @@ class VersionController extends ChangeNotifier {
       final Response res = await _repo.versionCheck(version: info.version, buildNumber: int.parse(info.buildNumber));
       switch(res.statusCode) {
         case 200:
-          isChecked = true;
+          switch (res.data?["AV_status"]) {
+            case "pass":
+              isChecked = true;
+              break;
+            case "update":
+              CustomAlert.alert(context, "버전 업데이트", "업데이트가 필요합니다.", onTap: () {
+                openURL(_storeURL(), mode: LaunchMode.externalApplication);
+              });
+              break;
+            case "inspection":
+              CustomAlert.alert(context, "버전 업데이트", "서버 점검중입니다.", onTap: () {
+                openURL(_storeURL(), mode: LaunchMode.externalApplication);
+              });
+              break;
+            case "warning":
+              CustomAlert.confirm(context, "버전 업데이트", "업데이트를 해주세요.", () {
+                openURL(_storeURL(), mode: LaunchMode.externalApplication);
+              });
+              break;
+          }
           break;
-        case 401:
-          CustomAlert.alert(context, "버전 업데이트", "업데이트가 필요합니다.", onTap: () {
+        /*case 401:
+          CustomAlert.alert(context, "버전 업데이트", "API KEY 값이 없습니다.", onTap: () {
             openURL(_storeURL(), mode: LaunchMode.externalApplication);
           });
           isChecked = false;
-          break;
+          break;*/
         case null:
           return getVersion(context);
         default:

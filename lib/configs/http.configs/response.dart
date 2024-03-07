@@ -24,7 +24,6 @@ class Response<T> extends Equatable{
   static Future<Response> fromHttp(HttpClientResponse res, {bool isLogged = true}) async{
 
     final String streamResponse = await res.transform(utf8.decoder).join();
-    print("RESPONSE: $streamResponse");
     final Map<String, dynamic>? body = streamResponse.isEmpty ? null : json.decode(streamResponse);
 
     final int statusCode = res.statusCode;

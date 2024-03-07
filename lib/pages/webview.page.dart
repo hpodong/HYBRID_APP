@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:open_filex/open_filex.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:soccerdiary/controllers/version.controller.dart';
+import 'package:toyou/controllers/version.controller.dart';
 import 'package:uni_links/uni_links.dart';
 import '../configs/config/config.dart';
 import '../controllers/device.controller.dart';
@@ -149,9 +149,10 @@ class _WebViewPageState extends State<WebViewPage> {
 
   void _onWebViewCreated(InAppWebViewController ctr) async{
     String javascriptCode = "";
-    for(final MapEntry<String, dynamic> map in _initialHeader.entries) {
+    /*for(final MapEntry<String, dynamic> map in _initialHeader.entries) {
       javascriptCode += "sessionStorage.setItem('${map.key}', '${map.value}');\n";
-    }
+    }*/
+    // javascriptCode = "setCookieWeb('fcmToken', '${NotificationController.of(context).fcmToken}');";
     InAppWebController.of(context).webViewCtr = ctr
       ..evaluateJavascript(source: javascriptCode)
       ..reload();
@@ -168,11 +169,15 @@ class _WebViewPageState extends State<WebViewPage> {
       _notificationCtr.firebasePushListener(context);
       _deepLinkListener();
     }
+
+    if(uri?.path.endsWith("/member/login.php") == true) {
+      ctr.evaluateJavascript(source: "setFcmToken('${NotificationController.of(context).fcmToken}', '${DeviceController.of(context).deviceId}');");
+    }
   }
 
   void _onConsoleMessage(InAppWebViewController ctr, ConsoleMessage cm) async{
     final String msg = cm.message;
-    log(cm.message);
+    log(msg);
   }
 
   Future<NavigationActionPolicy> _fileDownload(String? url) async {

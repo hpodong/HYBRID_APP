@@ -17,9 +17,9 @@
 	<key>BUNDLE_ID</key>
 	<string>com.sanggong.toyou.dev</string>
 	<key>PROJECT_ID</key>
-	<string>soccerdiary-4e6c2</string>
+	<string>toyou-4e6c2</string>
 	<key>STORAGE_BUCKET</key>
-	<string>soccerdiary-4e6c2.appspot.com</string>
+	<string>toyou-4e6c2.appspot.com</string>
 	<key>IS_ADS_ENABLED</key>
 	<false></false>
 	<key>IS_ANALYTICS_ENABLED</key>

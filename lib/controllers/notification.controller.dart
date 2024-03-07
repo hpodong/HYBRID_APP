@@ -7,7 +7,7 @@ import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
-import 'package:soccerdiary/utills/common.dart';
+import 'package:toyou/utills/common.dart';
 
 import 'inapp-web.controller.dart';
 

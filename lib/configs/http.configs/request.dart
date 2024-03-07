@@ -43,7 +43,7 @@ class Request {
       req.headers.set(HttpHeaders.acceptHeader, "*/*");
       req.headers.set(HttpHeaders.acceptEncodingHeader, "gzip, deflate, br");
       req.headers.set(HttpHeaders.connectionHeader, "keep-alive");
-      req.headers.set("x-api-key", _config.API_KEY);
+      req.headers.set("API_KEY", _config.API_KEY);
       if (accessToken != null && hasToken) req.headers.set(
           HttpHeaders.authorizationHeader, "Bearer $accessToken");
       switch (type) {
@@ -99,7 +99,7 @@ class Request {
   static Future<String?> _reissueToken() async {
     const TokenType at = TokenType.accessToken;
     const TokenType rt = TokenType.refreshToken;
-    final Response res = await Request.post("REISSUE_TOKEN", body: {
+    final Response res = await Request.post("/REISSUE_TOKEN", body: {
       rt.name: await _config.GET_TOKEN(rt)
     });
     final String? accessToken = res.data[at.name];
@@ -122,7 +122,6 @@ class Request {
         final String? value = body[key]?.toString();
         if (value != null) request.fields[key] = value;
       }
-      print(request.headers);
       if (files != null) for (final String key in files.keys) {
         final List<File>? fileList = files[key];
         if (fileList != null) for (final File file in fileList) {

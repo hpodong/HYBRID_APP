@@ -12,6 +12,7 @@ class Config {
   final String HOST_NAME = dotenv.get('HOST_NAME');
   final String API_KEY = dotenv.get("API_KEY");
   final bool USE_SSL = dotenv.get("USE_SSL") == "1";
+  final String PORT = dotenv.get("PORT");
   // final String BASE_API = dotenv.get('BASE_API');
   // final String PACKAGE_NAME = dotenv.get('PACKAGE_NAME');
   final String APP_STORE_ID = dotenv.get('APP_STORE_ID');
@@ -52,6 +53,7 @@ class Config {
     String url = "http://";
     if(USE_SSL) url = "https://";
     url += HOST_NAME;
+    if(!USE_SSL) url += ":$PORT";
     return url;
   }
 }

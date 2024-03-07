@@ -538,7 +538,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				NAVER_APP_SCHEME = soccerdiary;
+				NAVER_APP_SCHEME = toyou;
 				NAVER_CLIENT_ID = 5iFniNlZy5YCf1nB3igc;
 				NAVER_CLIENT_SECRET = gR3DoI0t19;
 				PRODUCT_BUNDLE_IDENTIFIER = com.sanggong.toyou;
@@ -650,7 +650,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				NAVER_APP_SCHEME = soccerdiary;
+				NAVER_APP_SCHEME = toyou;
 				NAVER_CLIENT_ID = 5iFniNlZy5YCf1nB3igc;
 				NAVER_CLIENT_SECRET = gR3DoI0t19;
 				PRODUCT_BUNDLE_IDENTIFIER = com.sanggong.toyou;
@@ -757,7 +757,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				NAVER_APP_SCHEME = soccerdiary;
+				NAVER_APP_SCHEME = toyou;
 				NAVER_CLIENT_ID = 5iFniNlZy5YCf1nB3igc;
 				NAVER_CLIENT_SECRET = gR3DoI0t19;
 				PRODUCT_BUNDLE_IDENTIFIER = com.sanggong.toyou;
@@ -869,7 +869,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				NAVER_APP_SCHEME = soccerdiary;
+				NAVER_APP_SCHEME = toyou;
 				NAVER_CLIENT_ID = 5iFniNlZy5YCf1nB3igc;
 				NAVER_CLIENT_SECRET = gR3DoI0t19;
 				PRODUCT_BUNDLE_IDENTIFIER = com.sanggong.toyou;
@@ -981,7 +981,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				NAVER_APP_SCHEME = soccerdiary;
+				NAVER_APP_SCHEME = toyou;
 				NAVER_CLIENT_ID = 5iFniNlZy5YCf1nB3igc;
 				NAVER_CLIENT_SECRET = gR3DoI0t19;
 				PRODUCT_BUNDLE_IDENTIFIER = com.sanggong.toyou;
@@ -1088,7 +1088,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				NAVER_APP_SCHEME = soccerdiary;
+				NAVER_APP_SCHEME = toyou;
 				NAVER_CLIENT_ID = 5iFniNlZy5YCf1nB3igc;
 				NAVER_CLIENT_SECRET = gR3DoI0t19;
 				PRODUCT_BUNDLE_IDENTIFIER = com.sanggong.toyou;
