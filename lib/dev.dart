@@ -3,6 +3,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
+import 'package:timezone/data/latest.dart' as tz;
 
 import 'app.dart';
 import 'controllers/notification.controller.dart';
@@ -18,6 +19,7 @@ void main() async{
     javaScriptAppKey: dotenv.get("KAKAO_JAVASCRIPT_APP_KEY"),
   );
   NotificationController.instance.firebasePushSetting();
+  tz.initializeTimeZones();
   runApp((const App()));
 }
 

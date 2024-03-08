@@ -63,8 +63,6 @@ class VersionController extends ChangeNotifier {
           });
           isChecked = false;
           break;*/
-        case null:
-          return getVersion(context);
         default:
           isChecked = false;
       }

@@ -90,7 +90,7 @@ class Request {
             statusCode: 404, message: "존재하지 않는 URI 주소입니다.", error: e.message);
       }
     } on SocketException catch (e) {
-      log("message", error: e.message, type: LogType.info);
+      log("message", error: e.message, type: LogType.error);
       return Response(statusCode: null, error: e.message);
     }
     return Response(statusCode: null, message: ErrorMessages.unknown);

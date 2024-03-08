@@ -8,6 +8,7 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
 import 'package:toyou/utills/common.dart';
+import 'package:timezone/timezone.dart' as tz;
 
 import 'inapp-web.controller.dart';
 
@@ -152,7 +153,19 @@ class NotificationController extends ChangeNotifier{
     debugPrint('message: ${rm.data}');
 
     if(notification != null && android != null) {
-      _localNotifications.show(notification.hashCode, notification.title, notification.body, notificationDetails, payload: rm.data.isEmpty ? null : jsonEncode(rm.data));
+      if(rm.data["send_time"] != null) {
+        final DateTime? dt = DateTime.tryParse(rm.data["send_time"]);
+
+        if(dt != null) {
+          final tz.TZDateTime tzdt = tz.TZDateTime.parse(tz.local, dt.toIso8601String());
+          final Map<String, dynamic> data = rm.data;
+          data["send_time"] = null;
+          final String payload = jsonEncode(data);
+          _localNotifications.zonedSchedule(notification.hashCode, notification.title, notification.body, tzdt, notificationDetails, uiLocalNotificationDateInterpretation: UILocalNotificationDateInterpretation.absoluteTime, payload: payload);
+        }
+      } else {
+        _localNotifications.show(notification.hashCode, notification.title, notification.body, notificationDetails, payload: rm.data.isEmpty ? null : jsonEncode(rm.data));
+      }
     }
   }
 
