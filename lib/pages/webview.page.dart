@@ -80,26 +80,30 @@ class _WebViewPageState extends State<WebViewPage> {
             headers: _initialHeader
         ),
         initialSettings: InAppWebViewSettings(
-            applicationNameForUserAgent: Platform.isIOS ? "TOYOU_IOS" : "TOYOU_ANDROID",
-            javaScriptEnabled: true,
-            useOnDownloadStart: true,
-            useShouldOverrideUrlLoading: true,
-            allowFileAccessFromFileURLs: true,
-            useHybridComposition: true,
-            domStorageEnabled: true,
-            cacheMode: CacheMode.LOAD_NO_CACHE,
-            cacheEnabled: false,
-            allowFileAccess: true,
-            allowContentAccess: true,
-            mediaPlaybackRequiresUserGesture: true,
-            useOnLoadResource: false,
-          allowsBackForwardNavigationGestures: false,
+          applicationNameForUserAgent: Platform.isIOS ? "TOYOU_IOS" : "TOYOU_ANDROID",
+          javaScriptEnabled: true,
+          useOnDownloadStart: true,
+          useShouldOverrideUrlLoading: true,
+          allowFileAccessFromFileURLs: true,
+          useHybridComposition: true,
+          domStorageEnabled: true,
+          cacheMode: CacheMode.LOAD_CACHE_ELSE_NETWORK,
+          cacheEnabled: false,
+          allowFileAccess: true,
+          allowContentAccess: true,
+          mediaPlaybackRequiresUserGesture: true,
+          allowsBackForwardNavigationGestures: true,
         ),
         onWebViewCreated: _onWebViewCreated,
         onLoadStart: _onLoadStart,
         onLoadStop: _onLoadStop,
+        onReceivedHttpError: _onReceivedHttpError,
       ),
     );
+  }
+
+  void _onReceivedHttpError(InAppWebViewController ctr, WebResourceRequest req, WebResourceResponse res) {
+    log("STATUS_CODE: ${res.statusCode}");
   }
 
   void _onDownloadStartRequest(InAppWebViewController ctr, DownloadStartRequest req) {
@@ -121,6 +125,15 @@ class _WebViewPageState extends State<WebViewPage> {
 
     debugPrint("SHOULD OVERRIDE URL : ${webUri.toString()}");
     debugPrint("HOST : ${webUri?.host}");
+    debugPrint("TYPE : ${action.navigationType}");
+
+    final String? path = action.request.url?.path;
+    if(path != null) {
+      if(path.startsWith("/index.php") || path == "/") await ctr.clearHistory();
+      if(path.contains("process.php") && await ctr.canGoForward()) {
+        await ctr.goBack();
+      }
+    }
 
     if(webUri != null) {
       final String url = webUri.toString();
@@ -154,12 +167,20 @@ class _WebViewPageState extends State<WebViewPage> {
     }*/
     // javascriptCode = "setCookieWeb('fcmToken', '${NotificationController.of(context).fcmToken}');";
     InAppWebController.of(context).webViewCtr = ctr
+      ..clearCache()
       ..evaluateJavascript(source: javascriptCode)
       ..reload();
   }
 
-  void _onLoadStart(InAppWebViewController ctr, Uri? uri){
+  void _onLoadStart(InAppWebViewController ctr, Uri? uri) async{
     debugPrint("CURRENT_URI = $uri");
+    final String? path = uri?.path;
+    if(path != null) {
+      if(path.startsWith("/index.php") || path == "/") await ctr.clearHistory();
+      /*if(path.contains("process.php") && await ctr.canGoForward()) {
+        await ctr.goBack();
+      }*/
+    }
   }
 
   void _onLoadStop(InAppWebViewController ctr, Uri? uri) async{

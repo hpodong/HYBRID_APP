@@ -28,8 +28,16 @@ class _SplashPageState extends State<SplashPage> {
 
   Future<bool> _onWillPop() async{
     final InAppWebViewController webViewCtr = InAppWebController.of(context).webViewCtr;
+    final WebUri? webUri = await webViewCtr.getUrl();
+    final Map<String, String>? query = webUri?.queryParameters;
+
     if(await webViewCtr.canGoBack()) {
+      if(webUri != null && query?["sisredirect"] != null) {
+        await webViewCtr.goBackOrForward(steps: -2);
+        return false;
+      }
       await webViewCtr.goBack();
+
       return false;
     } else {
       _closeTimer?.cancel();
@@ -72,7 +80,7 @@ class _SplashPageState extends State<SplashPage> {
       onWillPop: _onWillPop,
       child: Consumer<VersionController>(
           builder: (context, controller, child) {
-      if(!controller.isChecked) {
+            if(!controller.isChecked) {
             // if(false) {
               return _buildSplash(context);
             } else {

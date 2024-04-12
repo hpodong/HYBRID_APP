@@ -14,10 +14,10 @@ void main() async{
   await dotenv.load(fileName: 'dev.env');
   await Firebase.initializeApp();
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
-  KakaoSdk.init(
+  /*KakaoSdk.init(
     nativeAppKey: dotenv.get("KAKAO_NATIVE_APP_KEY"),
     javaScriptAppKey: dotenv.get("KAKAO_JAVASCRIPT_APP_KEY"),
-  );
+  );*/
   NotificationController.instance.firebasePushSetting();
   tz.initializeTimeZones();
   runApp((const App()));
