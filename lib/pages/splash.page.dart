@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:permission_handler/permission_handler.dart';
+import '../configs/config/config.dart';
 import '../controllers/device.controller.dart';
 import '../controllers/inapp-web.controller.dart';
 import '../controllers/notification.controller.dart';
@@ -33,11 +34,10 @@ class _SplashPageState extends State<SplashPage> {
 
     if(await webViewCtr.canGoBack()) {
       if(webUri != null && query?["sisredirect"] != null) {
-        await webViewCtr.goBackOrForward(steps: -2);
+        await webViewCtr.loadUrl(urlRequest: URLRequest(url: WebUri.uri(Uri.parse(Config.instance.getUrl()))));
         return false;
       }
       await webViewCtr.goBack();
-
       return false;
     } else {
       _closeTimer?.cancel();
