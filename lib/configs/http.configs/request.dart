@@ -43,7 +43,7 @@ class Request {
       req.headers.set(HttpHeaders.acceptHeader, "*/*");
       req.headers.set(HttpHeaders.acceptEncodingHeader, "gzip, deflate, br");
       req.headers.set(HttpHeaders.connectionHeader, "keep-alive");
-      req.headers.set("API_KEY", _config.API_KEY);
+      req.headers.set("x-api-key", _config.API_KEY);
       if (accessToken != null && hasToken) req.headers.set(
           HttpHeaders.authorizationHeader, "Bearer $accessToken");
       switch (type) {

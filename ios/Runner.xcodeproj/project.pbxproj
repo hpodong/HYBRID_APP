@@ -228,6 +228,7 @@
 				3B06AD1E1E4923F5004D2608 /* Thin Binary */,
 				9FD507438C6085D3EF144C45 /* [CP] Embed Pods Frameworks */,
 				CEA0F9142B297CF300B86425 /* GoogleService-info.splist location */,
+				7C747915C797CF3DC2C7F307 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -245,7 +246,7 @@
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = NO;
-				LastUpgradeCheck = 1430;
+				LastUpgradeCheck = 1510;
 				ORGANIZATIONNAME = "";
 				TargetAttributes = {
 					331C8080294A63A400263BE5 = {
@@ -337,6 +338,23 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "/bin/sh \"$FLUTTER_ROOT/packages/flutter_tools/bin/xcode_backend.sh\" embed_and_thin";
+		};
+		7C747915C797CF3DC2C7F307 /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-Runner/Pods-Runner-resources-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Copy Pods Resources";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-Runner/Pods-Runner-resources-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Runner/Pods-Runner-resources.sh\"\n";
+			showEnvVarsInLog = 0;
 		};
 		9740EEB61CF901F6004384FC /* Run Script */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -464,7 +482,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				APP_NAME = "투유텔레콤 dev";
+				APP_NAME = "주식 트레이더 dev";
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
@@ -521,7 +539,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 9740EEB21CF90195004384FC /* Debug.xcconfig */;
 			buildSettings = {
-				APP_NAME = "(dev)투유텔레콤";
+				APP_NAME = "(dev)주식 트레이더";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = Runner/Runner.entitlements;
@@ -538,10 +556,10 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				NAVER_APP_SCHEME = toyou;
+				NAVER_APP_SCHEME = quant;
 				NAVER_CLIENT_ID = 5iFniNlZy5YCf1nB3igc;
 				NAVER_CLIENT_SECRET = gR3DoI0t19;
-				PRODUCT_BUNDLE_IDENTIFIER = com.sanggong.toyou;
+				PRODUCT_BUNDLE_IDENTIFIER = com.sanggong.quant;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				REVERSED_CLIENT_ID = "com.googleusercontent.apps.1046501482226-9a7glg6a3k0s2ie760sbh26fqeptejv1";
@@ -566,7 +584,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				GENERATE_INFOPLIST_FILE = YES;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.sanggong.toyou.RunnerTests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.sanggong.quant.RunnerTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
@@ -579,7 +597,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				APP_NAME = "투유텔레콤 dev";
+				APP_NAME = "주식 트레이더 dev";
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
@@ -633,7 +651,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 7AFA3C8E1D35360C0083082E /* Release.xcconfig */;
 			buildSettings = {
-				APP_NAME = "(dev)투유텔레콤";
+				APP_NAME = "(dev)주식 트레이더";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = Runner/Runner.entitlements;
@@ -650,10 +668,10 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				NAVER_APP_SCHEME = toyou;
+				NAVER_APP_SCHEME = quant;
 				NAVER_CLIENT_ID = 5iFniNlZy5YCf1nB3igc;
 				NAVER_CLIENT_SECRET = gR3DoI0t19;
-				PRODUCT_BUNDLE_IDENTIFIER = com.sanggong.toyou;
+				PRODUCT_BUNDLE_IDENTIFIER = com.sanggong.quant;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				REVERSED_CLIENT_ID = "com.googleusercontent.apps.1046501482226-9a7glg6a3k0s2ie760sbh26fqeptejv1";
@@ -677,7 +695,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				GENERATE_INFOPLIST_FILE = YES;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.sanggong.toyou.RunnerTests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.sanggong.quant.RunnerTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Runner.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Runner";
@@ -688,7 +706,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				APP_NAME = "투유텔레콤 dev";
+				APP_NAME = "주식 트레이더 dev";
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
@@ -740,7 +758,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 7AFA3C8E1D35360C0083082E /* Release.xcconfig */;
 			buildSettings = {
-				APP_NAME = "(dev)투유텔레콤";
+				APP_NAME = "(dev)주식 트레이더";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = Runner/Runner.entitlements;
@@ -757,10 +775,10 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				NAVER_APP_SCHEME = toyou;
+				NAVER_APP_SCHEME = quant;
 				NAVER_CLIENT_ID = 5iFniNlZy5YCf1nB3igc;
 				NAVER_CLIENT_SECRET = gR3DoI0t19;
-				PRODUCT_BUNDLE_IDENTIFIER = com.sanggong.toyou;
+				PRODUCT_BUNDLE_IDENTIFIER = com.sanggong.quant;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				REVERSED_CLIENT_ID = "com.googleusercontent.apps.1046501482226-9a7glg6a3k0s2ie760sbh26fqeptejv1";
@@ -784,7 +802,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				GENERATE_INFOPLIST_FILE = YES;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.sanggong.toyou.RunnerTests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.sanggong.quant.RunnerTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Runner.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Runner";
@@ -795,7 +813,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				APP_NAME = "투유텔레콤 dev";
+				APP_NAME = "주식 트레이더 dev";
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
@@ -852,7 +870,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 9740EEB21CF90195004384FC /* Debug.xcconfig */;
 			buildSettings = {
-				APP_NAME = "투유텔레콤";
+				APP_NAME = "주식 트레이더";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = Runner/Runner.entitlements;
@@ -869,10 +887,10 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				NAVER_APP_SCHEME = toyou;
+				NAVER_APP_SCHEME = quant;
 				NAVER_CLIENT_ID = 5iFniNlZy5YCf1nB3igc;
 				NAVER_CLIENT_SECRET = gR3DoI0t19;
-				PRODUCT_BUNDLE_IDENTIFIER = com.sanggong.toyou;
+				PRODUCT_BUNDLE_IDENTIFIER = com.sanggong.quant;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				REVERSED_CLIENT_ID = "com.googleusercontent.apps.1046501482226-lget8lr9hkmh2vh0f4a6kjqa3aes45sn";
@@ -897,7 +915,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				GENERATE_INFOPLIST_FILE = YES;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.sanggong.toyou.RunnerTests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.sanggong.quant.RunnerTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
@@ -910,7 +928,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				APP_NAME = "투유텔레콤 dev";
+				APP_NAME = "주식 트레이더 dev";
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
@@ -964,7 +982,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 7AFA3C8E1D35360C0083082E /* Release.xcconfig */;
 			buildSettings = {
-				APP_NAME = "투유텔레콤";
+				APP_NAME = "주식 트레이더";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = Runner/Runner.entitlements;
@@ -981,10 +999,10 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				NAVER_APP_SCHEME = toyou;
+				NAVER_APP_SCHEME = quant;
 				NAVER_CLIENT_ID = 5iFniNlZy5YCf1nB3igc;
 				NAVER_CLIENT_SECRET = gR3DoI0t19;
-				PRODUCT_BUNDLE_IDENTIFIER = com.sanggong.toyou;
+				PRODUCT_BUNDLE_IDENTIFIER = com.sanggong.quant;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				REVERSED_CLIENT_ID = "com.googleusercontent.apps.1046501482226-lget8lr9hkmh2vh0f4a6kjqa3aes45sn";
@@ -1008,7 +1026,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				GENERATE_INFOPLIST_FILE = YES;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.sanggong.toyou.RunnerTests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.sanggong.quant.RunnerTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Runner.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Runner";
@@ -1019,7 +1037,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				APP_NAME = "투유텔레콤 dev";
+				APP_NAME = "주식 트레이더 dev";
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
@@ -1071,7 +1089,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 7AFA3C8E1D35360C0083082E /* Release.xcconfig */;
 			buildSettings = {
-				APP_NAME = "투유텔레콤";
+				APP_NAME = "주식 트레이더";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = Runner/Runner.entitlements;
@@ -1088,10 +1106,10 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				NAVER_APP_SCHEME = toyou;
+				NAVER_APP_SCHEME = quant;
 				NAVER_CLIENT_ID = 5iFniNlZy5YCf1nB3igc;
 				NAVER_CLIENT_SECRET = gR3DoI0t19;
-				PRODUCT_BUNDLE_IDENTIFIER = com.sanggong.toyou;
+				PRODUCT_BUNDLE_IDENTIFIER = com.sanggong.quant;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				REVERSED_CLIENT_ID = "com.googleusercontent.apps.1046501482226-lget8lr9hkmh2vh0f4a6kjqa3aes45sn";
@@ -1115,7 +1133,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				GENERATE_INFOPLIST_FILE = YES;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.sanggong.toyou.RunnerTests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.sanggong.quant.RunnerTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Runner.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Runner";

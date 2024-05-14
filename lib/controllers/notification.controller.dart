@@ -7,7 +7,8 @@ import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
-import 'package:toyou/utills/common.dart';
+import 'package:quant/configs/config/config.dart';
+import 'package:quant/utills/common.dart';
 import 'package:timezone/timezone.dart' as tz;
 
 import 'inapp-web.controller.dart';
@@ -169,7 +170,7 @@ class NotificationController extends ChangeNotifier{
     }
   }
 
-  void _onTapNotification(BuildContext context, String? payload) {
+  void _onTapNotification(BuildContext context, String? payload) async{
 
     FlutterAppBadger.removeBadge();
 
@@ -178,7 +179,12 @@ class NotificationController extends ChangeNotifier{
     if(payload != null && payload.isNotEmpty){
       final Map<String, dynamic> json = jsonDecode(payload);
       final String? url = json['url'];
-      if(url != null && url.isNotEmpty) InAppWebController.of(context).webViewCtr.loadUrl(urlRequest: URLRequest(url: WebUri(url)));
+      if(url != null && url.isNotEmpty) {
+        final Uri uri = Uri.parse(url);
+        log("!!!!!!!!!!!!!! :  ${uri}");
+
+        await InAppWebController.of(context).webViewCtr.loadUrl(urlRequest: URLRequest(url: WebUri(url), body: utf8.encode(jsonEncode(uri.queryParameters))));
+      }
     }
   }
 }

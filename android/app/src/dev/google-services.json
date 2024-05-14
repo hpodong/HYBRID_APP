@@ -1,21 +1,21 @@
 {
   "project_info": {
-    "project_number": "810687039213",
-    "project_id": "toyou-telecom",
-    "storage_bucket": "toyou-telecom.appspot.com"
+    "project_number": "704398891628",
+    "project_id": "quant-75d80",
+    "storage_bucket": "quant-75d80.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:810687039213:android:9f814aee4663c61c942ee4",
+        "mobilesdk_app_id": "1:704398891628:android:bd62fb658c1e30b2b89649",
         "android_client_info": {
-          "package_name": "com.sanggong.toyou"
+          "package_name": "com.sanggong.quant"
         }
       },
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyCGMIAi0LwB9EJnz1X7DkQ6Ubfm6bF0Uc8"
+          "current_key": "AIzaSyBPM9zvCms1mRJqsnk5rugAdl5b5ryIqbc"
         }
       ],
       "services": {
@@ -26,15 +26,15 @@
     },
     {
       "client_info": {
-        "mobilesdk_app_id": "1:810687039213:android:d2cdb9a6b0b19154942ee4",
+        "mobilesdk_app_id": "1:704398891628:android:99473e04c0131c98b89649",
         "android_client_info": {
-          "package_name": "com.sanggong.toyou.dev"
+          "package_name": "com.sanggong.quant.dev"
         }
       },
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyCGMIAi0LwB9EJnz1X7DkQ6Ubfm6bF0Uc8"
+          "current_key": "AIzaSyBPM9zvCms1mRJqsnk5rugAdl5b5ryIqbc"
         }
       ],
       "services": {

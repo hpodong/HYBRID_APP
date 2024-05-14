@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:provider/provider.dart';
-import 'package:toyou/repos/version.repo.dart';
+import 'package:quant/repos/version.repo.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../configs/config/config.dart';
@@ -30,8 +30,9 @@ class VersionController extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> getVersion(BuildContext context) {
-    return PackageInfo.fromPlatform().then((info) async{
+  Future<void> getVersion(BuildContext context) async {
+    isChecked = true;
+    /*return PackageInfo.fromPlatform().then((info) async{
       this.info = info;
       final Response res = await _repo.versionCheck(version: info.version, buildNumber: int.parse(info.buildNumber));
       switch(res.statusCode) {
@@ -57,16 +58,16 @@ class VersionController extends ChangeNotifier {
               break;
           }
           break;
-        /*case 401:
+        *//*case 401:
           CustomAlert.alert(context, "버전 업데이트", "API KEY 값이 없습니다.", onTap: () {
             openURL(_storeURL(), mode: LaunchMode.externalApplication);
           });
           isChecked = false;
-          break;*/
+          break;*//*
         default:
           isChecked = false;
       }
-    });
+    });*/
   }
 
   String _storeURL() {

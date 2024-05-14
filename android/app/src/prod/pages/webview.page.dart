@@ -80,7 +80,7 @@ class _WebViewPageState extends State<WebViewPage> {
             headers: _initialHeader
         ),
         initialSettings: InAppWebViewSettings(
-          applicationNameForUserAgent: Platform.isIOS ? "TOYOU_IOS" : "TOYOU_ANDROID",
+          applicationNameForUserAgent: Platform.isIOS ? "quant_IOS" : "quant_ANDROID",
           javaScriptEnabled: true,
           useOnDownloadStart: true,
           useShouldOverrideUrlLoading: true,
@@ -129,7 +129,7 @@ class _WebViewPageState extends State<WebViewPage> {
 
     final String? path = action.request.url?.path;
     if(path != null) {
-      if(path.startsWith("/index.php") || path == "/") await clearHistory();
+      if(path.startsWith("/index.php") || path == "/") await ctr.clearHistory();
       if(path.contains("process.php") && await ctr.canGoForward()) {
         await ctr.goBack();
       }
@@ -176,7 +176,7 @@ class _WebViewPageState extends State<WebViewPage> {
     debugPrint("CURRENT_URI = $uri");
     final String? path = uri?.path;
     if(path != null) {
-      if(path.startsWith("/index.php") || path == "/") await clearHistory();
+      if(path.startsWith("/index.php") || path == "/") await ctr.clearHistory();
       /*if(path.contains("process.php") && await ctr.canGoForward()) {
         await ctr.goBack();
       }*/
@@ -216,10 +216,4 @@ class _WebViewPageState extends State<WebViewPage> {
     }
   }
 
-  Future<void> clearHistory() async{
-    try {
-      await _inAppWebCtr.webViewCtr.clearHistory();
-    } catch(ignore){
-    }
-  }
 }

@@ -10,10 +10,9 @@ void main() async{
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
   widgetsBinding;
   await dotenv.load(fileName: 'prod.env');
-  await Firebase.initializeApp();
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+  await Firebase.initializeApp();
   NotificationController.instance.firebasePushSetting();
-  /*KakaoConfig.init();*/
   tz.initializeTimeZones();
   runApp((const App()));
 }
