@@ -29,16 +29,8 @@ class _SplashPageState extends State<SplashPage> {
 
   Future<bool> _onWillPop() async{
     final InAppWebViewController webViewCtr = InAppWebController.of(context).webViewCtr;
-    final WebUri? webUri = await webViewCtr.getUrl();
-    final Map<String, String>? query = webUri?.queryParameters;
-
-    log(query?["sisredirect"]);
 
     if(await webViewCtr.canGoBack()) {
-      if(webUri != null && query?["sisredirect"] != null) {
-        await webViewCtr.loadUrl(urlRequest: URLRequest(url: WebUri.uri(Uri.parse(Config.instance.getUrl()))));
-        return false;
-      }
       await webViewCtr.goBack();
       return false;
     } else {

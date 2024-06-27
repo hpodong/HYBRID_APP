@@ -191,7 +191,7 @@ class _WebViewPageState extends State<WebViewPage> {
       _deepLinkListener();
     }
 
-    if(uri?.path.endsWith("/member/login.php") == true) {
+    if(uri?.path.endsWith("/login") == true) {
       ctr.evaluateJavascript(source: "setFcmToken('${NotificationController.of(context).fcmToken}', '${DeviceController.of(context).deviceId}');");
     }
   }
