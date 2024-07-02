@@ -192,7 +192,10 @@ class _WebViewPageState extends State<WebViewPage> {
     }
 
     if(uri?.path.endsWith("/login") == true) {
-      ctr.evaluateJavascript(source: "setFcmToken('${NotificationController.of(context).fcmToken}', '${DeviceController.of(context).deviceId}');");
+      ctr.evaluateJavascript(source: """
+      document.getElementById('fcmToken').value = '${NotificationController.of(context).fcmToken}';
+      document.getElementById('deviceId').value = '${DeviceController.of(context).deviceId}';
+      """);
     }
   }
 
