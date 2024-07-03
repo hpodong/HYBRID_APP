@@ -1,13 +1,13 @@
 {
   "project_info": {
-    "project_number": "704398891628",
-    "project_id": "quant-75d80",
-    "storage_bucket": "quant-75d80.appspot.com"
+    "project_number": "812334094830",
+    "project_id": "quant-d87db",
+    "storage_bucket": "quant-d87db.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:704398891628:android:bd62fb658c1e30b2b89649",
+        "mobilesdk_app_id": "1:812334094830:android:4f98188daf80d8e2fbd6ff",
         "android_client_info": {
           "package_name": "com.sanggong.quant"
         }
@@ -15,7 +15,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyBPM9zvCms1mRJqsnk5rugAdl5b5ryIqbc"
+          "current_key": "AIzaSyC17A4QmUbVIYqGG1xBhA5cTvG7E3jGgNs"
         }
       ],
       "services": {
