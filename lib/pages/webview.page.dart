@@ -88,7 +88,7 @@ class _WebViewPageState extends State<WebViewPage> {
           useHybridComposition: true,
           domStorageEnabled: true,
           cacheMode: CacheMode.LOAD_CACHE_ELSE_NETWORK,
-          cacheEnabled: false,
+          cacheEnabled: true,
           allowFileAccess: true,
           allowContentAccess: true,
           mediaPlaybackRequiresUserGesture: true,
@@ -167,7 +167,6 @@ class _WebViewPageState extends State<WebViewPage> {
     }*/
     // javascriptCode = "setCookieWeb('fcmToken', '${NotificationController.of(context).fcmToken}');";
     InAppWebController.of(context).webViewCtr = ctr
-      ..clearCache()
       ..evaluateJavascript(source: javascriptCode)
       ..reload();
   }
