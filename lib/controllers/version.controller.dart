@@ -32,9 +32,9 @@ class VersionController extends ChangeNotifier {
 
   Future<void> getVersion(BuildContext context) async {
     isChecked = true;
-    /*return PackageInfo.fromPlatform().then((info) async{
+    return PackageInfo.fromPlatform().then((info) async{
       this.info = info;
-      final Response res = await _repo.versionCheck(version: info.version, buildNumber: int.parse(info.buildNumber));
+      /*final Response res = await _repo.versionCheck(version: info.version, buildNumber: int.parse(info.buildNumber));
       switch(res.statusCode) {
         case 200:
           switch (res.data?["AV_status"]) {
@@ -58,16 +58,16 @@ class VersionController extends ChangeNotifier {
               break;
           }
           break;
-        *//*case 401:
+        case 401:
           CustomAlert.alert(context, "버전 업데이트", "API KEY 값이 없습니다.", onTap: () {
             openURL(_storeURL(), mode: LaunchMode.externalApplication);
           });
           isChecked = false;
-          break;*//*
+          break;
         default:
           isChecked = false;
-      }
-    });*/
+      }*/
+    });
   }
 
   String _storeURL() {

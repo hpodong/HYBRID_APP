@@ -32,6 +32,7 @@ class _WebViewPageState extends State<WebViewPage> {
   late final OverlayController _overlayCtr = OverlayController.of(context);
   late final InAppWebController _inAppWebCtr = InAppWebController.of(context);
   late final NotificationController _notificationCtr = NotificationController.of(context);
+  late final VersionController _versionController = VersionController.of(context);
 
   Map<String, String> get _initialHeader => <String, String>{
     "fcm-token": _notificationCtr.fcmToken ?? '',
@@ -166,7 +167,8 @@ class _WebViewPageState extends State<WebViewPage> {
       javascriptCode += "sessionStorage.setItem('${map.key}', '${map.value}');\n";
     }*/
     // javascriptCode = "setCookieWeb('fcmToken', '${NotificationController.of(context).fcmToken}');";
-    InAppWebController.of(context).webViewCtr = ctr
+
+    _inAppWebCtr.webViewCtr = ctr
       ..evaluateJavascript(source: javascriptCode)
       ..reload();
   }
@@ -183,7 +185,7 @@ class _WebViewPageState extends State<WebViewPage> {
   }
 
   void _onLoadStop(InAppWebViewController ctr, Uri? uri) async{
-    if(!InAppWebController.of(context).firstLoad && VersionController.of(context).isChecked) {
+    if(!_inAppWebCtr.firstLoad && _versionController.isChecked) {
       _overlayCtr.removeOverlay();
       _inAppWebCtr.firstLoad = true;
       _notificationCtr.firebasePushListener(context);
@@ -192,8 +194,14 @@ class _WebViewPageState extends State<WebViewPage> {
 
     if(uri?.path.endsWith("/login") == true) {
       ctr.evaluateJavascript(source: """
-      document.getElementById('fcmToken').value = '${NotificationController.of(context).fcmToken}';
-      document.getElementById('deviceId').value = '${DeviceController.of(context).deviceId}';
+      document.getElementById('fcmToken').value = '${_notificationCtr.fcmToken}';
+      document.getElementById('deviceId').value = '${_deviceCtr.deviceId}';
+      """);
+    }
+    if(uri?.path.startsWith("/dashboard") == true) {
+      log(uri?.path);
+      ctr.evaluateJavascript(source: """
+      \$\('#app_version').text('${_versionController.info?.version}');
       """);
     }
   }
