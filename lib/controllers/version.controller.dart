@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:provider/provider.dart';
-import 'package:quant/repos/version.repo.dart';
+import 'package:HYBRID_APP/repos/version.repo.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../configs/config/config.dart';

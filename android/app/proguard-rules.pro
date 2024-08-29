@@ -35,8 +35,8 @@
 -dontwarn android.support.v4.**
 
 # Your App Package
--keep class com.sanggong.quant.** { *; }
--dontwarn com.sanggong.quant.**
+-keep class com.hpodong.hybrid.** { *; }
+-dontwarn com.hpodong.hybrid.**
 
 # Apple Sign In
 -keep class com.apple.** { *; }

@@ -9,7 +9,7 @@
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>com.sanggong.quant</string>
+	<string>com.hpodong.hybrid</string>
 	<key>PROJECT_ID</key>
 	<string>quant-d87db</string>
 	<key>STORAGE_BUCKET</key>

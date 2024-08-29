@@ -482,7 +482,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				APP_NAME = "주식 트레이더 dev";
+				APP_NAME = "하이브리드앱 dev";
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
@@ -539,7 +539,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 9740EEB21CF90195004384FC /* Debug.xcconfig */;
 			buildSettings = {
-				APP_NAME = "(dev)주식 트레이더";
+				APP_NAME = "(dev)하이브리드앱";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = Runner/Runner.entitlements;
@@ -556,10 +556,10 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				NAVER_APP_SCHEME = quant;
+				NAVER_APP_SCHEME = hpodonghybrid;
 				NAVER_CLIENT_ID = 5iFniNlZy5YCf1nB3igc;
 				NAVER_CLIENT_SECRET = gR3DoI0t19;
-				PRODUCT_BUNDLE_IDENTIFIER = com.sanggong.quant;
+				PRODUCT_BUNDLE_IDENTIFIER = com.hpodong.hybrid;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				REVERSED_CLIENT_ID = "com.googleusercontent.apps.1046501482226-9a7glg6a3k0s2ie760sbh26fqeptejv1";
@@ -584,7 +584,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				GENERATE_INFOPLIST_FILE = YES;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.sanggong.quant.RunnerTests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.hpodong.hybrid.RunnerTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
@@ -597,7 +597,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				APP_NAME = "주식 트레이더 dev";
+				APP_NAME = "하이브리드앱 dev";
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
@@ -651,7 +651,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 7AFA3C8E1D35360C0083082E /* Release.xcconfig */;
 			buildSettings = {
-				APP_NAME = "(dev)주식 트레이더";
+				APP_NAME = "(dev)하이브리드앱";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = Runner/Runner.entitlements;
@@ -668,10 +668,10 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				NAVER_APP_SCHEME = quant;
+				NAVER_APP_SCHEME = hpodonghybrid;
 				NAVER_CLIENT_ID = 5iFniNlZy5YCf1nB3igc;
 				NAVER_CLIENT_SECRET = gR3DoI0t19;
-				PRODUCT_BUNDLE_IDENTIFIER = com.sanggong.quant;
+				PRODUCT_BUNDLE_IDENTIFIER = com.hpodong.hybrid;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				REVERSED_CLIENT_ID = "com.googleusercontent.apps.1046501482226-9a7glg6a3k0s2ie760sbh26fqeptejv1";
@@ -695,7 +695,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				GENERATE_INFOPLIST_FILE = YES;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.sanggong.quant.RunnerTests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.hpodong.hybrid.RunnerTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Runner.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Runner";
@@ -706,7 +706,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				APP_NAME = "주식 트레이더 dev";
+				APP_NAME = "하이브리드앱 dev";
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
@@ -758,7 +758,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 7AFA3C8E1D35360C0083082E /* Release.xcconfig */;
 			buildSettings = {
-				APP_NAME = "(dev)주식 트레이더";
+				APP_NAME = "(dev)하이브리드앱";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = Runner/Runner.entitlements;
@@ -775,10 +775,10 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				NAVER_APP_SCHEME = quant;
+				NAVER_APP_SCHEME = hpodonghybrid;
 				NAVER_CLIENT_ID = 5iFniNlZy5YCf1nB3igc;
 				NAVER_CLIENT_SECRET = gR3DoI0t19;
-				PRODUCT_BUNDLE_IDENTIFIER = com.sanggong.quant;
+				PRODUCT_BUNDLE_IDENTIFIER = com.hpodong.hybrid;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				REVERSED_CLIENT_ID = "com.googleusercontent.apps.1046501482226-9a7glg6a3k0s2ie760sbh26fqeptejv1";
@@ -802,7 +802,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				GENERATE_INFOPLIST_FILE = YES;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.sanggong.quant.RunnerTests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.hpodong.hybrid.RunnerTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Runner.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Runner";
@@ -813,7 +813,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				APP_NAME = "주식 트레이더 dev";
+				APP_NAME = "하이브리드앱 dev";
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
@@ -870,7 +870,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 9740EEB21CF90195004384FC /* Debug.xcconfig */;
 			buildSettings = {
-				APP_NAME = "주식 트레이더";
+				APP_NAME = "하이브리드앱";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = Runner/Runner.entitlements;
@@ -887,10 +887,10 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				NAVER_APP_SCHEME = quant;
+				NAVER_APP_SCHEME = hpodonghybrid;
 				NAVER_CLIENT_ID = 5iFniNlZy5YCf1nB3igc;
 				NAVER_CLIENT_SECRET = gR3DoI0t19;
-				PRODUCT_BUNDLE_IDENTIFIER = com.sanggong.quant;
+				PRODUCT_BUNDLE_IDENTIFIER = com.hpodong.hybrid;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				REVERSED_CLIENT_ID = "com.googleusercontent.apps.1046501482226-lget8lr9hkmh2vh0f4a6kjqa3aes45sn";
@@ -915,7 +915,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				GENERATE_INFOPLIST_FILE = YES;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.sanggong.quant.RunnerTests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.hpodong.hybrid.RunnerTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
@@ -928,7 +928,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				APP_NAME = "주식 트레이더 dev";
+				APP_NAME = "하이브리드앱 dev";
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
@@ -982,7 +982,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 7AFA3C8E1D35360C0083082E /* Release.xcconfig */;
 			buildSettings = {
-				APP_NAME = "주식 트레이더";
+				APP_NAME = "하이브리드앱";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = Runner/Runner.entitlements;
@@ -999,10 +999,10 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				NAVER_APP_SCHEME = quant;
+				NAVER_APP_SCHEME = hpodonghybrid;
 				NAVER_CLIENT_ID = 5iFniNlZy5YCf1nB3igc;
 				NAVER_CLIENT_SECRET = gR3DoI0t19;
-				PRODUCT_BUNDLE_IDENTIFIER = com.sanggong.quant;
+				PRODUCT_BUNDLE_IDENTIFIER = com.hpodong.hybrid;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				REVERSED_CLIENT_ID = "com.googleusercontent.apps.1046501482226-lget8lr9hkmh2vh0f4a6kjqa3aes45sn";
@@ -1026,7 +1026,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				GENERATE_INFOPLIST_FILE = YES;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.sanggong.quant.RunnerTests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.hpodong.hybrid.RunnerTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Runner.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Runner";
@@ -1037,7 +1037,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				APP_NAME = "주식 트레이더 dev";
+				APP_NAME = "하이브리드앱 dev";
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
@@ -1089,7 +1089,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 7AFA3C8E1D35360C0083082E /* Release.xcconfig */;
 			buildSettings = {
-				APP_NAME = "주식 트레이더";
+				APP_NAME = "하이브리드앱";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = Runner/Runner.entitlements;
@@ -1106,10 +1106,10 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				NAVER_APP_SCHEME = quant;
+				NAVER_APP_SCHEME = hpodonghybrid;
 				NAVER_CLIENT_ID = 5iFniNlZy5YCf1nB3igc;
 				NAVER_CLIENT_SECRET = gR3DoI0t19;
-				PRODUCT_BUNDLE_IDENTIFIER = com.sanggong.quant;
+				PRODUCT_BUNDLE_IDENTIFIER = com.hpodong.hybrid;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				REVERSED_CLIENT_ID = "com.googleusercontent.apps.1046501482226-lget8lr9hkmh2vh0f4a6kjqa3aes45sn";
@@ -1133,7 +1133,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				GENERATE_INFOPLIST_FILE = YES;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.sanggong.quant.RunnerTests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.hpodong.hybrid.RunnerTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Runner.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Runner";

@@ -9,7 +9,7 @@
       "client_info": {
         "mobilesdk_app_id": "1:812334094830:android:4f98188daf80d8e2fbd6ff",
         "android_client_info": {
-          "package_name": "com.sanggong.quant"
+          "package_name": "com.hpodong.hybrid"
         }
       },
       "oauth_client": [],
@@ -28,7 +28,7 @@
       "client_info": {
         "mobilesdk_app_id": "1:812334094830:android:22f77f84abea926cfbd6ff",
         "android_client_info": {
-          "package_name": "com.sanggong.quant.dev"
+          "package_name": "com.hpodong.hybrid.dev"
         }
       },
       "oauth_client": [],

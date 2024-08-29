@@ -50,7 +50,7 @@ apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
 apply plugin: 'com.google.gms.google-services'
 
 android {
-    namespace "com.sanggong.quant"
+    namespace "com.hpodong.hybrid"
     compileSdkVersion 34
     ndkVersion flutter.ndkVersion
 
@@ -68,7 +68,7 @@ android {
     }
 
     defaultConfig {
-        applicationId "com.sanggong.quant"
+        applicationId "com.hpodong.hybrid"
         minSdkVersion 21
         targetSdkVersion flutter.targetSdkVersion
         versionCode flutterVersionCode.toInteger()
@@ -96,7 +96,7 @@ android {
         prod {
             dimension "default"
             manifestPlaceholders = [
-                    app_name: "주식 트레이더",
+                    app_name: "하이브리드앱",
             ]
             signingConfig signingConfigs.prod
         }
@@ -104,7 +104,7 @@ android {
             dimension "default"
             applicationIdSuffix ".dev"
             manifestPlaceholders = [
-                    app_name: "(dev) 주식 트레이더",
+                    app_name: "(dev) 하이브리드앱",
             ]
             signingConfig signingConfigs.dev
         }

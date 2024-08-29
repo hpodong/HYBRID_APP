@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
-import 'package:quant/utills/common.dart';
+import 'package:HYBRID_APP/utills/common.dart';
 
 
 class KakaoConfig {

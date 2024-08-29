@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:open_filex/open_filex.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:quant/controllers/version.controller.dart';
+import 'package:HYBRID_APP/controllers/version.controller.dart';
 import 'package:uni_links/uni_links.dart';
 import '../configs/config/config.dart';
 import '../controllers/device.controller.dart';

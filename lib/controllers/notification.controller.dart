@@ -7,8 +7,8 @@ import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
-import 'package:quant/configs/config/config.dart';
-import 'package:quant/utills/common.dart';
+import 'package:HYBRID_APP/configs/config/config.dart';
+import 'package:HYBRID_APP/utills/common.dart';
 import 'package:timezone/timezone.dart' as tz;
 
 import 'inapp-web.controller.dart';

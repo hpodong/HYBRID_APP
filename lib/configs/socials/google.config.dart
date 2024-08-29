@@ -1,6 +1,6 @@
 import 'package:flutter/services.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:quant/utills/common.dart';
+import 'package:HYBRID_APP/utills/common.dart';
 
 class GoogleConfig {
 
