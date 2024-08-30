@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -119,24 +120,30 @@ class NotificationController extends ChangeNotifier{
     log("알림 액세스: $desc");
   }
 
-  void _notificationHandler(BuildContext context, RemoteMessage rm) {
-
-    FlutterAppBadger.removeBadge();
+  void _notificationHandler(BuildContext context, RemoteMessage rm) async{
 
     final RemoteNotification? notification = rm.notification;
     final AndroidNotification? android = notification?.android;
 
+    if(Platform.isAndroid) {
+      final int? badge = android?.count;
+      if(badge != null) await FlutterAppBadger.updateBadgeCount(badge);
+    } else if(Platform.isIOS) {
+      final String? badge = notification?.apple?.badge;
+      if(badge != null) await FlutterAppBadger.updateBadgeCount(int.parse(badge));
+    }
+
     final AndroidNotificationDetails androidDetails = AndroidNotificationDetails(
-        ANDROID_CHANNEL_ID,
-        ANDROID_CHANNEL_NAME,
-        channelDescription: ANDROID_CHANNEL_DESCRIPTION,
-        priority: Priority.high,
-        importance: Importance.max,
-        largeIcon: const DrawableResourceAndroidBitmap('@mipmap/ic_launcher'),
-        color: Colors.white,
+      android?.channelId ?? ANDROID_CHANNEL_ID,
+      ANDROID_CHANNEL_NAME,
+      channelDescription: ANDROID_CHANNEL_DESCRIPTION,
+      priority: Priority.high,
+      importance: Importance.max,
+      largeIcon: const DrawableResourceAndroidBitmap('@mipmap/ic_launcher'),
+      color: Colors.white,
     );
 
-    NotificationDetails notificationDetails = NotificationDetails(
+    final NotificationDetails notificationDetails = NotificationDetails(
         android: androidDetails,
         iOS: _iosDetails
     );
@@ -152,17 +159,17 @@ class NotificationController extends ChangeNotifier{
           final Map<String, dynamic> data = rm.data;
           data["send_time"] = null;
           final String payload = jsonEncode(data);
-          _localNotifications.zonedSchedule(notification.hashCode, notification.title, notification.body, tzdt, notificationDetails, uiLocalNotificationDateInterpretation: UILocalNotificationDateInterpretation.absoluteTime, payload: payload);
+          await _localNotifications.zonedSchedule(notification.hashCode, notification.title, notification.body, tzdt, notificationDetails, uiLocalNotificationDateInterpretation: UILocalNotificationDateInterpretation.absoluteTime, payload: payload);
         }
       } else {
-        _localNotifications.show(notification.hashCode, notification.title, notification.body, notificationDetails, payload: rm.data.isEmpty ? null : jsonEncode(rm.data));
+        await _localNotifications.show(notification.hashCode, notification.title, notification.body, notificationDetails, payload: rm.data.isEmpty ? null : jsonEncode(rm.data));
       }
     }
   }
 
   void _onTapNotification(BuildContext context, String? payload) async{
 
-    FlutterAppBadger.removeBadge();
+    await FlutterAppBadger.removeBadge();
 
     log('payload: $payload');
 
@@ -171,7 +178,7 @@ class NotificationController extends ChangeNotifier{
       final String? url = json['url'];
       if(url != null && url.isNotEmpty) {
         final Uri uri = Uri.parse(url);
-        await InAppWebController.of(context).webViewCtr.loadUrl(urlRequest: URLRequest(url: WebUri(url), body: utf8.encode(jsonEncode(uri.queryParameters))));
+        if(context.mounted) await InAppWebController.of(context).webViewCtr.loadUrl(urlRequest: URLRequest(url: WebUri(url), body: utf8.encode(jsonEncode(uri.queryParameters))));
       }
     }
   }

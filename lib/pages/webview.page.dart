@@ -185,6 +185,7 @@ class _WebViewPageState extends State<WebViewPage> {
     }
 
     if(uri?.path.endsWith(LOGIN_PAGE) == true) {
+      log(_notificationCtr.fcmToken, title: "FCM_TOKEN");
       ctr.evaluateJavascript(source: """
       document.getElementById('fcmToken').value = '${_notificationCtr.fcmToken}';
       document.getElementById('deviceId').value = '${_deviceCtr.deviceId}';

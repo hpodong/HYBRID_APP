@@ -72,6 +72,7 @@ Future showToast(final String msg, {
 }
 
 void log(dynamic message, {
+  String? title,
   Object? error,
   PrettyPrinter? printer,
   LogType type = LogType.info
@@ -82,15 +83,18 @@ void log(dynamic message, {
             methodCount: 0
         )
     );
+    final StringBuffer sb = StringBuffer();
+    if(title != null) sb.write("[$title] ");
+    sb.write(message);
     switch(type) {
       case LogType.info:
-        logger.i(message, error: error);
+        logger.i(sb, error: error);
         break;
       case LogType.debug:
-        logger.d(message, error: error);
+        logger.d(sb, error: error);
         break;
       case LogType.error:
-        logger.e(message, error: error);
+        logger.e(sb, error: error);
     }
   }
 }
