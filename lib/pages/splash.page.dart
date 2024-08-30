@@ -53,6 +53,15 @@ class _SplashPageState extends State<SplashPage> {
       await NotificationController.of(context).setFcmToken();
       if(mounted) await DeviceController.of(context).getDeviceInfo();
       if(mounted) await VersionController.of(context).getVersion(context);
+      /*permissionCheck([
+        Permission.mediaLibrary,
+        Permission.photos,
+        Permission.camera,
+        Permission.microphone,
+        Permission.videos,
+        Permission.storage,
+        Permission.manageExternalStorage,
+      ]);*/
     });
   }
 
