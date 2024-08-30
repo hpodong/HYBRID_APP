@@ -1,9 +1,9 @@
-//plugins {
-//    id "com.android.application"
-//    id "kotlin-android"
-//    id "dev.flutter.flutter-gradle-plugin"
-//    id 'com.google.gms.google-services'
-//}
+plugins {
+    id "com.android.application"
+    id "kotlin-android"
+    id "dev.flutter.flutter-gradle-plugin"
+    id 'com.google.gms.google-services'
+}
 
 def localProperties = new Properties()
 def localPropertiesFile = rootProject.file('local.properties')
@@ -43,11 +43,6 @@ def flutterVersionName = localProperties.getProperty('flutter.versionName')
 if (flutterVersionName == null) {
     flutterVersionName = '1.0'
 }
-
-apply plugin: 'com.android.application'
-apply plugin: 'kotlin-android'
-apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
-apply plugin: 'com.google.gms.google-services'
 
 android {
     namespace "com.hpodong.hybrid"
@@ -96,7 +91,11 @@ android {
         prod {
             dimension "default"
             manifestPlaceholders = [
-                    app_name: "하이브리드앱",
+                    APP_NAME: prodProperties["app.name"],
+                    KAKAO_NATIVE_APP_KEY: prodProperties["kakao.native.app.key"],
+                    NAVER_CLIENT_ID: prodProperties["naver.client.id"],
+                    NAVER_SECRET: prodProperties["naver.secret"],
+                    NAVER_CLIENT_NAME: prodProperties["naver.client.name"],
             ]
             signingConfig signingConfigs.prod
         }
@@ -104,7 +103,11 @@ android {
             dimension "default"
             applicationIdSuffix ".dev"
             manifestPlaceholders = [
-                    app_name: "(dev) 하이브리드앱",
+                    APP_NAME: devProperties["app.name"],
+                    KAKAO_NATIVE_APP_KEY: prodProperties["kakao.native.app.key"],
+                    NAVER_CLIENT_ID: prodProperties["naver.client.id"],
+                    NAVER_SECRET: prodProperties["naver.secret"],
+                    NAVER_CLIENT_NAME: prodProperties["naver.client.name"],
             ]
             signingConfig signingConfigs.dev
         }
@@ -129,8 +132,6 @@ flutter {
 }
 
 dependencies {
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-    implementation platform('com.google.firebase:firebase-bom:32.6.0')
+    implementation platform('com.google.firebase:firebase-bom:33.2.0')
     implementation 'com.google.firebase:firebase-messaging'
-    implementation 'com.google.firebase:firebase-analytics'
 }
