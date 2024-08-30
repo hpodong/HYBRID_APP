@@ -2,7 +2,7 @@ plugins {
     id "com.android.application"
     id "kotlin-android"
     id "dev.flutter.flutter-gradle-plugin"
-//    id 'com.google.gms.google-services'
+    id 'com.google.gms.google-services'
 }
 
 def localProperties = new Properties()
@@ -104,10 +104,10 @@ android {
             applicationIdSuffix ".dev"
             manifestPlaceholders = [
                     APP_NAME: devProperties["app.name"],
-                    KAKAO_NATIVE_APP_KEY: prodProperties["kakao.native.app.key"],
-                    NAVER_CLIENT_ID: prodProperties["naver.client.id"],
-                    NAVER_SECRET: prodProperties["naver.secret"],
-                    NAVER_CLIENT_NAME: prodProperties["naver.client.name"],
+                    KAKAO_NATIVE_APP_KEY: devProperties["kakao.native.app.key"],
+                    NAVER_CLIENT_ID: devProperties["naver.client.id"],
+                    NAVER_SECRET: devProperties["naver.secret"],
+                    NAVER_CLIENT_NAME: devProperties["naver.client.name"],
             ]
             signingConfig signingConfigs.dev
         }
@@ -131,7 +131,8 @@ flutter {
     source '../..'
 }
 
-//dependencies {
-//    implementation platform('com.google.firebase:firebase-bom:33.2.0')
-//    implementation 'com.google.firebase:firebase-messaging'
-//}
+dependencies {
+    implementation platform('com.google.firebase:firebase-bom:33.2.0')
+    implementation 'com.google.firebase:firebase-messaging'
+    implementation 'com.google.firebase:firebase-analytics'
+}
