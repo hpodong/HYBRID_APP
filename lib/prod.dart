@@ -10,9 +10,9 @@ void main() async{
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
   widgetsBinding;
   await dotenv.load(fileName: 'prod.env');
-  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
   await Firebase.initializeApp();
-  NotificationController.instance.firebasePushSetting();
+  await NotificationController.instance.firebasePushSetting();
+  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
   tz.initializeTimeZones();
   runApp((const App()));
 }

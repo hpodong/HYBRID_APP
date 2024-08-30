@@ -22,7 +22,7 @@ class NotificationController extends ChangeNotifier{
   set fcmToken(String? token){
     _fcmToken = token;
     notifyListeners();
-    debugPrint("fcmToken: $_fcmToken");
+    log("fcmToken: $_fcmToken");
   }
 
   Future setFcmToken() async{
@@ -65,63 +65,58 @@ class NotificationController extends ChangeNotifier{
         iOS: _iosSettings,
       );
 
-  void firebasePushSetting() {
-    _fcm.setForegroundNotificationPresentationOptions(
+  Future<void> firebasePushSetting() async{
+    await _fcm.setForegroundNotificationPresentationOptions(
         alert: true,
         badge: true,
         sound: true
     );
-    _localNotifications
+    await _localNotifications
         .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
         ?.createNotificationChannel(_androidChannel());
   }
 
-  void firebasePushListener(BuildContext context) {
+  Future<void> firebasePushListener(BuildContext context) async{
     log("LISTENING FIREBASE PUSH");
-    _fcm.requestPermission(
+    final NotificationSettings settings = await _fcm.requestPermission(
         alert: true,
         badge: true,
         sound: true
-    ).then((settings) {
-      String desc = '';
-      // FirebaseMessaging.instance.subscribeToTopic("all");
-      switch(settings.authorizationStatus) {
-        case AuthorizationStatus.authorized:
-          _localNotifications.initialize(_settings,
-              onDidReceiveNotificationResponse: (res) => _onTapNotification(context, res.payload)
-          );
-          desc = '허용됨';
-          _localNotifications.getNotificationAppLaunchDetails().then((details) {
-            if(details?.didNotificationLaunchApp == true) {
-              _onTapNotification(context, details?.notificationResponse?.payload);
-            }
-          });
-          FirebaseMessaging.instance.getInitialMessage().then((RemoteMessage? message) {
-            if(message != null) {
-              debugPrint('getInitialMessage');
-              _onTapNotification(context, message.data.isEmpty ? null : jsonEncode(message.data));
-            }
-          });
-          FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-            debugPrint('onMessage');
-            _notificationHandler(context, message);
-          });
-          FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-            debugPrint('onMessageOpenedApp');
-            _onTapNotification(context, message.data.isEmpty ? "" : jsonEncode(message.data));
-          });
-          break;
-        case AuthorizationStatus.denied:
-          desc = '허용되지 않음';
-          break;
-        case AuthorizationStatus.notDetermined:
-          desc = '결정되지 않음';
-          break;
-        case AuthorizationStatus.provisional:
-          desc = '임시로 허용됨';
-      }
-      debugPrint("알림 액세스: $desc");
-    });
+    );
+
+    String desc = '';
+    // FirebaseMessaging.instance.subscribeToTopic("all");
+    switch(settings.authorizationStatus) {
+      case AuthorizationStatus.authorized:
+        _localNotifications.initialize(_settings,
+            onDidReceiveNotificationResponse: (res) => _onTapNotification(context, res.payload)
+        );
+        desc = '허용됨';
+        final NotificationAppLaunchDetails? details = await _localNotifications.getNotificationAppLaunchDetails();
+        if(details?.didNotificationLaunchApp == true && context.mounted) {
+          _onTapNotification(context, details?.notificationResponse?.payload);
+        }
+        final RemoteMessage? message = await FirebaseMessaging.instance.getInitialMessage();
+        if(message != null && context.mounted) {
+          _onTapNotification(context, message.data.isEmpty ? null : jsonEncode(message.data));
+        }
+        FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+          if(context.mounted) _notificationHandler(context, message);
+        });
+        FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+          if(context.mounted) _onTapNotification(context, message.data.isEmpty ? "" : jsonEncode(message.data));
+        });
+        break;
+      case AuthorizationStatus.denied:
+        desc = '허용되지 않음';
+        break;
+      case AuthorizationStatus.notDetermined:
+        desc = '결정되지 않음';
+        break;
+      case AuthorizationStatus.provisional:
+        desc = '임시로 허용됨';
+    }
+    log("알림 액세스: $desc");
   }
 
   void _notificationHandler(BuildContext context, RemoteMessage rm) {
@@ -146,7 +141,7 @@ class NotificationController extends ChangeNotifier{
         iOS: _iosDetails
     );
 
-    debugPrint('message: ${rm.data}');
+    log('message: ${rm.data}');
 
     if(notification != null && android != null) {
       if(rm.data["send_time"] != null) {
@@ -169,15 +164,13 @@ class NotificationController extends ChangeNotifier{
 
     FlutterAppBadger.removeBadge();
 
-    debugPrint('payload: $payload');
+    log('payload: $payload');
 
     if(payload != null && payload.isNotEmpty){
       final Map<String, dynamic> json = jsonDecode(payload);
       final String? url = json['url'];
       if(url != null && url.isNotEmpty) {
         final Uri uri = Uri.parse(url);
-        log("!!!!!!!!!!!!!! :  ${uri}");
-
         await InAppWebController.of(context).webViewCtr.loadUrl(urlRequest: URLRequest(url: WebUri(url), body: utf8.encode(jsonEncode(uri.queryParameters))));
       }
     }

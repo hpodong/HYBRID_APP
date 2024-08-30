@@ -94,7 +94,7 @@ class _WebViewPageState extends State<WebViewPage> {
   }
 
   void _onDownloadStartRequest(InAppWebViewController ctr, DownloadStartRequest req) {
-    debugPrint("${req.url}");
+    log("${req.url}");
     _fileDownload(req.url.toString());
   }
 
@@ -109,9 +109,9 @@ class _WebViewPageState extends State<WebViewPage> {
   Future<NavigationActionPolicy?> _shouldOverrideUrlLoading(InAppWebViewController ctr, NavigationAction action) async{
     final WebUri? webUri = action.request.url;
 
-    debugPrint("SHOULD OVERRIDE URL : ${webUri.toString()}");
-    debugPrint("HOST : ${webUri?.host}");
-    debugPrint("TYPE : ${action.navigationType}");
+    log("SHOULD OVERRIDE URL : ${webUri.toString()}");
+    log("HOST : ${webUri?.host}");
+    log("TYPE : ${action.navigationType}");
 
     final String? path = action.request.url?.path;
     if(path != null) {
@@ -137,12 +137,12 @@ class _WebViewPageState extends State<WebViewPage> {
   }
 
   Future<AjaxRequest?> _shouldInterceptAjaxRequest(InAppWebViewController ctr, AjaxRequest req) async{
-    debugPrint("ajaxRequest");
+    log("ajaxRequest");
     return req;
   }
 
   Future<FetchRequest?> _shouldInterceptFetchRequest(InAppWebViewController ctr, FetchRequest req) async{
-    debugPrint("fetchRequest");
+    log("fetchRequest");
     return req;
   }
 
@@ -159,7 +159,7 @@ class _WebViewPageState extends State<WebViewPage> {
   }
 
   void _onLoadStart(InAppWebViewController ctr, Uri? uri) async{
-    debugPrint("CURRENT_URI = $uri");
+    log("CURRENT_URI = $uri");
     final String? path = uri?.path;
     if(path != null) {
       if(path.startsWith("/index.php") || path == "/") await clearHistory();
@@ -180,7 +180,7 @@ class _WebViewPageState extends State<WebViewPage> {
     if(!_inAppWebCtr.firstLoad && _versionController.isChecked) {
       _overlayCtr.remove();
       _inAppWebCtr.firstLoad = true;
-      if(mounted) _notificationCtr.firebasePushListener(context);
+      if(mounted) await _notificationCtr.firebasePushListener(context);
       _deepLinkListener();
     }
 

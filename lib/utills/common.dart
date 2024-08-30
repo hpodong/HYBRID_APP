@@ -50,7 +50,7 @@ Future permissionCheck(List<Permission> permissions) async{
     for(final Permission permission in permissions) {
       message += "$permission: ${statuses[permission]}\n";
     }
-    debugPrint(message);
+    log(message);
   });
 }
 

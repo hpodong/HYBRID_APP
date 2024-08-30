@@ -37,7 +37,7 @@ class KakaoConfig {
       if(token.id != null) await UserApi.instance.logout();
     } on KakaoClientException catch (e) {
       if(e.msg.isNotEmpty) {
-        debugPrint(e.msg);
+        log(e.msg);
       }
     }
   }

@@ -11,8 +11,8 @@ void main() async{
   widgetsBinding;
   await dotenv.load(fileName: 'dev.env');
   await Firebase.initializeApp();
+  await NotificationController.instance.firebasePushSetting();
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
-  NotificationController.instance.firebasePushSetting();
   tz.initializeTimeZones();
   runApp((const App()));
 }
