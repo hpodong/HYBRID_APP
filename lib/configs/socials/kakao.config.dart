@@ -1,19 +1,17 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
-import 'package:HYBRID_APP/utills/common.dart';
+
+import '../../utills/common.dart';
+import '../config/config.dart';
 
 
 class KakaoConfig {
 
-  static String NATIVE_APP_KEY = dotenv.get("KAKAO_NATIVE_APP_KEY");
-  static String JAVASCRIPT_KEY = dotenv.get("KAKAO_JAVASCRIPT_APP_KEY");
-
   static Future<void> init() async {
     KakaoSdk.init(
-      nativeAppKey: NATIVE_APP_KEY,
-      javaScriptAppKey: JAVASCRIPT_KEY
+      nativeAppKey: KAKAO_NATIVE_APP_KEY,
+      javaScriptAppKey: KAKAO_JAVASCRIPT_APP_KEY
     );
   }
 
@@ -80,7 +78,6 @@ class KakaoConfig {
     try{
       final AccessTokenInfo info = await UserApi.instance.accessTokenInfo();
       log("KAKAO INFO: $info");
-
       if(info.id == null) {
         return null;
       } else {

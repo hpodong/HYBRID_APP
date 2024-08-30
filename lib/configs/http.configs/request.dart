@@ -43,7 +43,7 @@ class Request {
       req.headers.set(HttpHeaders.acceptHeader, "*/*");
       req.headers.set(HttpHeaders.acceptEncodingHeader, "gzip, deflate, br");
       req.headers.set(HttpHeaders.connectionHeader, "keep-alive");
-      req.headers.set("x-api-key", _config.API_KEY);
+      req.headers.set("x-api-key", API_KEY);
       if (accessToken != null && hasToken) req.headers.set(
           HttpHeaders.authorizationHeader, "Bearer $accessToken");
       switch (type) {
@@ -93,7 +93,7 @@ class Request {
       log("message", error: e.message, type: LogType.error);
       return Response(statusCode: null, error: e.message);
     }
-    return Response(statusCode: null, message: ErrorMessages.unknown);
+    return const Response(statusCode: null, message: ErrorMessages.unknown);
   }
 
   static Future<String?> _reissueToken() async {
@@ -116,7 +116,7 @@ class Request {
     try {
       final http.MultipartRequest request = http.MultipartRequest("POST", uri);
       if(accessToken != null && hasToken) request.headers.addAll({HttpHeaders.authorizationHeader: "Bearer $accessToken"});
-      request.headers.addAll({"x-api-key": _config.API_KEY});
+      request.headers.addAll({"x-api-key": API_KEY});
       if(headers != null) request.headers.addAll(headers);
       if(body != null) for (final String key in body.keys) {
         final String? value = body[key]?.toString();

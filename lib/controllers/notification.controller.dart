@@ -5,12 +5,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_app_badger/flutter_app_badger.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
-import 'package:HYBRID_APP/configs/config/config.dart';
-import 'package:HYBRID_APP/utills/common.dart';
 import 'package:timezone/timezone.dart' as tz;
 
+import '../configs/config/config.dart';
+import '../utills/common.dart';
 import 'inapp-web.controller.dart';
 
 class NotificationController extends ChangeNotifier{
@@ -34,10 +33,6 @@ class NotificationController extends ChangeNotifier{
     });
   }
 
-  final String _ANDROID_CHANNEL_ID = dotenv.get('ANDROID_CHANNEL_ID');
-  final String _ANDROID_CHANNEL_NAME = dotenv.get('ANDROID_CHANNEL_NAME');
-  final String _ANDROID_CHANNEL_DESCRIPTION = dotenv.get('ANDROID_CHANNEL_DESCRIPTION');
-
   final FirebaseMessaging _fcm = FirebaseMessaging.instance;
 
   final FlutterLocalNotificationsPlugin _localNotifications = FlutterLocalNotificationsPlugin();
@@ -49,9 +44,9 @@ class NotificationController extends ChangeNotifier{
   );
 
   AndroidNotificationChannel _androidChannel() => AndroidNotificationChannel(
-      _ANDROID_CHANNEL_ID,
-      _ANDROID_CHANNEL_NAME,
-      description: _ANDROID_CHANNEL_DESCRIPTION,
+      ANDROID_CHANNEL_ID,
+      ANDROID_CHANNEL_NAME,
+      description: ANDROID_CHANNEL_DESCRIPTION,
       importance: Importance.max
   );
 
@@ -137,9 +132,9 @@ class NotificationController extends ChangeNotifier{
     final AndroidNotification? android = notification?.android;
 
     final AndroidNotificationDetails androidDetails = AndroidNotificationDetails(
-        _ANDROID_CHANNEL_ID,
-        _ANDROID_CHANNEL_NAME,
-        channelDescription: _ANDROID_CHANNEL_DESCRIPTION,
+        ANDROID_CHANNEL_ID,
+        ANDROID_CHANNEL_NAME,
+        channelDescription: ANDROID_CHANNEL_DESCRIPTION,
         priority: Priority.high,
         importance: Importance.max,
         largeIcon: const DrawableResourceAndroidBitmap('@mipmap/ic_launcher'),

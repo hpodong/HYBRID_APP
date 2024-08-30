@@ -31,10 +31,10 @@ class OverlayController extends ChangeNotifier {
     if(entry != null) overlayState.insert(entry!);
 
     return future.then((result) {
-      removeOverlay();
+      remove();
       return result;
     }).catchError((error) {
-      removeOverlay();
+      remove();
       throw Exception(error);
     });
   }
@@ -48,8 +48,16 @@ class OverlayController extends ChangeNotifier {
     if(entry != null) overlayState.insert(entry!);
   }
 
-  void removeOverlay() {
+  void remove() {
     entry?.remove();
     entry = null;
+  }
+
+  void show(BuildContext context) {
+    entry = OverlayEntry(builder: _buildIndicator);
+
+    final OverlayState overlayState = Overlay.of(context);
+
+    if(entry != null) overlayState.insert(entry!);
   }
 }

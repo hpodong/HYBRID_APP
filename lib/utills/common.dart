@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:logger/logger.dart';
@@ -75,19 +76,21 @@ void log(dynamic message, {
   PrettyPrinter? printer,
   LogType type = LogType.info
 }) {
-  final Logger logger = Logger(
-      printer: printer ?? PrettyPrinter(
-          methodCount: 0
-      )
-  );
-  switch(type) {
-    case LogType.info:
-      logger.i(message, error: error);
-      break;
-    case LogType.debug:
-      logger.d(message, error: error);
-      break;
-    case LogType.error:
-      logger.e(message, error: error);
+  if(!kReleaseMode) {
+    final Logger logger = Logger(
+        printer: printer ?? PrettyPrinter(
+            methodCount: 0
+        )
+    );
+    switch(type) {
+      case LogType.info:
+        logger.i(message, error: error);
+        break;
+      case LogType.debug:
+        logger.d(message, error: error);
+        break;
+      case LogType.error:
+        logger.e(message, error: error);
+    }
   }
 }

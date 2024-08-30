@@ -1,5 +1,7 @@
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
+import '../config/config.dart';
+
 class AppleConfig {
 
   Future<AuthorizationCredentialAppleID?> login() {
@@ -10,8 +12,8 @@ class AppleConfig {
           AppleIDAuthorizationScopes.email
         ],
         webAuthenticationOptions: WebAuthenticationOptions(
-          clientId: 'net.oursoccer',
-          redirectUri: Uri.parse('https://oursoccer.net/callback/apple.php'),
+          clientId: APPLE_CLIENT_ID,
+          redirectUri: Uri.parse(APPLE_LOGIN_CALLBACK),
         ),
       );
     });

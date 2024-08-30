@@ -3,17 +3,17 @@
 <plist version="1.0">
 <dict>
 	<key>API_KEY</key>
-	<string>AIzaSyAO5alNIO0jrQ_rttT5_W71zfraIgbnAcw</string>
+	<string>AIzaSyAfEuRlsU44T0u6d61sPDdAtE0yD0OkLBQ</string>
 	<key>GCM_SENDER_ID</key>
-	<string>812334094830</string>
+	<string>566402399821</string>
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
 	<string>com.hpodong.hybrid</string>
 	<key>PROJECT_ID</key>
-	<string>quant-d87db</string>
+	<string>hybrid-app-9fb28</string>
 	<key>STORAGE_BUCKET</key>
-	<string>quant-d87db.appspot.com</string>
+	<string>hybrid-app-9fb28.appspot.com</string>
 	<key>IS_ADS_ENABLED</key>
 	<false></false>
 	<key>IS_ANALYTICS_ENABLED</key>
@@ -25,6 +25,6 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:812334094830:ios:095cc21a67dfaa4efbd6ff</string>
+	<string>1:566402399821:ios:b6a4cf054437dfce39a604</string>
 </dict>
 </plist>

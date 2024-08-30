@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_naver_login/flutter_naver_login.dart';
 
 import '../../utills/common.dart';
@@ -7,7 +6,7 @@ class NaverConfig {
 
   Future<NaverAccountResult?> login({NaverAccessToken? refreshTokens}) => _currentToken.then((tokens) {
     final String accessToken = refreshTokens?.accessToken ?? tokens.accessToken;
-    print("ACCESS TOKEN : $accessToken");
+    log("ACCESS TOKEN : $accessToken");
     if(accessToken.isNotEmpty) {
       if(refreshTokens?.isValid() == true) {
         return _currentAccount;

@@ -1,6 +1,8 @@
 import 'package:flutter/services.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:HYBRID_APP/utills/common.dart';
+
+import '../../utills/common.dart';
+import '../../utills/enums.dart';
 
 class GoogleConfig {
 
@@ -11,7 +13,8 @@ class GoogleConfig {
       final GoogleSignInAccount? account = await _signIn.signIn();
       return account;
     } on PlatformException catch (e) {
-      log(e);
+      log(e, type: LogType.error, error: e);
+      return null;
     }
   }
 

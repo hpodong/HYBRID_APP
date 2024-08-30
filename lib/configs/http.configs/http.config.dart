@@ -11,7 +11,3 @@ import '../config/config.dart';
 
 part "request.dart";
 part "response.dart";
-
-class HttpConfig extends Config{
-
-}

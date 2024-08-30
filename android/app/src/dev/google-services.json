@@ -1,13 +1,13 @@
 {
   "project_info": {
-    "project_number": "812334094830",
-    "project_id": "quant-d87db",
-    "storage_bucket": "quant-d87db.appspot.com"
+    "project_number": "566402399821",
+    "project_id": "hybrid-app-9fb28",
+    "storage_bucket": "hybrid-app-9fb28.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:812334094830:android:4f98188daf80d8e2fbd6ff",
+        "mobilesdk_app_id": "1:566402399821:android:ba4b20c8d22b1ca939a604",
         "android_client_info": {
           "package_name": "com.hpodong.hybrid"
         }
@@ -15,7 +15,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyC17A4QmUbVIYqGG1xBhA5cTvG7E3jGgNs"
+          "current_key": "AIzaSyBjTCQQxjF3JlCI-SRdecxbg694I0Jtp-s"
         }
       ],
       "services": {
@@ -26,7 +26,7 @@
     },
     {
       "client_info": {
-        "mobilesdk_app_id": "1:812334094830:android:22f77f84abea926cfbd6ff",
+        "mobilesdk_app_id": "1:566402399821:android:d06906f03a41d8c239a604",
         "android_client_info": {
           "package_name": "com.hpodong.hybrid.dev"
         }
@@ -34,7 +34,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyC17A4QmUbVIYqGG1xBhA5cTvG7E3jGgNs"
+          "current_key": "AIzaSyBjTCQQxjF3JlCI-SRdecxbg694I0Jtp-s"
         }
       ],
       "services": {

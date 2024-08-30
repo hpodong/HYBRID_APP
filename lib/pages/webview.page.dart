@@ -1,11 +1,12 @@
 import 'dart:io';
 
+import 'package:HYBRID_APP/customs/custom.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:open_filex/open_filex.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:HYBRID_APP/controllers/version.controller.dart';
 import 'package:uni_links/uni_links.dart';
 import '../configs/config/config.dart';
 import '../controllers/device.controller.dart';
@@ -14,13 +15,14 @@ import '../controllers/notification.controller.dart';
 import '../controllers/overlay.controller.dart';
 import 'package:http/http.dart' as http;
 
+import '../controllers/version.controller.dart';
 import '../utills/common.dart';
 
 class WebViewPage extends StatefulWidget {
 
   static const String routeName = '/webViewPage';
 
-  const WebViewPage({Key? key}) : super(key: key);
+  const WebViewPage({super.key});
 
   @override
   State<WebViewPage> createState() => _WebViewPageState();
@@ -33,21 +35,6 @@ class _WebViewPageState extends State<WebViewPage> {
   late final InAppWebController _inAppWebCtr = InAppWebController.of(context);
   late final NotificationController _notificationCtr = NotificationController.of(context);
   late final VersionController _versionController = VersionController.of(context);
-
-  Map<String, String> get _initialHeader => <String, String>{
-    "fcm-token": _notificationCtr.fcmToken ?? '',
-    "device-code": _deviceCtr.deviceCode ?? "",
-    "device-uuid": _deviceCtr.deviceId ?? "",
-    "device-type": _deviceCtr.deviceType ?? ""
-  };
-
-  final List<String> _allowFiles = <String>[
-    ".pdf",
-    ".hwp",
-    ".docx",
-    ".xlsx",
-    ".hwpx",
-  ];
 
   Future<void> _deepLinkListener() async{
     uriLinkStream.listen((event) {
@@ -78,10 +65,9 @@ class _WebViewPageState extends State<WebViewPage> {
         onLoadResource: _onLoadResource,
         initialUrlRequest: URLRequest(
             url: WebUri(Config.instance.getUrl()),
-            headers: _initialHeader
         ),
         initialSettings: InAppWebViewSettings(
-          applicationNameForUserAgent: Platform.isIOS ? "TOYOU_IOS" : "TOYOU_ANDROID",
+          applicationNameForUserAgent: USERAGENT,
           javaScriptEnabled: true,
           useOnDownloadStart: true,
           useShouldOverrideUrlLoading: true,
@@ -113,7 +99,6 @@ class _WebViewPageState extends State<WebViewPage> {
   }
 
   Future<WebResourceResponse> _androidShouldInterceptRequest(InAppWebViewController ctr, WebResourceRequest req) async{
-    debugPrint("ANDROID: ${req.url}");
     return WebResourceResponse();
   }
 
@@ -138,7 +123,7 @@ class _WebViewPageState extends State<WebViewPage> {
 
     if(webUri != null) {
       final String url = webUri.toString();
-      if(webUri.host != Config.instance.HOST_NAME && !url.contains("youtube")){
+      if(webUri.host != HOST_NAME && !url.contains("youtube")){
         if(action.isForMainFrame) await openURL(url);
         return NavigationActionPolicy.CANCEL;
       } else if(url.endsWith(".pdf") || url.endsWith(".hwp") || url.endsWith(".docx") || url.endsWith(".xlsx") || url.endsWith(".hwpx")){
@@ -178,21 +163,28 @@ class _WebViewPageState extends State<WebViewPage> {
     final String? path = uri?.path;
     if(path != null) {
       if(path.startsWith("/index.php") || path == "/") await clearHistory();
-      /*if(path.contains("process.php") && await ctr.canGoForward()) {
-        await ctr.goBack();
-      }*/
+    }
+    if(_inAppWebCtr.firstLoad && mounted) {
+      if(IS_SHOW_OVERLAY) {
+        final bool canGoForward = await _inAppWebCtr.webViewCtr.canGoForward();
+        if(!canGoForward && mounted) _overlayCtr.show(context);
+      }
     }
   }
 
   void _onLoadStop(InAppWebViewController ctr, Uri? uri) async{
+    if(IS_SHOW_OVERLAY) {
+      final bool canGoForward = await _inAppWebCtr.webViewCtr.canGoForward();
+      if(!canGoForward && mounted) _overlayCtr.remove();
+    }
     if(!_inAppWebCtr.firstLoad && _versionController.isChecked) {
-      _overlayCtr.removeOverlay();
+      _overlayCtr.remove();
       _inAppWebCtr.firstLoad = true;
-      _notificationCtr.firebasePushListener(context);
+      if(mounted) _notificationCtr.firebasePushListener(context);
       _deepLinkListener();
     }
 
-    if(uri?.path.endsWith("/login") == true) {
+    if(uri?.path.endsWith(LOGIN_PAGE) == true) {
       ctr.evaluateJavascript(source: """
       document.getElementById('fcmToken').value = '${_notificationCtr.fcmToken}';
       document.getElementById('deviceId').value = '${_deviceCtr.deviceId}';

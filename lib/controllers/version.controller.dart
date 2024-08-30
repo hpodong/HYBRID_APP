@@ -3,13 +3,9 @@ import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:provider/provider.dart';
-import 'package:HYBRID_APP/repos/version.repo.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 import '../configs/config/config.dart';
-import '../configs/http.configs/http.config.dart';
-import '../customs/custom.dart';
-import '../utills/common.dart';
+import '../repos/version.repo.dart';
 
 class VersionController extends ChangeNotifier {
 
@@ -72,7 +68,7 @@ class VersionController extends ChangeNotifier {
 
   String _storeURL() {
     if(Platform.isIOS) {
-      return "https://apps.apple.com/app/${info?.appName}/${Config.instance.APP_STORE_ID}";
+      return "https://apps.apple.com/app/${info?.appName}/$APP_STORE_ID";
     } else {
       return "https://play.google.com/store/apps/details?id=${_info?.packageName}";
     }

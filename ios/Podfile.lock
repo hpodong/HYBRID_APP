@@ -7,38 +7,38 @@ PODS:
     - AppAuth/Core
   - device_info_plus (0.0.1):
     - Flutter
-  - Firebase/CoreOnly (10.22.0):
-    - FirebaseCore (= 10.22.0)
-  - Firebase/Messaging (10.22.0):
+  - Firebase/CoreOnly (10.18.0):
+    - FirebaseCore (= 10.18.0)
+  - Firebase/Messaging (10.18.0):
     - Firebase/CoreOnly
-    - FirebaseMessaging (~> 10.22.0)
-  - firebase_core (2.27.0):
-    - Firebase/CoreOnly (= 10.22.0)
+    - FirebaseMessaging (~> 10.18.0)
+  - firebase_core (2.24.2):
+    - Firebase/CoreOnly (= 10.18.0)
     - Flutter
-  - firebase_messaging (14.7.19):
-    - Firebase/Messaging (= 10.22.0)
+  - firebase_messaging (14.7.10):
+    - Firebase/Messaging (= 10.18.0)
     - firebase_core
     - Flutter
-  - FirebaseCore (10.22.0):
+  - FirebaseCore (10.18.0):
     - FirebaseCoreInternal (~> 10.0)
     - GoogleUtilities/Environment (~> 7.12)
     - GoogleUtilities/Logger (~> 7.12)
-  - FirebaseCoreInternal (10.25.0):
+  - FirebaseCoreInternal (10.29.0):
     - "GoogleUtilities/NSData+zlib (~> 7.8)"
-  - FirebaseInstallations (10.25.0):
+  - FirebaseInstallations (10.29.0):
     - FirebaseCore (~> 10.0)
     - GoogleUtilities/Environment (~> 7.8)
     - GoogleUtilities/UserDefaults (~> 7.8)
     - PromisesObjC (~> 2.1)
-  - FirebaseMessaging (10.22.0):
+  - FirebaseMessaging (10.18.0):
     - FirebaseCore (~> 10.0)
     - FirebaseInstallations (~> 10.0)
-    - GoogleDataTransport (~> 9.3)
+    - GoogleDataTransport (~> 9.2)
     - GoogleUtilities/AppDelegateSwizzler (~> 7.8)
     - GoogleUtilities/Environment (~> 7.8)
     - GoogleUtilities/Reachability (~> 7.8)
     - GoogleUtilities/UserDefaults (~> 7.8)
-    - nanopb (< 2.30911.0, >= 2.30908.0)
+    - nanopb (< 2.30910.0, >= 2.30908.0)
   - Flutter (1.0.0)
   - flutter_app_badger (1.3.0):
     - Flutter
@@ -99,18 +99,18 @@ PODS:
   - GTMAppAuth (4.1.1):
     - AppAuth/Core (~> 1.7)
     - GTMSessionFetcher/Core (< 4.0, >= 3.3)
-  - GTMSessionFetcher (3.4.1):
-    - GTMSessionFetcher/Full (= 3.4.1)
-  - GTMSessionFetcher/Core (3.4.1)
-  - GTMSessionFetcher/Full (3.4.1):
+  - GTMSessionFetcher (3.5.0):
+    - GTMSessionFetcher/Full (= 3.5.0)
+  - GTMSessionFetcher/Core (3.5.0)
+  - GTMSessionFetcher/Full (3.5.0):
     - GTMSessionFetcher/Core
-  - kakao_flutter_sdk_common (1.9.0):
+  - kakao_flutter_sdk_common (1.9.6):
     - Flutter
-  - nanopb (2.30910.0):
-    - nanopb/decode (= 2.30910.0)
-    - nanopb/encode (= 2.30910.0)
-  - nanopb/decode (2.30910.0)
-  - nanopb/encode (2.30910.0)
+  - nanopb (2.30909.1):
+    - nanopb/decode (= 2.30909.1)
+    - nanopb/encode (= 2.30909.1)
+  - nanopb/decode (2.30909.1)
+  - nanopb/encode (2.30909.1)
   - naveridlogin-sdk-ios (4.1.6)
   - open_filex (0.0.2):
     - Flutter
@@ -123,8 +123,6 @@ PODS:
   - permission_handler_apple (9.3.0):
     - Flutter
   - PromisesObjC (2.4.0)
-  - share_plus (0.0.1):
-    - Flutter
   - shared_preferences_foundation (0.0.1):
     - Flutter
     - FlutterMacOS
@@ -137,6 +135,7 @@ PODS:
     - Flutter
   - webview_flutter_wkwebview (0.0.1):
     - Flutter
+    - FlutterMacOS
 
 DEPENDENCIES:
   - device_info_plus (from `.symlinks/plugins/device_info_plus/ios`)
@@ -154,12 +153,11 @@ DEPENDENCIES:
   - package_info_plus (from `.symlinks/plugins/package_info_plus/ios`)
   - path_provider_foundation (from `.symlinks/plugins/path_provider_foundation/darwin`)
   - permission_handler_apple (from `.symlinks/plugins/permission_handler_apple/ios`)
-  - share_plus (from `.symlinks/plugins/share_plus/ios`)
   - shared_preferences_foundation (from `.symlinks/plugins/shared_preferences_foundation/darwin`)
   - sign_in_with_apple (from `.symlinks/plugins/sign_in_with_apple/ios`)
   - uni_links (from `.symlinks/plugins/uni_links/ios`)
   - url_launcher_ios (from `.symlinks/plugins/url_launcher_ios/ios`)
-  - webview_flutter_wkwebview (from `.symlinks/plugins/webview_flutter_wkwebview/ios`)
+  - webview_flutter_wkwebview (from `.symlinks/plugins/webview_flutter_wkwebview/darwin`)
 
 SPEC REPOS:
   trunk:
@@ -211,8 +209,6 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/path_provider_foundation/darwin"
   permission_handler_apple:
     :path: ".symlinks/plugins/permission_handler_apple/ios"
-  share_plus:
-    :path: ".symlinks/plugins/share_plus/ios"
   shared_preferences_foundation:
     :path: ".symlinks/plugins/shared_preferences_foundation/darwin"
   sign_in_with_apple:
@@ -222,47 +218,46 @@ EXTERNAL SOURCES:
   url_launcher_ios:
     :path: ".symlinks/plugins/url_launcher_ios/ios"
   webview_flutter_wkwebview:
-    :path: ".symlinks/plugins/webview_flutter_wkwebview/ios"
+    :path: ".symlinks/plugins/webview_flutter_wkwebview/darwin"
 
 SPEC CHECKSUMS:
   AppAuth: 501c04eda8a8d11f179dbe8637b7a91bb7e5d2fa
-  device_info_plus: c6fb39579d0f423935b0c9ce7ee2f44b71b9fce6
-  Firebase: 797fd7297b7e1be954432743a0b3f90038e45a71
-  firebase_core: 100945864b4aedce3cfef0c62ab864858bf013cf
-  firebase_messaging: e65050bf9b187511d80ea3a4de7cf5573d2c7543
-  FirebaseCore: 0326ec9b05fbed8f8716cddbf0e36894a13837f7
-  FirebaseCoreInternal: 910a81992c33715fec9263ca7381d59ab3a750b7
-  FirebaseInstallations: 91950fe859846fff0fbd296180909dd273103b09
-  FirebaseMessaging: 9f71037fd9db3376a4caa54e5a3949d1027b4b6e
+  device_info_plus: 97af1d7e84681a90d0693e63169a5d50e0839a0d
+  Firebase: 414ad272f8d02dfbf12662a9d43f4bba9bec2a06
+  firebase_core: 0af4a2b24f62071f9bf283691c0ee41556dcb3f5
+  firebase_messaging: 90e8a6db84b6e1e876cebce4f30f01dc495e7014
+  FirebaseCore: 2322423314d92f946219c8791674d2f3345b598f
+  FirebaseCoreInternal: df84dd300b561c27d5571684f389bf60b0a5c934
+  FirebaseInstallations: 913cf60d0400ebd5d6b63a28b290372ab44590dd
+  FirebaseMessaging: 9bc34a98d2e0237e1b121915120d4d48ddcf301e
   Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
   flutter_app_badger: b87fc231847b03b92ce1412aa351842e7e97932f
   flutter_inappwebview_ios: 97215cf7d4677db55df76782dbd2930c5e1c1ea0
   flutter_local_notifications: 4cde75091f6327eb8517fa068a0a5950212d2086
   flutter_naver_login: 1dbf6d21aae5235cdf76a28ac79cf6871899282f
-  fluttertoast: 9f2f8e81bb5ce18facb9748d7855bf5a756fe3db
+  fluttertoast: e9a18c7be5413da53898f660530c56f35edfba9c
   google_sign_in_ios: 07375bfbf2620bc93a602c0e27160d6afc6ead38
   GoogleDataTransport: 6c09b596d841063d76d4288cc2d2f42cc36e1e2a
   GoogleSignIn: d4281ab6cf21542b1cfaff85c191f230b399d2db
   GoogleUtilities: ea963c370a38a8069cc5f7ba4ca849a60b6d7d15
   GTMAppAuth: f69bd07d68cd3b766125f7e072c45d7340dea0de
-  GTMSessionFetcher: 8000756fc1c19d2e5697b90311f7832d2e33f6cd
-  kakao_flutter_sdk_common: 6cc350382c723c0ec6faf44e7c68a22b1c48737b
-  nanopb: 438bc412db1928dac798aa6fd75726007be04262
+  GTMSessionFetcher: 5aea5ba6bd522a239e236100971f10cb71b96ab6
+  kakao_flutter_sdk_common: 4f10f98226da5d0f7cbdeeaed5cc21f144515209
+  nanopb: d4d75c12cd1316f4a64e3c6963f879ecd4b5e0d5
   naveridlogin-sdk-ios: cdd34e3585a3d5aaf37c1d84c1f41faba4a25d1a
   open_filex: 6e26e659846ec990262224a12ef1c528bb4edbe4
   OrderedSet: aaeb196f7fef5a9edf55d89760da9176ad40b93c
-  package_info_plus: 115f4ad11e0698c8c1c5d8a689390df880f47e85
+  package_info_plus: 58f0028419748fad15bf008b270aaa8e54380b1c
   path_provider_foundation: 2b6b4c569c0fb62ec74538f866245ac84301af46
   permission_handler_apple: 9878588469a2b0d0fc1e048d9f43605f92e6cec2
   PromisesObjC: f5707f49cb48b9636751c5b2e7d227e43fba9f47
-  share_plus: c3fef564749587fc939ef86ffb283ceac0baf9f5
   shared_preferences_foundation: fcdcbc04712aee1108ac7fda236f363274528f78
   sign_in_with_apple: f3bf75217ea4c2c8b91823f225d70230119b8440
   Toast: 1f5ea13423a1e6674c4abdac5be53587ae481c4e
   uni_links: d97da20c7701486ba192624d99bffaaffcfc298a
   url_launcher_ios: 5334b05cef931de560670eeae103fd3e431ac3fe
-  webview_flutter_wkwebview: be0f0d33777f1bfd0c9fdcb594786704dbf65f36
+  webview_flutter_wkwebview: 0982481e3d9c78fd5c6f62a002fcd24fc791f1e4
 
-PODFILE CHECKSUM: ce0f8e7b88d3b99db6f37c0a442166e6d66e3df0
+PODFILE CHECKSUM: 0a3801549e323a692ecd474bdeb2126726750962
 
 COCOAPODS: 1.15.2

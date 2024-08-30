@@ -35,19 +35,6 @@
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
 
-        <!--<activity
-                android:name="com.aboutyou.dart_packages.sign_in_with_apple.SignInWithAppleCallback"
-                android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-
-                <data android:scheme="signinwithapple" />
-                <data android:path="callback" /> &lt;!&ndash; 여기에 callback 추가 &ndash;&gt;
-            </intent-filter>
-        </activity>-->
-
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -64,6 +51,16 @@
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
+
+            <!--카카오 공유하기-->
+            <!--<intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:host="kakaolink"
+                      android:scheme="kakao344ff90b963fdfaa07b64b7f26652db6" />
+            </intent-filter>-->
         </activity>
 
         <meta-data
@@ -88,6 +85,18 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/provider_paths" />
         </provider>
+        <!--<activity
+                android:name="com.aboutyou.dart_packages.sign_in_with_apple.SignInWithAppleCallback"
+                android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:scheme="signinwithapple" />
+                <data android:path="callback" /> &lt;!&ndash; 여기에 callback 추가 &ndash;&gt;
+            </intent-filter>
+        </activity>-->
 
         <!--<activity
                 android:name="com.kakao.sdk.flutter.AuthCodeCustomTabsActivity"
