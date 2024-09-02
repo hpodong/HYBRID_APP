@@ -25,6 +25,8 @@
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>
+		    <key>CFBundleURLName</key>
+            <string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
 			<key>CFBundleURLSchemes</key>
@@ -48,6 +50,68 @@
 		<string>kakaoplus</string>
 		<string>naversearchapp</string>
 		<string>naversearchthirdlogin</string>
+        <!-- PG사 세팅 -->
+		<!--
+		<string>shinhan-sr-ansimclick</string>
+        <string>smshinhanansimclick</string>
+        <string>hdcardappcardansimclick</string>
+        <string>smhyundaiansimclick</string>
+        <string>mpocket.online.ansimclick</string>
+        <string>scardcertiapp</string>
+        <string>cloudpay</string>
+        <string>hanawalletmembers</string>
+        <string>hanaskcardmobileportal</string>
+        <string>nhallonepayansimclick</string>
+        <string>nonghyupcardansimclick</string>
+        <string>kb-acp</string>
+        <string>kbbank</string>
+        <string>newliiv</string>
+        <string>Liivbank</string>
+        <string>NewSmartPib</string>
+        <string>com.wooricard.wcard</string>
+        <string>wooripay</string>
+        <string>citimobileapp</string>
+        <string>lotteappcard</string>
+        <string>lottesmartpay</string>
+        <string>spmobile</string>
+        <string>kpay</string>
+        <string>payco</string>
+        <string>paycoapplogin</string>
+        <string>kakaotalk</string>
+        <string>lpayapp</string>
+        <string>lmslpay</string>
+        <string>shinsegaeeasypayment</string>
+        <string>supertoss</string>
+        <string>tmoneypay</string>
+        <string>chai</string>
+        <string>tswansimclick</string>
+        <string>uppay</string>
+        <string>kftc-bankpay</string>
+        <string>bankwallet</string>
+        <string>ukbanksmartbanknonloginpay</string>
+        <string>kdb-bankpay</string>
+        <string>ibk-bankpay</string>
+        <string>kb-bankpay</string>
+        <string>keb-bankpay</string>
+        <string>sh-bankpay</string>
+        <string>nhb-bankpay</string>
+        <string>nh-bankpay</string>
+        <string>wr-bankpay</string>
+        <string>sc-bankpay</string>
+        <string>s-bankpay</string>
+        <string>ct-bankpay</string>
+        <string>dg-bankpay</string>
+        <string>bnk-bankpay</string>
+        <string>kj-bankpay</string>
+        <string>jj-bankpay</string>
+        <string>jb-bankpay</string>
+        <string>kn-bankpay</string>
+        <string>kp-bankpay</string>
+        <string>cu-bankpay</string>
+        <string>mg-bankpay</string>
+        <string>kbn-bankpay</string>
+        <string>kkb-bankpay</string>
+        -->
 	</array>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
