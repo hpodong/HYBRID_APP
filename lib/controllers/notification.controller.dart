@@ -23,7 +23,7 @@ class NotificationController extends ChangeNotifier{
   set fcmToken(String? token){
     _fcmToken = token;
     notifyListeners();
-    log("fcmToken: $_fcmToken");
+    log(_fcmToken, title: "FCM TOKEN");
   }
 
   Future setFcmToken() async{
@@ -37,19 +37,6 @@ class NotificationController extends ChangeNotifier{
   final FirebaseMessaging _fcm = FirebaseMessaging.instance;
 
   final FlutterLocalNotificationsPlugin _localNotifications = FlutterLocalNotificationsPlugin();
-
-  final DarwinNotificationDetails _iosDetails = const DarwinNotificationDetails(
-      presentAlert: true,
-      presentBadge: true,
-      presentSound: true
-  );
-
-  AndroidNotificationChannel _androidChannel() => AndroidNotificationChannel(
-      ANDROID_CHANNEL_ID,
-      ANDROID_CHANNEL_NAME,
-      description: ANDROID_CHANNEL_DESCRIPTION,
-      importance: Importance.max
-  );
 
   final AndroidInitializationSettings _androidSettings = const AndroidInitializationSettings(
       '@mipmap/ic_launcher');
@@ -72,9 +59,18 @@ class NotificationController extends ChangeNotifier{
         badge: true,
         sound: true
     );
+    await _createAndroidChannel(ANDROID_CHANNEL_ID, ANDROID_CHANNEL_NAME, description: ANDROID_CHANNEL_DESCRIPTION);
+  }
+
+  Future<void> _createAndroidChannel(String id, String name, {
+    String? description,
+    Importance importance = Importance.max,
+    String? groupId
+  }) async{
+    final AndroidNotificationChannel channel = AndroidNotificationChannel(id, name, description: description, importance: importance, groupId: groupId);
     await _localNotifications
         .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
-        ?.createNotificationChannel(_androidChannel());
+        ?.createNotificationChannel(channel);
   }
 
   Future<void> firebasePushListener(BuildContext context) async{
@@ -86,7 +82,6 @@ class NotificationController extends ChangeNotifier{
     );
 
     String desc = '';
-    // FirebaseMessaging.instance.subscribeToTopic("all");
     switch(settings.authorizationStatus) {
       case AuthorizationStatus.authorized:
         _localNotifications.initialize(_settings,
@@ -125,13 +120,7 @@ class NotificationController extends ChangeNotifier{
     final RemoteNotification? notification = rm.notification;
     final AndroidNotification? android = notification?.android;
 
-    if(Platform.isAndroid) {
-      final int? badge = android?.count;
-      if(badge != null) await FlutterAppBadger.updateBadgeCount(badge);
-    } else if(Platform.isIOS) {
-      final String? badge = notification?.apple?.badge;
-      if(badge != null) await FlutterAppBadger.updateBadgeCount(int.parse(badge));
-    }
+    log(android?.channelId, title: "CHANNEL");
 
     final AndroidNotificationDetails androidDetails = AndroidNotificationDetails(
       android?.channelId ?? ANDROID_CHANNEL_ID,
@@ -143,36 +132,34 @@ class NotificationController extends ChangeNotifier{
       color: Colors.white,
     );
 
+    const DarwinNotificationDetails iosDetails = DarwinNotificationDetails(
+      presentAlert: true,
+      presentBadge: true,
+      presentSound: true
+    );
+
+
     final NotificationDetails notificationDetails = NotificationDetails(
         android: androidDetails,
-        iOS: _iosDetails
+        iOS: iosDetails
     );
 
     log('message: ${rm.data}');
 
     if(notification != null && android != null) {
-      if(rm.data["send_time"] != null) {
-        final DateTime? dt = DateTime.tryParse(rm.data["send_time"]);
-
-        if(dt != null) {
-          final tz.TZDateTime tzdt = tz.TZDateTime.parse(tz.local, dt.toIso8601String());
-          final Map<String, dynamic> data = rm.data;
-          data["send_time"] = null;
-          final String payload = jsonEncode(data);
-          await _localNotifications.zonedSchedule(notification.hashCode, notification.title, notification.body, tzdt, notificationDetails, uiLocalNotificationDateInterpretation: UILocalNotificationDateInterpretation.absoluteTime, payload: payload);
-        }
-      } else {
-        await _localNotifications.show(notification.hashCode, notification.title, notification.body, notificationDetails, payload: rm.data.isEmpty ? null : jsonEncode(rm.data));
-      }
+      await _localNotifications.show(notification.hashCode, notification.title, notification.body, notificationDetails, payload: rm.data.isEmpty ? null : jsonEncode(rm.data));
+      await _updateBadge();
     }
   }
 
+  Future<void> _updateBadge() async{
+    final List<ActiveNotification> notifications = await _localNotifications.getActiveNotifications();
+    await FlutterAppBadger.updateBadgeCount(notifications.length);
+  }
+
   void _onTapNotification(BuildContext context, String? payload) async{
-
-    await FlutterAppBadger.removeBadge();
-
     log('payload: $payload');
-
+    await _updateBadge();
     if(payload != null && payload.isNotEmpty){
       final Map<String, dynamic> json = jsonDecode(payload);
       final String? url = json['url'];

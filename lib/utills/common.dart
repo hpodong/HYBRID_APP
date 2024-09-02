@@ -78,6 +78,7 @@ void log(dynamic message, {
   LogType type = LogType.info
 }) {
   if(!kReleaseMode) {
+    final DateTime now = DateTime.now();
     final Logger logger = Logger(
         printer: printer ?? PrettyPrinter(
             methodCount: 0
@@ -86,6 +87,7 @@ void log(dynamic message, {
     final StringBuffer sb = StringBuffer();
     if(title != null) sb.write("[$title] ");
     sb.write(message);
+    sb.write("\n[$now]");
     switch(type) {
       case LogType.info:
         logger.i(sb, error: error);
