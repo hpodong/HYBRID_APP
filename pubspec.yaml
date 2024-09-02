@@ -32,6 +32,7 @@ dependencies:
   google_sign_in: ^6.2.1
   sign_in_with_apple: ^6.1.2
   flutter_naver_login: ^1.8.0
+  android_id: ^0.4.0
 
 dev_dependencies:
   flutter_test:

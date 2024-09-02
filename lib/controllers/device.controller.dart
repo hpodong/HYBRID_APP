@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:android_id/android_id.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -33,8 +34,9 @@ class DeviceController extends ChangeNotifier{
   Future getDeviceInfo() async{
     final DeviceInfoPlugin infoPlugin = DeviceInfoPlugin();
     if(Platform.isAndroid) {
+      const AndroidId androidId = AndroidId();
+      deviceId = await androidId.getId();
       infoPlugin.androidInfo.then((info) {
-        deviceId = info.id;
         deviceCode = 'ANDROID';
         deviceType = 'PHONE';
       });
