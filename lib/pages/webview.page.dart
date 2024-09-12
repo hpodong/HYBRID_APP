@@ -37,12 +37,17 @@ class _WebViewPageState extends State<WebViewPage> {
   late final VersionController _versionController = VersionController.of(context);
 
   Future<void> _deepLinkListener() async{
-    uriLinkStream.listen((event) {
-      if(event != null) {
-        log("DEEP LINK: ${event.toString()}");
-        _inAppWebCtr.webViewCtr.loadUrl(urlRequest: URLRequest(url: WebUri.uri(event)));
-      }
-    });
+    final Uri? initUri = await getInitialUri();
+    await _deepLinkHandler(initUri);
+    uriLinkStream.listen(_deepLinkHandler);
+  }
+
+  Future<void> _deepLinkHandler(Uri? event) async {
+    if(event != null) {
+      log("DEEP LINK: ${event.toString()}");
+      final String? url = event.queryParameters["url"];
+      if(url != null) await _inAppWebCtr.webViewCtr.loadUrl(urlRequest: URLRequest(url: WebUri.uri(Uri.parse(url))));
+    }
   }
 
   @override
