@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 import 'package:HYBRID_APP/configs/config/config.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
@@ -26,22 +27,20 @@ class _SplashPageState extends State<SplashPage> {
 
   bool _canClose = false;
 
-  Future<bool> _onWillPop() async{
+  Future<void> _onWillPop(bool didPop, dynamic data) async{
     final InAppWebViewController webViewCtr = InAppWebController.of(context).webViewCtr;
-
-    if(await webViewCtr.canGoBack()) {
+    final bool canGoBack = await webViewCtr.canGoBack();
+    if(canGoBack) {
+      _canClose = false;
+      setState((){});
       await webViewCtr.goBack();
-      return false;
     } else {
       _closeTimer?.cancel();
-      if(_canClose) return true;
-      setState(() => _canClose = true);
+      if (_canClose) exit(0);
+      _canClose = true;
+      setState(() {});
       showToast("뒤로가기 버튼을 한번 더 누르면 앱이 종료됩니다.");
-      _closeTimer = Timer.periodic(const Duration(seconds: 2), (timer) {
-        _canClose = false;
-        setState((){});
-      });
-      return false;
+      _closeTimer = Timer.periodic(const Duration(seconds: 2), (timer) => setState(() => _canClose = false));
     }
   }
 
@@ -67,12 +66,13 @@ class _SplashPageState extends State<SplashPage> {
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: _onWillPop,
+    return PopScope(
+      canPop: _canClose,
+      onPopInvokedWithResult: _onWillPop,
       child: Consumer<VersionController>(
           builder: (context, controller, child) {
             if(!controller.isChecked) {
-            // if(false) {
+              // if(false) {
               return _buildSplash(context);
             } else {
               return const WebViewPage();
