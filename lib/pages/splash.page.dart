@@ -29,7 +29,6 @@ class _SplashPageState extends State<SplashPage> {
   Future<void> _onWillPop(bool didPop, dynamic data) async{
     final InAppWebViewController webViewCtr = InAppWebController.of(context).webViewCtr;
     final bool canGoBack = await webViewCtr.canGoBack();
-    log(didPop, title: "DID POP");
 
     if(canGoBack) {
       _canClose = false;
