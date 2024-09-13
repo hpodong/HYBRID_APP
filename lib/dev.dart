@@ -14,7 +14,7 @@ void main() async{
   await NotificationController.instance.firebasePushSetting();
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
   tz.initializeTimeZones();
-  runApp((const App()));
+  runApp((App()));
 }
 
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
