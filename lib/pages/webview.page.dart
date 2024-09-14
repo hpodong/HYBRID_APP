@@ -1,9 +1,7 @@
 import 'dart:io';
 
-import 'package:HYBRID_APP/customs/custom.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:open_filex/open_filex.dart';
 import 'package:path_provider/path_provider.dart';
@@ -63,11 +61,9 @@ class _WebViewPageState extends State<WebViewPage> {
       child: InAppWebView(
         onConsoleMessage: _onConsoleMessage,
         onDownloadStartRequest: _onDownloadStartRequest,
-        // androidShouldInterceptRequest: _androidShouldInterceptRequest,
         shouldInterceptAjaxRequest: _shouldInterceptAjaxRequest,
         shouldInterceptFetchRequest: _shouldInterceptFetchRequest,
         shouldOverrideUrlLoading: _shouldOverrideUrlLoading,
-        onLoadResource: _onLoadResource,
         initialUrlRequest: URLRequest(
             url: WebUri(Config.instance.getUrl()),
         ),
@@ -83,8 +79,10 @@ class _WebViewPageState extends State<WebViewPage> {
           cacheEnabled: true,
           allowFileAccess: true,
           allowContentAccess: true,
-          mediaPlaybackRequiresUserGesture: true,
           allowsBackForwardNavigationGestures: true,
+          allowBackgroundAudioPlaying: true,
+          allowsPictureInPictureMediaPlayback: true,
+          mediaPlaybackRequiresUserGesture: true,
         ),
         onWebViewCreated: _onWebViewCreated,
         onLoadStart: _onLoadStart,
@@ -100,15 +98,8 @@ class _WebViewPageState extends State<WebViewPage> {
 
   void _onDownloadStartRequest(InAppWebViewController ctr, DownloadStartRequest req) {
     log("${req.url}");
-    _fileDownload(req.url.toString());
-  }
-
-  Future<WebResourceResponse> _androidShouldInterceptRequest(InAppWebViewController ctr, WebResourceRequest req) async{
-    return WebResourceResponse();
-  }
-
-  void _onLoadResource(InAppWebViewController ctr, LoadedResource resource) {
-    // debugPrint("resource url: ${resource.url}");
+    final String url = req.url.toString();
+    _overlayCtr.showIndicator(context, _fileDownload(url));
   }
 
   Future<NavigationActionPolicy?> _shouldOverrideUrlLoading(InAppWebViewController ctr, NavigationAction action) async{
@@ -131,8 +122,8 @@ class _WebViewPageState extends State<WebViewPage> {
       if(webUri.host != HOST_NAME && !url.contains("youtube")){
         if(action.isForMainFrame) await openURL(url);
         return NavigationActionPolicy.CANCEL;
-      } else if(url.endsWith(".pdf") || url.endsWith(".hwp") || url.endsWith(".docx") || url.endsWith(".xlsx") || url.endsWith(".hwpx")){
-        return _fileDownload(url);
+      } else if(url.endsWith(".pdf") || url.endsWith(".hwp") || url.endsWith(".docx") || url.endsWith(".xlsx") || url.endsWith(".hwpx") && mounted){
+        return _overlayCtr.showIndicator(context, _fileDownload(url));
       } else {
         return NavigationActionPolicy.ALLOW;
       }

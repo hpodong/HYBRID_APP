@@ -7,10 +7,11 @@ import 'package:flutter_app_badger/flutter_app_badger.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:provider/provider.dart';
-import 'package:timezone/timezone.dart' as tz;
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../configs/config/config.dart';
 import '../utills/common.dart';
+import '../utills/enums.dart';
 import 'inapp-web.controller.dart';
 
 class NotificationController extends ChangeNotifier{
@@ -23,15 +24,7 @@ class NotificationController extends ChangeNotifier{
   set fcmToken(String? token){
     _fcmToken = token;
     notifyListeners();
-    log(_fcmToken, title: "FCM TOKEN");
-  }
-
-  Future setFcmToken() async{
-    return _fcm.getToken().then((token) {
-      fcmToken = token;
-    }).catchError((error) {
-      throw Exception(error);
-    });
+    log(_fcmToken, title: "FCM TOKEN", showRelease: true);
   }
 
   final FirebaseMessaging _fcm = FirebaseMessaging.instance;
@@ -53,13 +46,36 @@ class NotificationController extends ChangeNotifier{
         iOS: _iosSettings,
       );
 
+  Future<void> initialFcmToken() async {
+    if(fcmToken != null) return;
+    final SharedPreferences spf = await SharedPreferences.getInstance();
+    fcmToken = spf.getString(TokenType.fcmToken.name);
+    if(fcmToken == null) {
+      try {
+        final String? token = await _fcm.getToken();
+        if(token != null) _setFcmToken(token);
+      } catch (e) {
+        await initialFcmToken();
+      }
+    }
+    _fcm.onTokenRefresh.listen(_setFcmToken);
+  }
+
+  Future<void> _setFcmToken(String token) async {
+    final SharedPreferences spf = await SharedPreferences.getInstance();
+    if(await spf.setString(TokenType.fcmToken.name, token)) fcmToken = token;
+  }
+
   Future<void> firebasePushSetting() async{
     await _fcm.setForegroundNotificationPresentationOptions(
         alert: true,
         badge: true,
         sound: true
     );
-    await _createAndroidChannel(ANDROID_CHANNEL_ID, ANDROID_CHANNEL_NAME, description: ANDROID_CHANNEL_DESCRIPTION);
+    if(Platform.isAndroid) {
+      await _createAndroidChannel(ANDROID_CHANNEL_ID, ANDROID_CHANNEL_NAME,
+          description: ANDROID_CHANNEL_DESCRIPTION);
+    }
   }
 
   Future<void> _createAndroidChannel(String id, String name, {
@@ -133,9 +149,9 @@ class NotificationController extends ChangeNotifier{
     );
 
     const DarwinNotificationDetails iosDetails = DarwinNotificationDetails(
-      presentAlert: true,
-      presentBadge: true,
-      presentSound: true
+        presentAlert: true,
+        presentBadge: true,
+        presentSound: true
     );
 
 

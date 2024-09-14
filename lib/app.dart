@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
@@ -32,7 +35,14 @@ class App extends StatelessWidget {
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.dark);
     return MultiProvider(
         providers: _providers,
-        child: MaterialApp(
+        child: Platform.isIOS ? CupertinoApp(
+          theme: const CupertinoThemeData(
+            scaffoldBackgroundColor: CustomColors.splash,
+          ),
+          debugShowCheckedModeBanner: false,
+          routes: _routes,
+          home: const SplashPage(),
+        ) :  MaterialApp(
           theme: ThemeData(
               scaffoldBackgroundColor: CustomColors.splash
           ),

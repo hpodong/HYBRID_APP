@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
+import 'package:permission_handler/permission_handler.dart';
 import '../configs/config/config.dart';
 import '../controllers/device.controller.dart';
 import '../controllers/inapp-web.controller.dart';
@@ -49,7 +50,7 @@ class _SplashPageState extends State<SplashPage> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) async{
       OverlayController.of(context).showOverlayWidget(context, (context) => _buildSplash(context));
-      await NotificationController.of(context).setFcmToken();
+      if(mounted) await NotificationController.of(context).initialFcmToken();
       if(mounted) await DeviceController.of(context).getDeviceInfo();
       if(mounted) await VersionController.of(context).getVersion(context);
       /*permissionCheck([

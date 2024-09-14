@@ -1,4 +1,4 @@
-enum TokenType{ accessToken, refreshToken }
+enum TokenType{ accessToken, refreshToken, fcmToken }
 
 enum RequestType { GET, POST, MULTIPART }
 

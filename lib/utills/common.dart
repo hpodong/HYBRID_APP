@@ -75,9 +75,10 @@ void log(dynamic message, {
   String? title,
   Object? error,
   PrettyPrinter? printer,
-  LogType type = LogType.info
+  LogType type = LogType.info,
+  bool showRelease = false
 }) {
-  if(!kReleaseMode) {
+  if(!kReleaseMode || showRelease) {
     final DateTime now = DateTime.now();
     final Logger logger = Logger(
         printer: printer ?? PrettyPrinter(
