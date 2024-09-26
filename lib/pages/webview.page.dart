@@ -88,8 +88,13 @@ class _WebViewPageState extends State<WebViewPage> {
         onLoadStart: _onLoadStart,
         onLoadStop: _onLoadStop,
         onReceivedHttpError: _onReceivedHttpError,
+        onReceivedError: _onReceivedError,
       ),
     );
+  }
+
+  void _onReceivedError(InAppWebViewController ctr, WebResourceRequest req, WebResourceError err) {
+    OverlayController.of(context).remove();
   }
 
   void _onReceivedHttpError(InAppWebViewController ctr, WebResourceRequest req, WebResourceResponse res) {

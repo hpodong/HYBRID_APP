@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -13,16 +15,16 @@ class OverlayController extends ChangeNotifier {
   }
 
   static Widget _buildIndicator(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.3)
+    return ColoredBox(
+      color: Colors.white.withOpacity(0.3),
+      child: Center(
+          child: Platform.isIOS ? const CupertinoActivityIndicator() : const CircularProgressIndicator()
       ),
-      alignment: Alignment.center,
-      child: const CupertinoActivityIndicator(),
     );
   }
 
   Future<T> showIndicator<T>(BuildContext context, Future<T> future) {
+    remove();
 
     entry = OverlayEntry(builder: _buildIndicator);
 
@@ -54,6 +56,9 @@ class OverlayController extends ChangeNotifier {
   }
 
   void show(BuildContext context) {
+
+    remove();
+
     entry = OverlayEntry(builder: _buildIndicator);
 
     final OverlayState overlayState = Overlay.of(context);
