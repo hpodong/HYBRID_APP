@@ -1,9 +1,13 @@
+import 'dart:io';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:logger/logger.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 
 import 'enums.dart';
 
@@ -16,6 +20,8 @@ double mediaWidth(BuildContext context, double scale) {
   return MediaQuery.of(context).size.width * deviceWidth;
 }
 double basePadding(BuildContext context) => mediaWidth(context, 15);
+
+const MethodChannel platform = MethodChannel('method_channel');
 
 EdgeInsets baseAllPadding(BuildContext context) => EdgeInsets.all(basePadding(context));
 
@@ -36,12 +42,6 @@ Future<dynamic> movePageToNamed(BuildContext context, String routeName, {
   Object? arguments
 }) async{
   return Navigator.pushNamed(context, routeName, arguments: arguments);
-}
-
-Future<void> openURL(String url, {
-  LaunchMode mode = LaunchMode.platformDefault
-}) {
-  return launchUrl(Uri.parse(url), mode: mode);
 }
 
 Future permissionCheck(List<Permission> permissions) async{
@@ -99,5 +99,49 @@ void log(dynamic message, {
       case LogType.error:
         logger.e(sb, error: error);
     }
+  }
+}
+
+Future<void> openURL(String url) async {
+  final bool canLaunch = await canLaunchUrlString(url);
+  final Uri uri = Uri.parse(url);
+  if(Platform.isIOS) {
+    if (canLaunch) await launchUrl(uri);
+  } else {
+    try {
+      final String? packageName = await getPackageName(url);
+      log(packageName, title: "PACKAGE NAME");
+      switch(packageName) {
+        case "kvp.jjy.MispAndroid320":
+          url = url.replaceAll(uri.host, uri.host.toUpperCase());
+      }
+      log(url, title: "OPEN URL");
+      await platform.invokeMethod('openURL', {'url': url});
+    } catch(e) {
+      switch(uri.scheme) {
+        case "kftc-bankpay":
+          await launchUrlString("https://play.google.com/store/apps/details?id=com.kftc.bankpay.android&hl=ko");
+          break;
+        case "mg-bankpay":
+          await launchUrlString("https://play.google.com/store/apps/details?id=kr.co.kfcc.mobilebank&hl=ko");
+          break;
+        case "newliiv":
+          await launchUrlString("https://play.google.com/store/apps/details?id=com.kbstar.reboot&hl=ko");
+          break;
+        case "kn-bankpay":
+          await launchUrlString("https://play.google.com/store/apps/details?id=com.knb.psb&hl=ko");
+          break;
+        case "nhb-bankpay":
+          await launchUrlString("https://play.google.com/store/apps/details?id=com.nh.cashcardapp&hl=ko");
+      }
+    }
+  }
+}
+
+Future<String?> getPackageName(String url) async{
+  try {
+    return platform.invokeMethod('getPackage', {'url': url});
+  } catch(e) {
+    return null;
   }
 }

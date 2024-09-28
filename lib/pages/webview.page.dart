@@ -1,12 +1,20 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
+import 'package:flutter_naver_login/flutter_naver_login.dart';
+import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
 import 'package:open_filex/open_filex.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'package:uni_links/uni_links.dart';
 import '../configs/config/config.dart';
+import '../configs/socials/apple.config.dart';
+import '../configs/socials/kakao.config.dart';
+import '../configs/socials/naver.config.dart';
 import '../controllers/device.controller.dart';
 import '../controllers/inapp-web.controller.dart';
 import '../controllers/notification.controller.dart';
@@ -48,6 +56,11 @@ class _WebViewPageState extends State<WebViewPage> {
     }
   }
 
+  final List<String> _allowHosts = <String>[
+    HOST_NAME,
+    "www.youtube.com",
+  ];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -61,28 +74,32 @@ class _WebViewPageState extends State<WebViewPage> {
       child: InAppWebView(
         onConsoleMessage: _onConsoleMessage,
         onDownloadStartRequest: _onDownloadStartRequest,
+        // androidShouldInterceptRequest: _androidShouldInterceptRequest,
         shouldInterceptAjaxRequest: _shouldInterceptAjaxRequest,
         shouldInterceptFetchRequest: _shouldInterceptFetchRequest,
         shouldOverrideUrlLoading: _shouldOverrideUrlLoading,
+        onCreateWindow: _onCreateWindow,
         initialUrlRequest: URLRequest(
-            url: WebUri(Config.instance.getUrl()),
+          url: WebUri(Config.instance.getUrl()),
         ),
         initialSettings: InAppWebViewSettings(
           applicationNameForUserAgent: USERAGENT,
           javaScriptEnabled: true,
+          javaScriptCanOpenWindowsAutomatically: true,
+          // supportMultipleWindows: true,
+          // iframeAllowFullscreen: true,
           useOnDownloadStart: true,
           useShouldOverrideUrlLoading: true,
           allowFileAccessFromFileURLs: true,
+          useShouldInterceptAjaxRequest: true,
           useHybridComposition: true,
           domStorageEnabled: true,
-          cacheMode: CacheMode.LOAD_CACHE_ELSE_NETWORK,
+          cacheMode: CacheMode.LOAD_DEFAULT,
           cacheEnabled: true,
           allowFileAccess: true,
           allowContentAccess: true,
-          allowsBackForwardNavigationGestures: true,
-          allowBackgroundAudioPlaying: true,
-          allowsPictureInPictureMediaPlayback: true,
           mediaPlaybackRequiresUserGesture: true,
+          allowsBackForwardNavigationGestures: true,
         ),
         onWebViewCreated: _onWebViewCreated,
         onLoadStart: _onLoadStart,
@@ -93,42 +110,60 @@ class _WebViewPageState extends State<WebViewPage> {
     );
   }
 
+  void _onReceivedHttpError(InAppWebViewController ctr, WebResourceRequest req, WebResourceResponse res) {
+    log("STATUS_CODE: ${res.statusCode}");
+    OverlayController.of(context).remove();
+  }
+
   void _onReceivedError(InAppWebViewController ctr, WebResourceRequest req, WebResourceError err) {
     OverlayController.of(context).remove();
   }
 
-  void _onReceivedHttpError(InAppWebViewController ctr, WebResourceRequest req, WebResourceResponse res) {
-    log("STATUS_CODE: ${res.statusCode}");
-  }
-
   void _onDownloadStartRequest(InAppWebViewController ctr, DownloadStartRequest req) {
     log("${req.url}");
-    final String url = req.url.toString();
-    _overlayCtr.showIndicator(context, _fileDownload(url));
+    _fileDownload(req.url.toString());
+  }
+
+  Future<WebResourceResponse> _androidShouldInterceptRequest(InAppWebViewController ctr, WebResourceRequest req) async{
+    return WebResourceResponse();
+  }
+
+  void _onLoadResource(InAppWebViewController ctr, LoadedResource resource) {
+    // debugPrint("resource url: ${resource.url}");
+  }
+
+  Future<bool?> _onCreateWindow(InAppWebViewController ctr, CreateWindowAction action) async{
+    await ctr.loadUrl(urlRequest: action.request);
+    log(action, title: "WINDOW.OPEN");
+    return false;
   }
 
   Future<NavigationActionPolicy?> _shouldOverrideUrlLoading(InAppWebViewController ctr, NavigationAction action) async{
     final WebUri? webUri = action.request.url;
 
-    log("SHOULD OVERRIDE URL : ${webUri.toString()}");
-    log("HOST : ${webUri?.host}");
-    log("TYPE : ${action.navigationType}");
-
     final String? path = action.request.url?.path;
-    if(path != null) {
-      if(path.startsWith("/index.php") || path == "/") await clearHistory();
-      if(path.contains("process.php") && await ctr.canGoForward()) {
-        await ctr.goBack();
-      }
-    }
+
+    if(path != null) if(path.startsWith("/index.php") || path == "/") await clearHistory();
 
     if(webUri != null) {
-      final String url = webUri.toString();
-      if(webUri.host != HOST_NAME && !url.contains("youtube")){
-        if(action.isForMainFrame) await openURL(url);
+      String url = webUri.toString();
+      final String host = webUri.host;
+
+      log("SHOULD OVERRIDE URL : ${webUri.toString()}");
+      log("HOST : ${webUri.host}");
+
+      if(webUri.path == "/login.php" && webUri.queryParameters["view"] == "logout") {
+        final NaverConfig na = NaverConfig();
+        final KakaoConfig ka = KakaoConfig();
+        await na.logout();
+        await ka.logout();
+      }
+
+      if(!webUri.scheme.startsWith("http")/* || !_allowHosts.any((ah) => host == ah)*/){
+        if(mounted) OverlayController.of(context).showIndicator(context, openURL(url));
         return NavigationActionPolicy.CANCEL;
-      } else if(url.endsWith(".pdf") || url.endsWith(".hwp") || url.endsWith(".docx") || url.endsWith(".xlsx") || url.endsWith(".hwpx") && mounted){
-        return _overlayCtr.showIndicator(context, _fileDownload(url));
+      } else if(url.endsWith(".pdf") || url.endsWith(".hwp") || url.endsWith(".docx") || url.endsWith(".xlsx") || url.endsWith(".hwpx")){
+        return _fileDownload(url);
       } else {
         return NavigationActionPolicy.ALLOW;
       }
@@ -138,12 +173,10 @@ class _WebViewPageState extends State<WebViewPage> {
   }
 
   Future<AjaxRequest?> _shouldInterceptAjaxRequest(InAppWebViewController ctr, AjaxRequest req) async{
-    log("ajaxRequest");
     return req;
   }
 
   Future<FetchRequest?> _shouldInterceptFetchRequest(InAppWebViewController ctr, FetchRequest req) async{
-    log("fetchRequest");
     return req;
   }
 
@@ -202,7 +235,84 @@ class _WebViewPageState extends State<WebViewPage> {
 
   void _onConsoleMessage(InAppWebViewController ctr, ConsoleMessage cm) async{
     final String msg = cm.message;
+    switch(msg) {
+      case "kakao_login": return OverlayController.of(context).showIndicator(context, _kakaoLogin());
+      case "naver_login": return OverlayController.of(context).showIndicator(context, _naverLogin());
+      case "apple_login": return OverlayController.of(context).showIndicator(context, _appleLogin());
+
+    }
     log(msg);
+  }
+
+  Future<void> _kakaoLogin() async{
+    final KakaoConfig kc = KakaoConfig();
+    final User? user = await kc.login();
+    log(user, title: "USER");
+    if(user != null) {
+      final String script = """
+      email = '${user.kakaoAccount?.email}';
+      phone = '${user.kakaoAccount?.phoneNumber?.replaceAll("+82 10", "010")}';
+      name = '${user.kakaoAccount?.name}';
+      item = 'kakao';
+      
+      oPBP.setValue('item',item);
+      oPBP.setValue('view','CheckApiLogin');
+      oPBP.setValue('email', '${user.kakaoAccount?.email}');
+      oPBP.setValue('fcmToken', '${NotificationController.of(context).fcmToken}');
+      oPBP.setValue('deviceId', '${DeviceController.of(context).deviceId}');
+      oPBP.doSubmit('login.php', OnFinishedLogin);
+      """;
+      log(script);
+      await _inAppWebCtr.webViewCtr.evaluateJavascript(source: script);
+    }
+  }
+
+  Future<void> _appleLogin() async{
+    final AppleConfig kc = AppleConfig();
+    final AuthorizationCredentialAppleID? user = await kc.login();
+    if(user != null) {
+      String name = "";
+      if(user.familyName != null && user.givenName != null) {
+        name = "${user.familyName}${user.givenName}";
+      }
+      final String script = """
+      email = '${user.userIdentifier}';
+      name = '$name';
+      item = 'apple';
+      
+      oPBP.setValue('item',item);
+      oPBP.setValue('view','CheckApiLogin');
+      oPBP.setValue('email', '${user.userIdentifier}');
+      oPBP.setValue('fmcToken', '${NotificationController.of(context).fcmToken}');
+      oPBP.setValue('deviceId', '${DeviceController.of(context).deviceId}');
+      oPBP.doSubmit('login.php', OnFinishedLogin);
+      """;
+      log(script);
+      await _inAppWebCtr.webViewCtr.evaluateJavascript(source: script);
+    }
+  }
+
+  Future<void> _naverLogin() async{
+    final NaverConfig nc = NaverConfig();
+    final NaverAccountResult? user = await nc.login();
+
+    if(user != null) {
+      final String script = """
+      email = '${user.email}';
+      phone = '${user.mobile.replaceAll("+82 10", "010")}';
+      name = '${user.name}';
+      item = 'naver';
+      
+      oPBP.setValue('item',item);
+      oPBP.setValue('view','CheckApiLogin');
+      oPBP.setValue('email', '${user.email}');
+      oPBP.setValue('fcmToken', '${NotificationController.of(context).fcmToken}');
+      oPBP.setValue('deviceId', '${DeviceController.of(context).deviceId}');
+      oPBP.doSubmit('login.php', OnFinishedLogin);
+      """;
+      log(script);
+      await _inAppWebCtr.webViewCtr.evaluateJavascript(source: script);
+    }
   }
 
   Future<NavigationActionPolicy> _fileDownload(String? url) async {
