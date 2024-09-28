@@ -149,8 +149,8 @@ class _WebViewPageState extends State<WebViewPage> {
       String url = webUri.toString();
       final String host = webUri.host;
 
-      log("SHOULD OVERRIDE URL : ${webUri.toString()}");
-      log("HOST : ${webUri.host}");
+      log(url, title: "SHOULD OVERRIDE URL");
+      log(host, title: "HOST");
 
       if(webUri.path == "/login.php" && webUri.queryParameters["view"] == "logout") {
         final NaverConfig na = NaverConfig();
