@@ -1,3 +1,5 @@
+import 'package:flutter/foundation.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 
@@ -7,8 +9,7 @@ import '../utills/common.dart';
 
 class WindowPopupPage extends StatefulWidget {
   final CreateWindowAction action;
-  final InAppWebViewSettings settings;
-  const WindowPopupPage(this.action, this.settings, {super.key});
+  const WindowPopupPage(this.action, {super.key});
 
   @override
   State<WindowPopupPage> createState() => _WindowPopupPageState();
