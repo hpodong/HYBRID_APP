@@ -142,7 +142,7 @@ class _WebViewPageState extends State<WebViewPage> {
   Future<bool?> _onCreateWindow(InAppWebViewController ctr, CreateWindowAction action) async{
     log(action, title: "WINDOW.OPEN");
     // await ctr.loadUrl(urlRequest: action.request);
-    await movePage(context, WindowPopupPage(action, _webViewSettings), fullscreenDialog: true);
+    await movePage(context, WindowPopupPage(action), fullscreenDialog: true);
     return true;
   }
 
