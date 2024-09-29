@@ -1,8 +1,6 @@
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:flutter_naver_login/flutter_naver_login.dart';
@@ -23,12 +21,15 @@ import 'package:http/http.dart' as http;
 
 import '../controllers/version.controller.dart';
 import '../utills/common.dart';
+import 'window_popup.page.dart';
 
 class WebViewPage extends StatefulWidget {
 
   static const String routeName = '/webViewPage';
 
-  const WebViewPage({super.key});
+  final URLRequest? request;
+
+  const WebViewPage({this.request, super.key});
 
   @override
   State<WebViewPage> createState() => _WebViewPageState();
@@ -59,7 +60,41 @@ class _WebViewPageState extends State<WebViewPage> {
   final List<String> _allowHosts = <String>[
     HOST_NAME,
     "www.youtube.com",
+    "www.payapp.kr",
+    /*"nid.naver.com",
+    "kauth.kakao.com",
+    "talk-apps.kakao.com",
+    "accounts.kakao.com",
+    "logins.daum.net",*/
   ];
+
+  final List<String> _allowFiles = <String>[
+    "pdf",
+    "hwp",
+    "docx",
+    "xlsx",
+    "hwpx",
+  ];
+
+  final InAppWebViewSettings _webViewSettings = InAppWebViewSettings(
+    applicationNameForUserAgent: USERAGENT,
+    javaScriptEnabled: true,
+    transparentBackground: true,
+    javaScriptCanOpenWindowsAutomatically: true,
+    supportMultipleWindows: true,
+    iframeAllowFullscreen: true,
+    useOnDownloadStart: true,
+    useShouldOverrideUrlLoading: true,
+    allowFileAccessFromFileURLs: true,
+    useHybridComposition: true,
+    domStorageEnabled: true,
+    cacheMode: CacheMode.LOAD_DEFAULT,
+    cacheEnabled: true,
+    allowFileAccess: true,
+    allowContentAccess: true,
+    mediaPlaybackRequiresUserGesture: true,
+    allowsBackForwardNavigationGestures: true,
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -72,46 +107,26 @@ class _WebViewPageState extends State<WebViewPage> {
   Widget _buildBody(BuildContext context) {
     return SafeArea(
       child: InAppWebView(
+        shouldOverrideUrlLoading: _shouldOverrideUrlLoading,
+
         onConsoleMessage: _onConsoleMessage,
         onDownloadStartRequest: _onDownloadStartRequest,
         // androidShouldInterceptRequest: _androidShouldInterceptRequest,
-        shouldInterceptAjaxRequest: _shouldInterceptAjaxRequest,
-        shouldInterceptFetchRequest: _shouldInterceptFetchRequest,
-        shouldOverrideUrlLoading: _shouldOverrideUrlLoading,
         onCreateWindow: _onCreateWindow,
-        initialUrlRequest: URLRequest(
-          url: WebUri(Config.instance.getUrl()),
-        ),
-        initialSettings: InAppWebViewSettings(
-          applicationNameForUserAgent: USERAGENT,
-          javaScriptEnabled: true,
-          javaScriptCanOpenWindowsAutomatically: true,
-          // supportMultipleWindows: true,
-          // iframeAllowFullscreen: true,
-          useOnDownloadStart: true,
-          useShouldOverrideUrlLoading: true,
-          allowFileAccessFromFileURLs: true,
-          useShouldInterceptAjaxRequest: true,
-          useHybridComposition: true,
-          domStorageEnabled: true,
-          cacheMode: CacheMode.LOAD_DEFAULT,
-          cacheEnabled: true,
-          allowFileAccess: true,
-          allowContentAccess: true,
-          mediaPlaybackRequiresUserGesture: true,
-          allowsBackForwardNavigationGestures: true,
-        ),
         onWebViewCreated: _onWebViewCreated,
         onLoadStart: _onLoadStart,
         onLoadStop: _onLoadStop,
         onReceivedHttpError: _onReceivedHttpError,
         onReceivedError: _onReceivedError,
+        initialUrlRequest: widget.request ?? URLRequest(
+          url: WebUri(Config.instance.getUrl()),
+        ),
+        initialSettings: _webViewSettings,
       ),
     );
   }
 
   void _onReceivedHttpError(InAppWebViewController ctr, WebResourceRequest req, WebResourceResponse res) {
-    log("STATUS_CODE: ${res.statusCode}");
     OverlayController.of(context).remove();
   }
 
@@ -124,18 +139,11 @@ class _WebViewPageState extends State<WebViewPage> {
     _fileDownload(req.url.toString());
   }
 
-  Future<WebResourceResponse> _androidShouldInterceptRequest(InAppWebViewController ctr, WebResourceRequest req) async{
-    return WebResourceResponse();
-  }
-
-  void _onLoadResource(InAppWebViewController ctr, LoadedResource resource) {
-    // debugPrint("resource url: ${resource.url}");
-  }
-
   Future<bool?> _onCreateWindow(InAppWebViewController ctr, CreateWindowAction action) async{
-    await ctr.loadUrl(urlRequest: action.request);
     log(action, title: "WINDOW.OPEN");
-    return false;
+    // await ctr.loadUrl(urlRequest: action.request);
+    await movePage(context, WindowPopupPage(action, _webViewSettings), fullscreenDialog: true);
+    return true;
   }
 
   Future<NavigationActionPolicy?> _shouldOverrideUrlLoading(InAppWebViewController ctr, NavigationAction action) async{
@@ -152,7 +160,7 @@ class _WebViewPageState extends State<WebViewPage> {
       log(url, title: "SHOULD OVERRIDE URL");
       log(host, title: "HOST");
 
-      if(webUri.path == "/login.php" && webUri.queryParameters["view"] == "logout") {
+      if(webUri.path == LOGOUT_PAGE) {
         final NaverConfig na = NaverConfig();
         final KakaoConfig ka = KakaoConfig();
         await na.logout();
@@ -162,7 +170,7 @@ class _WebViewPageState extends State<WebViewPage> {
       if(!webUri.scheme.startsWith("http")/* || !_allowHosts.any((ah) => host == ah)*/){
         if(mounted) OverlayController.of(context).showIndicator(context, openURL(url));
         return NavigationActionPolicy.CANCEL;
-      } else if(url.endsWith(".pdf") || url.endsWith(".hwp") || url.endsWith(".docx") || url.endsWith(".xlsx") || url.endsWith(".hwpx")){
+      } else if(_allowFiles.any((type) => url.endsWith(".$type"))){
         return _fileDownload(url);
       } else {
         return NavigationActionPolicy.ALLOW;
@@ -170,14 +178,6 @@ class _WebViewPageState extends State<WebViewPage> {
     } else {
       return NavigationActionPolicy.CANCEL;
     }
-  }
-
-  Future<AjaxRequest?> _shouldInterceptAjaxRequest(InAppWebViewController ctr, AjaxRequest req) async{
-    return req;
-  }
-
-  Future<FetchRequest?> _shouldInterceptFetchRequest(InAppWebViewController ctr, FetchRequest req) async{
-    return req;
   }
 
   void _onWebViewCreated(InAppWebViewController ctr) async{

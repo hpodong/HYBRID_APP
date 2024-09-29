@@ -11,6 +11,7 @@ final bool USE_SSL = dotenv.get("USE_SSL") == "1";
 final String PORT = dotenv.get("PORT");
 final String APP_STORE_ID = dotenv.get('APP_STORE_ID');
 final String LOGIN_PAGE = dotenv.get('LOGIN_PAGE');
+final String LOGOUT_PAGE = dotenv.get('LOGOUT_PAGE');
 final String _USERAGENT = dotenv.get('USERAGENT');
 final String ANDROID_CHANNEL_ID = dotenv.get('ANDROID_CHANNEL_ID');
 final String ANDROID_CHANNEL_NAME = dotenv.get('ANDROID_CHANNEL_NAME');
