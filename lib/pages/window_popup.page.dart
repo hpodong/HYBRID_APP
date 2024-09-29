@@ -30,10 +30,13 @@ class _WindowPopupPageState extends State<WindowPopupPage> {
   }
 
   Future<void> _onWebViewCreated(InAppWebViewController controller) async{
+    /*await controller.loadUrl(urlRequest: widget.action.request);*/
     setState(() => _controller = controller);
+    log(widget.action.windowId, title: "WINDOW ID");
   }
 
   Future<void> _onCloseWindow(InAppWebViewController controller) async {
+    log("", title: "CLOSE WINDOW");
     Navigator.pop(context);
   }
 
@@ -58,27 +61,21 @@ class _WindowPopupPageState extends State<WindowPopupPage> {
         body: SafeArea(
           child: InAppWebView(
             windowId: widget.action.windowId,
-            initialUrlRequest: widget.action.request,
             initialSettings: InAppWebViewSettings(
               applicationNameForUserAgent: USERAGENT,
               javaScriptEnabled: true,
-              transparentBackground: true,
-              iframeAllowFullscreen: true,
               useHybridComposition: true,
-              useShouldOverrideUrlLoading: true,
-              domStorageEnabled: true,
               cacheMode: CacheMode.LOAD_DEFAULT,
               cacheEnabled: true,
-              allowFileAccess: true,
-              allowContentAccess: true,
-              mediaPlaybackRequiresUserGesture: true,
               allowsBackForwardNavigationGestures: true,
-              allowsInlineMediaPlayback: true,
             ),
             onTitleChanged: (ctr, title) => setState(() => _title = title),
             onWebViewCreated: _onWebViewCreated,
             onCloseWindow: _onCloseWindow,
-            onLoadStart: (ctr, uri) => _overlayCtr.show(context),
+            onLoadStart: (ctr, uri) {
+              log(uri, title: "LOAD START");
+              _overlayCtr.show(context);
+            },
             onLoadStop: (ctr, uri) => _overlayCtr.remove(),
             onReceivedHttpError: (ctr, req, err) => _overlayCtr.remove(),
             onReceivedError: (ctr, req, err) => _overlayCtr.remove(),
@@ -95,6 +92,7 @@ class _WindowPopupPageState extends State<WindowPopupPage> {
     if(webUri != null) {
       final String url = webUri.toString();
       if(!webUri.scheme.startsWith("http")){
+        log(webUri.scheme, title: "SCHEME");
         if(mounted) OverlayController.of(context).showIndicator(context, openURL(url));
         return NavigationActionPolicy.CANCEL;
       } else {
