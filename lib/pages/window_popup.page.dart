@@ -62,7 +62,6 @@ class _WindowPopupPageState extends State<WindowPopupPage> {
             initialSettings: InAppWebViewSettings(
               applicationNameForUserAgent: USERAGENT,
               javaScriptEnabled: true,
-              supportMultipleWindows: true,
               transparentBackground: true,
               iframeAllowFullscreen: true,
               useHybridComposition: true,
