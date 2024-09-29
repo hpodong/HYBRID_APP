@@ -32,11 +32,9 @@ class _WindowPopupPageState extends State<WindowPopupPage> {
   Future<void> _onWebViewCreated(InAppWebViewController controller) async{
     /*await controller.loadUrl(urlRequest: widget.action.request);*/
     setState(() => _controller = controller);
-    log(widget.action.windowId, title: "WINDOW ID");
   }
 
   Future<void> _onCloseWindow(InAppWebViewController controller) async {
-    log("", title: "CLOSE WINDOW");
     Navigator.pop(context);
   }
 
@@ -47,6 +45,7 @@ class _WindowPopupPageState extends State<WindowPopupPage> {
       onPopInvokedWithResult: _onPopInvokedWithResult,
       child: Scaffold(
         appBar: AppBar(
+          elevation: 1,
           centerTitle: false,
           automaticallyImplyLeading: false,
           title: Text(_title ?? ""),
@@ -66,14 +65,15 @@ class _WindowPopupPageState extends State<WindowPopupPage> {
               javaScriptEnabled: true,
               useHybridComposition: true,
               cacheMode: CacheMode.LOAD_DEFAULT,
+              useShouldOverrideUrlLoading: true,
               cacheEnabled: true,
+              domStorageEnabled: true,
               allowsBackForwardNavigationGestures: true,
             ),
             onTitleChanged: (ctr, title) => setState(() => _title = title),
             onWebViewCreated: _onWebViewCreated,
             onCloseWindow: _onCloseWindow,
             onLoadStart: (ctr, uri) {
-              log(uri, title: "LOAD START");
               _overlayCtr.show(context);
             },
             onLoadStop: (ctr, uri) => _overlayCtr.remove(),
@@ -92,7 +92,6 @@ class _WindowPopupPageState extends State<WindowPopupPage> {
     if(webUri != null) {
       final String url = webUri.toString();
       if(!webUri.scheme.startsWith("http")){
-        log(webUri.scheme, title: "SCHEME");
         if(mounted) OverlayController.of(context).showIndicator(context, openURL(url));
         return NavigationActionPolicy.CANCEL;
       } else {
