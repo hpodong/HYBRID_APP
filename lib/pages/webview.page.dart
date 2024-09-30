@@ -376,7 +376,7 @@ class _WebViewPageState extends State<WebViewPage> {
     final NaverConfig nc = NaverConfig();
     final NaverAccountResult? user = await nc.login();
 
-    if(user != null) {
+    if(user != null && mounted) {
       final String script = """
       email = '${user.email}';
       phone = '${user.mobile.replaceAll("+82 10", "010")}';
