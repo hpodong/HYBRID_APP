@@ -35,20 +35,13 @@ class App extends StatelessWidget {
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.dark);
     return MultiProvider(
         providers: _providers,
-        child: Platform.isIOS ? CupertinoApp(
-          theme: const CupertinoThemeData(
-            scaffoldBackgroundColor: CustomColors.splash,
-          ),
-          debugShowCheckedModeBanner: false,
-          routes: _routes,
-          home: const SplashPage(),
-        ) :  MaterialApp(
+        child: MaterialApp(
           theme: ThemeData(
               scaffoldBackgroundColor: CustomColors.splash
           ),
           debugShowCheckedModeBanner: false,
           routes: _routes,
-          home: const SplashPage(),
+          home: const WebViewPage(),
         )
     );
   }

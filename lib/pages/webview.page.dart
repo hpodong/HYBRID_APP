@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
@@ -7,6 +8,7 @@ import 'package:flutter_naver_login/flutter_naver_login.dart';
 import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
 import 'package:open_filex/open_filex.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:provider/provider.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'package:uni_links/uni_links.dart';
 import '../configs/config/config.dart';
@@ -20,6 +22,7 @@ import '../controllers/overlay.controller.dart';
 import 'package:http/http.dart' as http;
 
 import '../controllers/version.controller.dart';
+import '../customs/custom.dart';
 import '../utills/common.dart';
 import 'window_popup.page.dart';
 
@@ -76,6 +79,26 @@ class _WebViewPageState extends State<WebViewPage> {
     "hwpx",
   ];
 
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) async{
+      _overlayCtr.showOverlayWidget(context, (context) => _buildSplash(context));
+      if(mounted) await NotificationController.of(context).initialFcmToken();
+      if(mounted) await DeviceController.of(context).getDeviceInfo();
+      if(mounted) await VersionController.of(context).getVersion(context);
+      /*permissionCheck([
+        Permission.mediaLibrary,
+        Permission.photos,
+        Permission.camera,
+        Permission.microphone,
+        Permission.videos,
+        Permission.storage,
+        Permission.manageExternalStorage,
+      ]);*/
+    });
+  }
+
   final InAppWebViewSettings _webViewSettings = InAppWebViewSettings(
     applicationNameForUserAgent: USERAGENT,
     javaScriptEnabled: true,
@@ -96,11 +119,46 @@ class _WebViewPageState extends State<WebViewPage> {
     allowsBackForwardNavigationGestures: true,
   );
 
+  Timer? _closeTimer;
+
+  bool _canClose = false;
+
+  Future<void> _onWillPop(bool didPop, dynamic data) async{
+    final InAppWebViewController webViewCtr = InAppWebController.of(context).webViewCtr;
+    final bool canGoBack = await webViewCtr.canGoBack();
+
+    if(canGoBack) {
+      _canClose = false;
+      setState((){});
+      await webViewCtr.goBack();
+    } else {
+      _closeTimer?.cancel();
+      if(_canClose) exit(1);
+      _canClose = true;
+      setState(() {});
+      showToast("뒤로가기 버튼을 한번 더 누르면 앱이 종료됩니다.");
+      _closeTimer = Timer.periodic(const Duration(seconds: 1), (timer) => setState(() => _canClose = false));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        backgroundColor: Colors.white,
-        body: _buildBody(context)
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: _onWillPop,
+      child: Consumer<VersionController>(
+          builder: (context, controller, child) {
+            if(!controller.isChecked) {
+              // if(false) {
+              return _buildSplash(context);
+            } else {
+              return Scaffold(
+                  backgroundColor: Colors.white,
+                  body: _buildBody(context)
+              );
+            }
+          }
+      ),
     );
   }
 
@@ -122,6 +180,23 @@ class _WebViewPageState extends State<WebViewPage> {
           url: WebUri(Config.instance.getUrl()),
         ),
         initialSettings: _webViewSettings,
+      ),
+    );
+  }
+
+  Widget _buildSplash(BuildContext context) {
+    return Scaffold(
+      backgroundColor: CustomColors.splash,
+      body: Container(
+        height: double.infinity,
+        width: double.infinity,
+        decoration: BoxDecoration(
+            color: CustomColors.splash,
+            image: DecorationImage(
+                image: AssetImage(SPLASH_IMAGE),
+                fit: BoxFit.cover
+            )
+        ),
       ),
     );
   }
