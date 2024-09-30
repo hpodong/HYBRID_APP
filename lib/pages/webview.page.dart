@@ -169,11 +169,11 @@ class _WebViewPageState extends State<WebViewPage> {
 
         onConsoleMessage: _onConsoleMessage,
         onDownloadStartRequest: _onDownloadStartRequest,
-        // androidShouldInterceptRequest: _androidShouldInterceptRequest,
         onCreateWindow: _onCreateWindow,
         onWebViewCreated: _onWebViewCreated,
         onLoadStart: _onLoadStart,
         onLoadStop: _onLoadStop,
+        onPermissionRequest: _onPermissionRequest,
         onReceivedHttpError: _onReceivedHttpError,
         onReceivedError: _onReceivedError,
         initialUrlRequest: widget.request ?? URLRequest(
@@ -212,6 +212,10 @@ class _WebViewPageState extends State<WebViewPage> {
   void _onDownloadStartRequest(InAppWebViewController ctr, DownloadStartRequest req) {
     log("${req.url}");
     _fileDownload(req.url.toString());
+  }
+
+  Future<PermissionResponse?> _onPermissionRequest(InAppWebViewController ctr, PermissionRequest req) async{
+    return PermissionResponse(resources: req.resources, action: PermissionResponseAction.GRANT);
   }
 
   Future<bool?> _onCreateWindow(InAppWebViewController ctr, CreateWindowAction action) async{
