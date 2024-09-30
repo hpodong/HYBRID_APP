@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -11,7 +9,6 @@ import 'controllers/notification.controller.dart';
 import 'controllers/overlay.controller.dart';
 import 'controllers/version.controller.dart';
 import 'customs/custom.dart';
-import 'pages/splash.page.dart';
 import 'pages/webview.page.dart';
 
 class App extends StatelessWidget {
