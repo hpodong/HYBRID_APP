@@ -212,8 +212,7 @@ class _WebViewPageState extends State<WebViewPage> {
   }
 
   void _onDownloadStartRequest(InAppWebViewController ctr, DownloadStartRequest req) {
-    log("${req.url}");
-    _fileDownload(req.url.toString());
+    _overlayCtr.showIndicator(context, _fileDownload(req));
   }
 
   Future<PermissionResponse?> _onPermissionRequest(InAppWebViewController ctr, PermissionRequest req) async{
@@ -252,7 +251,7 @@ class _WebViewPageState extends State<WebViewPage> {
         if(mounted) OverlayController.of(context).showIndicator(context, openURL(url));
         return NavigationActionPolicy.CANCEL;
       } else if(_allowFiles.any((type) => url.endsWith(".$type"))){
-        return _fileDownload(url);
+        return NavigationActionPolicy.DOWNLOAD;
       } else {
         return NavigationActionPolicy.ALLOW;
       }
@@ -396,19 +395,15 @@ class _WebViewPageState extends State<WebViewPage> {
     }
   }
 
-  Future<NavigationActionPolicy> _fileDownload(String? url) async {
-    if(url != null) {
-      final Uri uri = Uri.parse(url);
-      final http.Response res = await http.get(uri);
-      final Directory directory = await getApplicationDocumentsDirectory();
-      final String filePath = "${directory.path}/${url.split("/").last}";
-      final File file = File(filePath);
-      if(!(await File(filePath).exists())) await file.writeAsBytes(res.bodyBytes.buffer.asUint8List());
-      OpenFilex.open(filePath);
-      return NavigationActionPolicy.CANCEL;
-    } else {
-      return NavigationActionPolicy.CANCEL;
-    }
+  Future<void> _fileDownload(DownloadStartRequest req) async {
+    final String filename = req.suggestedFilename ?? DateTime.now().microsecondsSinceEpoch.toString();
+
+    final Directory directory = await getApplicationDocumentsDirectory();
+    final String filePath = "${directory.path}/$filename";
+    final File file = File(filePath);
+    final http.Response res = await http.get(req.url);
+    if(!(await File(filePath).exists())) await file.writeAsBytes(res.bodyBytes.buffer.asUint8List());
+    await OpenFilex.open(file.path);
   }
 
   Future<void> clearHistory() async{
