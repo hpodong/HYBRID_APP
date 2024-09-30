@@ -128,7 +128,9 @@ class _WebViewPageState extends State<WebViewPage> {
     final InAppWebViewController webViewCtr = InAppWebController.of(context).webViewCtr;
     final bool canGoBack = await webViewCtr.canGoBack();
 
-    if(canGoBack) {
+    if(mounted && OverlayController.of(context).entry != null) {
+      OverlayController.of(context).remove();
+    } else if(canGoBack) {
       _canClose = false;
       setState((){});
       await webViewCtr.goBack();

@@ -1,5 +1,3 @@
-import 'package:flutter/foundation.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 
@@ -23,7 +21,9 @@ class _WindowPopupPageState extends State<WindowPopupPage> {
   late final OverlayController _overlayCtr = OverlayController.of(context);
 
   Future<void> _onPopInvokedWithResult(bool canPop, dynamic result) async{
-    if(await _controller?.canGoBack() == true) {
+    if(mounted && OverlayController.of(context).entry != null) {
+      OverlayController.of(context).remove();
+    } else if(await _controller?.canGoBack() == true) {
       await _controller?.goBack();
     } else {
       if(mounted && Navigator.canPop(context)) Navigator.pop(context);
