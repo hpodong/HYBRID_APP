@@ -111,6 +111,7 @@ class _WebViewPageState extends State<WebViewPage> {
     allowFileAccessFromFileURLs: true,
     useHybridComposition: true,
     domStorageEnabled: true,
+    underPageBackgroundColor: Colors.white,
     cacheMode: CacheMode.LOAD_DEFAULT,
     cacheEnabled: true,
     allowFileAccess: true,
@@ -166,7 +167,6 @@ class _WebViewPageState extends State<WebViewPage> {
     return SafeArea(
       child: InAppWebView(
         shouldOverrideUrlLoading: _shouldOverrideUrlLoading,
-
         onConsoleMessage: _onConsoleMessage,
         onDownloadStartRequest: _onDownloadStartRequest,
         onCreateWindow: _onCreateWindow,

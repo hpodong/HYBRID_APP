@@ -46,6 +46,7 @@ class _WindowPopupPageState extends State<WindowPopupPage> {
       onPopInvokedWithResult: _onPopInvokedWithResult,
       child: Scaffold(
         appBar: AppBar(
+          backgroundColor: Colors.white,
           elevation: 1,
           centerTitle: false,
           automaticallyImplyLeading: false,
@@ -68,6 +69,7 @@ class _WindowPopupPageState extends State<WindowPopupPage> {
               cacheMode: CacheMode.LOAD_DEFAULT,
               useShouldOverrideUrlLoading: true,
               cacheEnabled: true,
+              underPageBackgroundColor: Colors.white,
               domStorageEnabled: true,
               allowsBackForwardNavigationGestures: true,
             ),
