@@ -86,17 +86,17 @@ class _WebViewPageState extends State<WebViewPage> {
       _overlayCtr.showOverlayWidget(context, (context) => _buildSplash(context));
       if(mounted) await NotificationController.of(context).initialFcmToken();
       if(mounted) await DeviceController.of(context).getDeviceInfo();
+      if(mounted) await _setInitialData();
       if(mounted) await VersionController.of(context).getVersion(context);
-      /*permissionCheck([
-        Permission.mediaLibrary,
-        Permission.photos,
-        Permission.camera,
-        Permission.microphone,
-        Permission.videos,
-        Permission.storage,
-        Permission.manageExternalStorage,
-      ]);*/
     });
+  }
+
+  Future<void> _setInitialData() async {
+    final String? fcmToken = _notificationCtr.fcmToken;
+    final String? deviceId = _deviceCtr.deviceId;
+    final DateTime expiredAt = DateTime.now().add(const Duration(days: 365));
+    if(fcmToken != null) await _inAppWebCtr.setCookie("FCM_TOKEN", fcmToken, expiredAt: expiredAt);
+    if(deviceId != null) await _inAppWebCtr.setCookie("DEVICE_ID", deviceId, expiredAt: expiredAt);
   }
 
   final InAppWebViewSettings _webViewSettings = InAppWebViewSettings(
@@ -261,21 +261,7 @@ class _WebViewPageState extends State<WebViewPage> {
   }
 
   void _onWebViewCreated(InAppWebViewController ctr) async{
-
     _inAppWebCtr.webViewCtr = ctr;
-
-    final String? fcmToken = _notificationCtr.fcmToken;
-    final String? deviceId = _deviceCtr.deviceId;
-    final DateTime expiredAt = DateTime.now().add(const Duration(days: 365));
-    if(fcmToken != null) _setCookie("FCM_TOKEN", fcmToken, expiredAt: expiredAt);
-    if(deviceId != null) _setCookie("DEVICE_ID", deviceId, expiredAt: expiredAt);
-  }
-
-  Future<void> _setCookie(String name, String value, {
-    DateTime? expiredAt
-  }) async {
-    final CookieManager cm = CookieManager.instance();
-    await cm.setCookie(url: WebUri.uri(Uri.parse(Config.instance.getUrl())), name: "FCM_TOKEN", value: value, expiresDate: expiredAt?.millisecondsSinceEpoch);
   }
 
   void _onLoadStart(InAppWebViewController ctr, Uri? uri) async{
