@@ -261,15 +261,21 @@ class _WebViewPageState extends State<WebViewPage> {
   }
 
   void _onWebViewCreated(InAppWebViewController ctr) async{
-    String javascriptCode = "";
-    /*for(final MapEntry<String, dynamic> map in _initialHeader.entries) {
-      javascriptCode += "sessionStorage.setItem('${map.key}', '${map.value}');\n";
-    }*/
-    // javascriptCode = "setCookieWeb('fcmToken', '${NotificationController.of(context).fcmToken}');";
 
-    _inAppWebCtr.webViewCtr = ctr
-      ..evaluateJavascript(source: javascriptCode)
-      ..reload();
+    _inAppWebCtr.webViewCtr = ctr;
+
+    final String? fcmToken = _notificationCtr.fcmToken;
+    final String? deviceId = _deviceCtr.deviceId;
+    final DateTime expiredAt = DateTime.now().add(const Duration(days: 365));
+    if(fcmToken != null) _setCookie("FCM_TOKEN", fcmToken, expiredAt: expiredAt);
+    if(deviceId != null) _setCookie("DEVICE_ID", deviceId, expiredAt: expiredAt);
+  }
+
+  Future<void> _setCookie(String name, String value, {
+    DateTime? expiredAt
+  }) async {
+    final CookieManager cm = CookieManager.instance();
+    await cm.setCookie(url: WebUri.uri(Uri.parse(Config.instance.getUrl())), name: "FCM_TOKEN", value: value, expiresDate: expiredAt?.millisecondsSinceEpoch);
   }
 
   void _onLoadStart(InAppWebViewController ctr, Uri? uri) async{
