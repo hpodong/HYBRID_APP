@@ -31,7 +31,7 @@ dependencies:
   uni_links: ^0.5.1
   google_sign_in: ^6.2.1
   sign_in_with_apple: ^6.1.2
-  flutter_naver_login: ^1.8.0
+  flutter_naver_login_plus: ^1.0.2
   android_id: ^0.4.0
 
 dev_dependencies:

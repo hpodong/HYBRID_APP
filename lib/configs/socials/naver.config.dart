@@ -1,4 +1,4 @@
-import 'package:flutter_naver_login/flutter_naver_login.dart';
+import 'package:flutter_naver_login_plus/flutter_naver_login_plus.dart';
 
 import '../../utills/common.dart';
 
@@ -19,12 +19,12 @@ class NaverConfig {
   });
 
   Future<void> logout() async{
-    final NaverAccessToken token = await FlutterNaverLogin.currentAccessToken;
-    if(token.accessToken.isNotEmpty) await FlutterNaverLogin.logOut();
+    final NaverAccessToken token = await FlutterNaverLoginPlus.currentAccessToken;
+    if(token.accessToken.isNotEmpty) await FlutterNaverLoginPlus.logOut();
   }
 
   Future<NaverAccountResult?> _login() async{
-    final NaverLoginResult result = await FlutterNaverLogin.logIn();
+    final NaverLoginResult result = await FlutterNaverLoginPlus.logIn();
     log("NAVER LOGIN STATUS: ${result.status}");
     switch(result.status) {
       case NaverLoginStatus.error :
@@ -36,7 +36,7 @@ class NaverConfig {
   }
 
   Future<NaverAccountResult?> get _currentAccount async{
-    final NaverAccountResult user = await FlutterNaverLogin.currentAccount();
+    final NaverAccountResult user = await FlutterNaverLoginPlus.currentAccount();
     if(user.id.isEmpty) {
       return null;
     } else {
@@ -44,9 +44,9 @@ class NaverConfig {
     }
   }
 
-  Future<NaverAccessToken> get _currentToken => FlutterNaverLogin.currentAccessToken;
+  Future<NaverAccessToken> get _currentToken => FlutterNaverLoginPlus.currentAccessToken;
 
-  Future<NaverAccountResult?> get _refreshToken => FlutterNaverLogin.refreshAccessTokenWithRefreshToken()
+  Future<NaverAccountResult?> get _refreshToken => FlutterNaverLoginPlus.refreshAccessTokenWithRefreshToken()
       .then((tokens) => login(refreshTokens: tokens));
 
   bool _tokenValidator(String expiresAt){
