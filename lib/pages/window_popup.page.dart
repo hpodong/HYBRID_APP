@@ -61,6 +61,7 @@ class _WindowPopupPageState extends State<WindowPopupPage> {
         ),
         body: SafeArea(
           child: InAppWebView(
+            keepAlive: InAppWebViewKeepAlive(),
             windowId: widget.action.windowId,
             initialSettings: InAppWebViewSettings(
               applicationNameForUserAgent: USERAGENT,

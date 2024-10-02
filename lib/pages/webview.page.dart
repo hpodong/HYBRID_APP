@@ -169,6 +169,7 @@ class _WebViewPageState extends State<WebViewPage> {
     return SafeArea(
       child: InAppWebView(
         shouldOverrideUrlLoading: _shouldOverrideUrlLoading,
+        keepAlive: InAppWebViewKeepAlive(),
         onConsoleMessage: _onConsoleMessage,
         onDownloadStartRequest: _onDownloadStartRequest,
         onCreateWindow: _onCreateWindow,
