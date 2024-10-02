@@ -20,7 +20,7 @@ class NaverConfig {
 
   Future<void> logout() async{
     final NaverAccessToken token = await FlutterNaverLoginPlus.currentAccessToken;
-    if(token.accessToken.isNotEmpty) await FlutterNaverLoginPlus.logOut();
+    if(token.accessToken.isNotEmpty) await FlutterNaverLoginPlus.logOutAndDeleteToken();
   }
 
   Future<NaverAccountResult?> _login() async{
