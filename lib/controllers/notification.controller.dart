@@ -12,7 +12,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../configs/config/config.dart';
 import '../utills/common.dart';
 import '../utills/enums.dart';
-import 'inapp-web.controller.dart';
 
 class NotificationController extends ChangeNotifier{
 
@@ -89,7 +88,7 @@ class NotificationController extends ChangeNotifier{
         ?.createNotificationChannel(channel);
   }
 
-  Future<void> firebasePushListener(BuildContext context) async{
+  Future<void> firebasePushListener(InAppWebViewController? ctr) async{
     log("LISTENING FIREBASE PUSH");
     final NotificationSettings settings = await _fcm.requestPermission(
         alert: true,
@@ -101,22 +100,22 @@ class NotificationController extends ChangeNotifier{
     switch(settings.authorizationStatus) {
       case AuthorizationStatus.authorized:
         _localNotifications.initialize(_settings,
-            onDidReceiveNotificationResponse: (res) => _onTapNotification(context, res.payload)
+            onDidReceiveNotificationResponse: (res) => _onTapNotification(ctr, res.payload)
         );
         desc = '허용됨';
         final NotificationAppLaunchDetails? details = await _localNotifications.getNotificationAppLaunchDetails();
-        if(details?.didNotificationLaunchApp == true && context.mounted) {
-          _onTapNotification(context, details?.notificationResponse?.payload);
+        if(details?.didNotificationLaunchApp == true) {
+          _onTapNotification(ctr, details?.notificationResponse?.payload);
         }
         final RemoteMessage? message = await FirebaseMessaging.instance.getInitialMessage();
-        if(message != null && context.mounted) {
-          _onTapNotification(context, message.data.isEmpty ? null : jsonEncode(message.data));
+        if(message != null) {
+          _onTapNotification(ctr, message.data.isEmpty ? null : jsonEncode(message.data));
         }
         FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-          if(context.mounted) _notificationHandler(context, message);
+          _notificationHandler(message);
         });
         FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-          if(context.mounted) _onTapNotification(context, message.data.isEmpty ? "" : jsonEncode(message.data));
+          _onTapNotification(ctr, message.data.isEmpty ? "" : jsonEncode(message.data));
         });
         break;
       case AuthorizationStatus.denied:
@@ -131,7 +130,7 @@ class NotificationController extends ChangeNotifier{
     log("알림 액세스: $desc");
   }
 
-  void _notificationHandler(BuildContext context, RemoteMessage rm) async{
+  void _notificationHandler(RemoteMessage rm) async{
 
     final RemoteNotification? notification = rm.notification;
     final AndroidNotification? android = notification?.android;
@@ -173,7 +172,7 @@ class NotificationController extends ChangeNotifier{
     await FlutterAppBadger.updateBadgeCount(notifications.length);
   }
 
-  void _onTapNotification(BuildContext context, String? payload) async{
+  void _onTapNotification(InAppWebViewController? ctr, String? payload) async{
     log('payload: $payload');
     await _updateBadge();
     if(payload != null && payload.isNotEmpty){
@@ -181,7 +180,7 @@ class NotificationController extends ChangeNotifier{
       final String? url = json['url'];
       if(url != null && url.isNotEmpty) {
         final Uri uri = Uri.parse(url);
-        if(context.mounted) await InAppWebController.of(context).webViewCtr.loadUrl(urlRequest: URLRequest(url: WebUri(url), body: utf8.encode(jsonEncode(uri.queryParameters))));
+        await ctr?.loadUrl(urlRequest: URLRequest(url: WebUri(url), body: utf8.encode(jsonEncode(uri.queryParameters))));
       }
     }
   }

@@ -287,7 +287,7 @@ class _WebViewPageState extends State<WebViewPage> {
     if(!_inAppWebCtr.firstLoad && _versionController.isChecked) {
       _overlayCtr.remove();
       _inAppWebCtr.firstLoad = true;
-      if(mounted) await _notificationCtr.firebasePushListener(context);
+      if(mounted) await _notificationCtr.firebasePushListener(_inAppWebCtr.webViewCtr);
       _deepLinkListener();
     }
 
