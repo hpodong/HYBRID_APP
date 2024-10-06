@@ -127,7 +127,7 @@ class NotificationController extends ChangeNotifier{
       case AuthorizationStatus.provisional:
         desc = '임시로 허용됨';
     }
-    log("알림 액세스: $desc");
+    log(desc, title: "알림 액세스");
   }
 
   void _notificationHandler(RemoteMessage rm) async{
@@ -159,7 +159,7 @@ class NotificationController extends ChangeNotifier{
         iOS: iosDetails
     );
 
-    log('message: ${rm.data}');
+    log(rm.data, title: "MESSAGE");
 
     if(notification != null && android != null) {
       await _localNotifications.show(notification.hashCode, notification.title, notification.body, notificationDetails, payload: rm.data.isEmpty ? null : jsonEncode(rm.data));
@@ -173,7 +173,7 @@ class NotificationController extends ChangeNotifier{
   }
 
   void _onTapNotification(InAppWebViewController? ctr, String? payload) async{
-    log('payload: $payload');
+    log(payload, title: "PAYLOAD");
     await _updateBadge();
     if(payload != null && payload.isNotEmpty){
       final Map<String, dynamic> json = jsonDecode(payload);
