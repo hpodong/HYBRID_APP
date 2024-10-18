@@ -179,6 +179,7 @@ class _WebViewPageState extends State<WebViewPage> {
         onPermissionRequest: _onPermissionRequest,
         onReceivedHttpError: _onReceivedHttpError,
         onReceivedError: _onReceivedError,
+        onWebContentProcessDidTerminate: _onWebContentProcessDidTerminate,
         initialUrlRequest: widget.request ?? URLRequest(
           url: WebUri(Config.instance.getUrl()),
         ),
@@ -202,6 +203,10 @@ class _WebViewPageState extends State<WebViewPage> {
         ),
       ),
     );
+  }
+
+  void _onWebContentProcessDidTerminate(InAppWebViewController ctr) {
+    ctr.reload();
   }
 
   void _onReceivedHttpError(InAppWebViewController ctr, WebResourceRequest req, WebResourceResponse res) {
