@@ -33,15 +33,16 @@ class OverlayController extends ChangeNotifier {
     if(entry != null) overlayState.insert(entry!);
 
     return future.then((result) {
-      remove();
       return result;
     }).catchError((error) {
-      remove();
       throw Exception(error);
+    }).whenComplete(() {
+      remove();
     });
   }
 
   void showOverlayWidget(BuildContext context, Widget Function(BuildContext) builder) {
+    remove();
 
     entry = OverlayEntry(builder: builder);
 

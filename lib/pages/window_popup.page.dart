@@ -21,8 +21,8 @@ class _WindowPopupPageState extends State<WindowPopupPage> {
   late final OverlayController _overlayCtr = OverlayController.of(context);
 
   Future<void> _onPopInvokedWithResult(bool canPop, dynamic result) async{
-    if(mounted && OverlayController.of(context).entry != null) {
-      OverlayController.of(context).remove();
+    if(mounted && _overlayCtr.entry != null) {
+      _overlayCtr.remove();
     } else if(await _controller?.canGoBack() == true) {
       await _controller?.goBack();
     } else {
@@ -30,9 +30,8 @@ class _WindowPopupPageState extends State<WindowPopupPage> {
     }
   }
 
-  Future<void> _onWebViewCreated(InAppWebViewController controller) async{
-    /*await controller.loadUrl(urlRequest: widget.action.request);*/
-    setState(() => _controller = controller);
+  void _onWebViewCreated(InAppWebViewController controller){
+    _controller = controller;
   }
 
   Future<void> _onCloseWindow(InAppWebViewController controller) async {
@@ -80,6 +79,7 @@ class _WindowPopupPageState extends State<WindowPopupPage> {
             onLoadStart: (ctr, uri) {
               _overlayCtr.show(context);
             },
+            onWebContentProcessDidTerminate: _onWebContentProcessDidTerminate,
             onLoadStop: (ctr, uri) => _overlayCtr.remove(),
             onReceivedHttpError: (ctr, req, err) => _overlayCtr.remove(),
             onReceivedError: (ctr, req, err) => _overlayCtr.remove(),
@@ -90,13 +90,17 @@ class _WindowPopupPageState extends State<WindowPopupPage> {
     );
   }
 
+  void _onWebContentProcessDidTerminate(InAppWebViewController ctr) {
+    ctr.reload();
+  }
+
   Future<NavigationActionPolicy?> _shouldOverrideUrlLoading(InAppWebViewController ctr, NavigationAction action) async {
     final WebUri? webUri = action.request.url;
 
     if(webUri != null) {
       final String url = webUri.toString();
       if(!webUri.scheme.startsWith("http")){
-        if(mounted) OverlayController.of(context).showIndicator(context, openURL(url));
+        if(mounted) _overlayCtr.showIndicator(context, openURL(url));
         return NavigationActionPolicy.CANCEL;
       } else {
         return NavigationActionPolicy.ALLOW;

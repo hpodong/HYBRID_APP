@@ -16,7 +16,6 @@ import '../configs/socials/apple.config.dart';
 import '../configs/socials/kakao.config.dart';
 import '../configs/socials/naver.config.dart';
 import '../controllers/device.controller.dart';
-import '../controllers/inapp-web.controller.dart';
 import '../controllers/notification.controller.dart';
 import '../controllers/overlay.controller.dart';
 import 'package:http/http.dart' as http;
@@ -40,11 +39,14 @@ class WebViewPage extends StatefulWidget {
 
 class _WebViewPageState extends State<WebViewPage> {
 
+  bool _loadCompleted = false;
+
   late final DeviceController _deviceCtr = DeviceController.of(context);
   late final OverlayController _overlayCtr = OverlayController.of(context);
-  late final InAppWebController _inAppWebCtr = InAppWebController.of(context);
   late final NotificationController _notificationCtr = NotificationController.of(context);
   late final VersionController _versionController = VersionController.of(context);
+
+  InAppWebViewController? _controller;
 
   Future<void> _deepLinkListener() async{
     final Uri? initUri = await getInitialUri();
@@ -56,7 +58,7 @@ class _WebViewPageState extends State<WebViewPage> {
     if(event != null) {
       log("DEEP LINK: ${event.toString()}");
       final String? url = event.queryParameters["url"];
-      if(url != null) await _inAppWebCtr.webViewCtr.loadUrl(urlRequest: URLRequest(url: WebUri.uri(Uri.parse(url))));
+      if(url != null) await _controller?.loadUrl(urlRequest: URLRequest(url: WebUri.uri(Uri.parse(url))));
     }
   }
 
@@ -72,6 +74,9 @@ class _WebViewPageState extends State<WebViewPage> {
   ];
 
   final List<String> _allowFiles = <String>[
+    "png",
+    "jpg",
+    "jpeg",
     "pdf",
     "hwp",
     "docx",
@@ -94,9 +99,11 @@ class _WebViewPageState extends State<WebViewPage> {
   Future<void> _setInitialData() async {
     final String? fcmToken = _notificationCtr.fcmToken;
     final String? deviceId = _deviceCtr.deviceId;
+    final String? version = _versionController.info?.version;
     final DateTime expiredAt = DateTime.now().add(const Duration(days: 365));
-    if(fcmToken != null) await _inAppWebCtr.setCookie("FCM_TOKEN", fcmToken, expiredAt: expiredAt);
-    if(deviceId != null) await _inAppWebCtr.setCookie("DEVICE_ID", deviceId, expiredAt: expiredAt);
+    if(fcmToken != null) await _setCookie("FCM_TOKEN", fcmToken, expiredAt: expiredAt);
+    if(deviceId != null) await _setCookie("DEVICE_ID", deviceId, expiredAt: expiredAt);
+    if(version != null) await _setCookie("APP_VERSION", version, expiredAt: expiredAt);
   }
 
   final InAppWebViewSettings _webViewSettings = InAppWebViewSettings(
@@ -125,15 +132,14 @@ class _WebViewPageState extends State<WebViewPage> {
   bool _canClose = false;
 
   Future<void> _onWillPop(bool didPop, dynamic data) async{
-    final InAppWebViewController webViewCtr = InAppWebController.of(context).webViewCtr;
-    final bool canGoBack = await webViewCtr.canGoBack();
+    final bool? canGoBack = await _controller?.canGoBack();
 
-    if(mounted && OverlayController.of(context).entry != null) {
-      OverlayController.of(context).remove();
-    } else if(canGoBack) {
+    if(mounted && _overlayCtr.entry != null) {
+      _overlayCtr.remove();
+    } else if(canGoBack == true) {
       _canClose = false;
       setState((){});
-      await webViewCtr.goBack();
+      await _controller?.goBack();
     } else {
       _closeTimer?.cancel();
       if(_canClose) exit(1);
@@ -181,7 +187,7 @@ class _WebViewPageState extends State<WebViewPage> {
         onReceivedError: _onReceivedError,
         onWebContentProcessDidTerminate: _onWebContentProcessDidTerminate,
         initialUrlRequest: widget.request ?? URLRequest(
-          url: WebUri(Config.instance.getUrl()),
+          url: WebUri(Config.instance.getUrl(INITIAL_PATH)),
         ),
         initialSettings: _webViewSettings,
       ),
@@ -210,11 +216,11 @@ class _WebViewPageState extends State<WebViewPage> {
   }
 
   void _onReceivedHttpError(InAppWebViewController ctr, WebResourceRequest req, WebResourceResponse res) {
-    OverlayController.of(context).remove();
+    _overlayCtr.remove();
   }
 
   void _onReceivedError(InAppWebViewController ctr, WebResourceRequest req, WebResourceError err) {
-    OverlayController.of(context).remove();
+    _overlayCtr.remove();
   }
 
   void _onDownloadStartRequest(InAppWebViewController ctr, DownloadStartRequest req) {
@@ -253,8 +259,8 @@ class _WebViewPageState extends State<WebViewPage> {
         await ka.logout();
       }
 
-      if(!webUri.scheme.startsWith("http")/* || !_allowHosts.any((ah) => host == ah)*/){
-        if(mounted) OverlayController.of(context).showIndicator(context, openURL(url));
+      if((!webUri.isScheme("http") && !webUri.isScheme("https")) || !_allowHosts.any((ah) => host == ah)){
+        if(mounted) await openURL(url);
         return NavigationActionPolicy.CANCEL;
       } else if(_allowFiles.any((type) => url.endsWith(".$type"))){
         return NavigationActionPolicy.DOWNLOAD;
@@ -266,33 +272,29 @@ class _WebViewPageState extends State<WebViewPage> {
     }
   }
 
-  void _onWebViewCreated(InAppWebViewController ctr) async{
-    _inAppWebCtr.webViewCtr = ctr;
+  void _onWebViewCreated(InAppWebViewController ctr) {
+    _controller = ctr;
   }
 
   void _onLoadStart(InAppWebViewController ctr, Uri? uri) async{
-    log("CURRENT_URI = $uri");
+    log(uri, title: "CURRENT_URL");
     final String? path = uri?.path;
-    if(path != null) {
-      if(path.startsWith("/index.php") || path == "/") await clearHistory();
-    }
-    if(_inAppWebCtr.firstLoad && mounted) {
-      if(IS_SHOW_OVERLAY) {
-        final bool canGoForward = await _inAppWebCtr.webViewCtr.canGoForward();
-        if(!canGoForward && mounted) _overlayCtr.show(context);
-      }
+    if(mounted && INITIAL_PATH == path) await clearHistory();
+
+    if(mounted && !_loadCompleted) {
+      _overlayCtr.showOverlayWidget(context, _buildSplash);
+    } else if(mounted) {
+      _overlayCtr.show(context);
     }
   }
 
   void _onLoadStop(InAppWebViewController ctr, Uri? uri) async{
-    if(IS_SHOW_OVERLAY) {
-      final bool canGoForward = await _inAppWebCtr.webViewCtr.canGoForward();
-      if(!canGoForward && mounted) _overlayCtr.remove();
-    }
-    if(!_inAppWebCtr.firstLoad && _versionController.isChecked) {
+    if(IS_SHOW_OVERLAY && _loadCompleted) _overlayCtr.remove();
+
+    if(!_loadCompleted && _versionController.isChecked) {
       _overlayCtr.remove();
-      _inAppWebCtr.firstLoad = true;
-      if(mounted) await _notificationCtr.firebasePushListener(_inAppWebCtr.webViewCtr);
+      _loadCompleted = true;
+      if(mounted) await _notificationCtr.firebasePushListener(_controller);
       _deepLinkListener();
     }
 
@@ -303,21 +305,14 @@ class _WebViewPageState extends State<WebViewPage> {
       document.getElementById('deviceId').value = '${_deviceCtr.deviceId}';
       """);
     }
-    if(uri?.path.startsWith("/dashboard") == true) {
-      log(uri?.path);
-      ctr.evaluateJavascript(source: """
-      \$\('#app_version').text('${_versionController.info?.version}');
-      """);
-    }
   }
 
   void _onConsoleMessage(InAppWebViewController ctr, ConsoleMessage cm) async{
     final String msg = cm.message;
     switch(msg) {
-      case "kakao_login": return OverlayController.of(context).showIndicator(context, _kakaoLogin());
-      case "naver_login": return OverlayController.of(context).showIndicator(context, _naverLogin());
-      case "apple_login": return OverlayController.of(context).showIndicator(context, _appleLogin());
-
+      case "kakao_login": return _overlayCtr.showIndicator(context, _kakaoLogin());
+      case "naver_login": return _overlayCtr.showIndicator(context, _naverLogin());
+      case "apple_login": return _overlayCtr.showIndicator(context, _appleLogin());
     }
     log(msg);
   }
@@ -327,21 +322,7 @@ class _WebViewPageState extends State<WebViewPage> {
     final User? user = await kc.login();
     log(user, title: "USER");
     if(user != null) {
-      final String script = """
-      email = '${user.kakaoAccount?.email}';
-      phone = '${user.kakaoAccount?.phoneNumber?.replaceAll("+82 10", "010")}';
-      name = '${user.kakaoAccount?.name}';
-      item = 'kakao';
-      
-      oPBP.setValue('item',item);
-      oPBP.setValue('view','CheckApiLogin');
-      oPBP.setValue('email', '${user.kakaoAccount?.email}');
-      oPBP.setValue('fcmToken', '${NotificationController.of(context).fcmToken}');
-      oPBP.setValue('deviceId', '${DeviceController.of(context).deviceId}');
-      oPBP.doSubmit('login.php', OnFinishedLogin);
-      """;
-      log(script);
-      await _inAppWebCtr.webViewCtr.evaluateJavascript(source: script);
+
     }
   }
 
@@ -353,20 +334,6 @@ class _WebViewPageState extends State<WebViewPage> {
       if(user.familyName != null && user.givenName != null) {
         name = "${user.familyName}${user.givenName}";
       }
-      final String script = """
-      email = '${user.userIdentifier}';
-      name = '$name';
-      item = 'apple';
-      
-      oPBP.setValue('item',item);
-      oPBP.setValue('view','CheckApiLogin');
-      oPBP.setValue('email', '${user.userIdentifier}');
-      oPBP.setValue('fmcToken', '${NotificationController.of(context).fcmToken}');
-      oPBP.setValue('deviceId', '${DeviceController.of(context).deviceId}');
-      oPBP.doSubmit('login.php', OnFinishedLogin);
-      """;
-      log(script);
-      await _inAppWebCtr.webViewCtr.evaluateJavascript(source: script);
     }
   }
 
@@ -375,21 +342,7 @@ class _WebViewPageState extends State<WebViewPage> {
     final NaverAccountResult? user = await nc.login();
 
     if(user != null && mounted) {
-      final String script = """
-      email = '${user.email}';
-      phone = '${user.mobile.replaceAll("+82 10", "010")}';
-      name = '${user.name}';
-      item = 'naver';
-      
-      oPBP.setValue('item',item);
-      oPBP.setValue('view','CheckApiLogin');
-      oPBP.setValue('email', '${user.email}');
-      oPBP.setValue('fcmToken', '${NotificationController.of(context).fcmToken}');
-      oPBP.setValue('deviceId', '${DeviceController.of(context).deviceId}');
-      oPBP.doSubmit('login.php', OnFinishedLogin);
-      """;
-      log(script);
-      await _inAppWebCtr.webViewCtr.evaluateJavascript(source: script);
+
     }
   }
 
@@ -406,8 +359,16 @@ class _WebViewPageState extends State<WebViewPage> {
 
   Future<void> clearHistory() async{
     try {
-      await _inAppWebCtr.webViewCtr.clearHistory();
+      log("CLEAR HISTORY");
+      await _controller?.clearHistory();
     } catch(ignore){
     }
+  }
+
+  Future<void> _setCookie(String name, String value, {
+    DateTime? expiredAt
+  }) async {
+    final CookieManager cm = CookieManager.instance();
+    await cm.setCookie(url: WebUri.uri(Uri.parse(Config.instance.getUrl())), name: name, value: value, expiresDate: expiredAt?.millisecondsSinceEpoch);
   }
 }

@@ -21,6 +21,9 @@ final String KAKAO_JAVASCRIPT_APP_KEY = dotenv.get('KAKAO_JAVASCRIPT_APP_KEY');
 final String SPLASH_IMAGE = dotenv.get('SPLASH_IMAGE');
 final String APPLE_CLIENT_ID = dotenv.get('APPLE_CLIENT_ID');
 final String APPLE_LOGIN_CALLBACK = dotenv.get('APPLE_LOGIN_CALLBACK');
+final String INITIAL_PATH = dotenv.get('INITIAL_PATH');
+
+final bool VERSION_CHECK = bool.parse(dotenv.get('VERSION_CHECK'));
 final bool IS_SHOW_OVERLAY = bool.parse(dotenv.get('IS_SHOW_OVERLAY'));
 
 String get USERAGENT => Platform.isAndroid ? "${_USERAGENT}_ANDROID" : "${_USERAGENT}_IOS";
@@ -61,11 +64,12 @@ class Config {
     };
   }
 
-  String getUrl() {
+  String getUrl([String? add_path]) {
     String url = "http://";
     if(USE_SSL) url = "https://";
     url += HOST_NAME;
     if(!USE_SSL) url += ":$PORT";
+    if(add_path != null) url += add_path;
     return url;
   }
 }

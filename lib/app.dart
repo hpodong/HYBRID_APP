@@ -4,7 +4,6 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:provider/single_child_widget.dart';
 import 'controllers/device.controller.dart';
-import 'controllers/inapp-web.controller.dart';
 import 'controllers/notification.controller.dart';
 import 'controllers/overlay.controller.dart';
 import 'controllers/version.controller.dart';
@@ -23,7 +22,6 @@ class App extends StatelessWidget {
     ChangeNotifierProvider(create: (_) => NotificationController()),
     ChangeNotifierProvider(create: (_) => DeviceController()),
     ChangeNotifierProvider(create: (_) => OverlayController()),
-    ChangeNotifierProvider(create: (_) => InAppWebController()),
   ];
 
   @override

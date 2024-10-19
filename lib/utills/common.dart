@@ -105,6 +105,7 @@ void log(dynamic message, {
 Future<void> openURL(String url) async {
   final bool canLaunch = await canLaunchUrlString(url);
   final Uri uri = Uri.parse(url);
+  log(url, title: "OPEN URL");
   if(Platform.isIOS) {
     if (canLaunch) await launchUrl(uri);
   } else {
