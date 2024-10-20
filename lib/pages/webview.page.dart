@@ -220,6 +220,11 @@ class _WebViewPageState extends State<WebViewPage> {
   }
 
   void _onReceivedError(InAppWebViewController ctr, WebResourceRequest req, WebResourceError err) {
+    log(err, title: "ERROR");
+    final WebResourceErrorType type = err.type;
+    if(type == WebResourceErrorType.NOT_CONNECTED_TO_INTERNET) {
+      showToast("인터넷 연결이 필요합니다.");
+    }
     _overlayCtr.remove();
   }
 
