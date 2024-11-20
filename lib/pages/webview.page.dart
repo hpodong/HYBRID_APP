@@ -125,6 +125,7 @@ class _WebViewPageState extends State<WebViewPage> {
     allowContentAccess: true,
     mediaPlaybackRequiresUserGesture: true,
     allowsBackForwardNavigationGestures: true,
+    supportZoom: false
   );
 
   Timer? _closeTimer;

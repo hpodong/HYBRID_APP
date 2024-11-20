@@ -36,12 +36,12 @@ class DeviceController extends ChangeNotifier{
     if(Platform.isAndroid) {
       const AndroidId androidId = AndroidId();
       deviceId = await androidId.getId();
-      infoPlugin.androidInfo.then((info) {
+      await infoPlugin.androidInfo.then((info) {
         deviceCode = 'ANDROID';
         deviceType = 'PHONE';
       });
     } else {
-      infoPlugin.iosInfo.then((info) {
+      await infoPlugin.iosInfo.then((info) {
         deviceId = info.identifierForVendor;
         deviceCode = 'IOS';
         deviceType = 'PHONE';
