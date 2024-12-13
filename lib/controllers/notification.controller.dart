@@ -51,8 +51,13 @@ class NotificationController extends ChangeNotifier{
     fcmToken = spf.getString(TokenType.fcmToken.name);
     if(fcmToken == null) {
       try {
-        final String? token = await _fcm.getToken();
-        if(token != null) _setFcmToken(token);
+        if(Platform.isAndroid) {
+          final String? token = await _fcm.getToken();
+          if(token != null) _setFcmToken(token);
+        } else {
+          final String? token = await _fcm.getAPNSToken();
+          if(token != null) _setFcmToken(token);
+        }
       } catch (e) {
         await initialFcmToken();
       }
