@@ -30,8 +30,9 @@ class _WindowPopupPageState extends State<WindowPopupPage> {
     }
   }
 
-  void _onWebViewCreated(InAppWebViewController controller){
-    _controller = controller;
+  Future<void> _onWebViewCreated(InAppWebViewController controller) async{
+    /*await controller.loadUrl(urlRequest: widget.action.request);*/
+    setState(() => _controller = controller);
   }
 
   Future<void> _onCloseWindow(InAppWebViewController controller) async {
@@ -47,14 +48,13 @@ class _WindowPopupPageState extends State<WindowPopupPage> {
         appBar: AppBar(
           backgroundColor: Colors.white,
           elevation: 1,
-          centerTitle: false,
+          centerTitle: true,
           automaticallyImplyLeading: false,
           title: Text(_title ?? ""),
+          titleTextStyle: TextStyle(fontWeight: FontWeight.bold, color: Colors.black, fontSize: 16),
           actions: [
             CloseButton(
-              onPressed: () {
-                if(Navigator.canPop(context)) Navigator.pop(context);
-              },
+                onPressed: _closeWindow
             )
           ],
         ),
@@ -65,21 +65,28 @@ class _WindowPopupPageState extends State<WindowPopupPage> {
             initialSettings: InAppWebViewSettings(
               applicationNameForUserAgent: USERAGENT,
               javaScriptEnabled: true,
-              useHybridComposition: true,
-              cacheMode: CacheMode.LOAD_DEFAULT,
+              javaScriptCanOpenWindowsAutomatically: true,
+              supportMultipleWindows: true,
+              iframeAllowFullscreen: true,
+              useOnDownloadStart: true,
               useShouldOverrideUrlLoading: true,
-              cacheEnabled: true,
-              underPageBackgroundColor: Colors.white,
+              allowFileAccessFromFileURLs: true,
+              useHybridComposition: true,
               domStorageEnabled: true,
+              underPageBackgroundColor: Colors.white,
+              cacheMode: CacheMode.LOAD_DEFAULT,
+              cacheEnabled: true,
+              mediaPlaybackRequiresUserGesture: true,
               allowsBackForwardNavigationGestures: true,
             ),
-            onTitleChanged: (ctr, title) => setState(() => _title = title),
+            onTitleChanged: (ctr, title) {
+              if(mounted) setState(() => _title = title);
+            },
             onWebViewCreated: _onWebViewCreated,
             onCloseWindow: _onCloseWindow,
             onLoadStart: (ctr, uri) {
               _overlayCtr.show(context);
             },
-            onWebContentProcessDidTerminate: _onWebContentProcessDidTerminate,
             onLoadStop: (ctr, uri) => _overlayCtr.remove(),
             onReceivedHttpError: (ctr, req, err) => _overlayCtr.remove(),
             onReceivedError: (ctr, req, err) => _overlayCtr.remove(),
@@ -90,17 +97,13 @@ class _WindowPopupPageState extends State<WindowPopupPage> {
     );
   }
 
-  void _onWebContentProcessDidTerminate(InAppWebViewController ctr) {
-    ctr.reload();
-  }
-
   Future<NavigationActionPolicy?> _shouldOverrideUrlLoading(InAppWebViewController ctr, NavigationAction action) async {
     final WebUri? webUri = action.request.url;
 
     if(webUri != null) {
       final String url = webUri.toString();
       if(!webUri.scheme.startsWith("http")){
-        if(mounted) _overlayCtr.showIndicator(context, openURL(url));
+        if(mounted) OverlayController.of(context).showIndicator(context, openURL(url));
         return NavigationActionPolicy.CANCEL;
       } else {
         return NavigationActionPolicy.ALLOW;
@@ -108,5 +111,9 @@ class _WindowPopupPageState extends State<WindowPopupPage> {
     } else {
       return NavigationActionPolicy.CANCEL;
     }
+  }
+
+  void _closeWindow() async{
+    await _controller?.evaluateJavascript(source: "window.close();");
   }
 }

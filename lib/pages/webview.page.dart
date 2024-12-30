@@ -46,6 +46,8 @@ class _WebViewPageState extends State<WebViewPage> {
   late final NotificationController _notificationCtr = NotificationController.of(context);
   late final VersionController _versionController = VersionController.of(context);
 
+  final CookieManager _cookieManager = CookieManager.instance();
+
   InAppWebViewController? _controller;
 
   Future<void> _deepLinkListener() async{
@@ -303,14 +305,6 @@ class _WebViewPageState extends State<WebViewPage> {
       if(mounted) await _notificationCtr.firebasePushListener(_controller);
       _deepLinkListener();
     }
-
-    if(uri?.path.endsWith(LOGIN_PAGE) == true) {
-      log(_notificationCtr.fcmToken, title: "FCM_TOKEN");
-      ctr.evaluateJavascript(source: """
-      document.getElementById('fcmToken').value = '${_notificationCtr.fcmToken}';
-      document.getElementById('deviceId').value = '${_deviceCtr.deviceId}';
-      """);
-    }
   }
 
   void _onConsoleMessage(InAppWebViewController ctr, ConsoleMessage cm) async{
@@ -374,7 +368,6 @@ class _WebViewPageState extends State<WebViewPage> {
   Future<void> _setCookie(String name, String value, {
     DateTime? expiredAt
   }) async {
-    final CookieManager cm = CookieManager.instance();
-    await cm.setCookie(url: WebUri.uri(Uri.parse(Config.instance.getUrl())), name: name, value: value, expiresDate: expiredAt?.millisecondsSinceEpoch);
+    await _cookieManager.setCookie(url: WebUri.uri(Uri.parse(Config.instance.getUrl())), name: name, value: value, expiresDate: expiredAt?.millisecondsSinceEpoch);
   }
 }
