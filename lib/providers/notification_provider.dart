@@ -6,50 +6,42 @@ import 'package:flutter/material.dart';
 import 'package:flutter_app_badger/flutter_app_badger.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../configs/config/config.dart';
 import '../utills/common.dart';
 import '../utills/enums.dart';
 
-class NotificationController extends ChangeNotifier{
+final notificationProvider = StateNotifierProvider<FcmTokenStateNotifier, String?>((ref) => FcmTokenStateNotifier());
 
-  static NotificationController get instance => NotificationController();
-  static NotificationController of(BuildContext context) => context.read<NotificationController>();
+final FlutterLocalNotificationsPlugin _localNotifications = FlutterLocalNotificationsPlugin();
 
-  String? _fcmToken;
-  String? get fcmToken => _fcmToken;
-  set fcmToken(String? token){
-    _fcmToken = token;
-    notifyListeners();
-    log(_fcmToken, title: "FCM TOKEN", showRelease: true);
+class NotificationNotifier extends ChangeNotifier{
+
+  final Ref ref;
+
+  NotificationNotifier(this.ref) {
+    ref.listen(notificationProvider, (prev, next) {
+      if(prev != next) notifyListeners();
+    });
+    ref.read(notificationProvider.notifier).initialFcmToken();
   }
+}
+
+class FcmTokenStateNotifier extends StateNotifier<String?> {
 
   final FirebaseMessaging _fcm = FirebaseMessaging.instance;
 
-  final FlutterLocalNotificationsPlugin _localNotifications = FlutterLocalNotificationsPlugin();
+  FcmTokenStateNotifier(): super(null);
 
-  final AndroidInitializationSettings _androidSettings = const AndroidInitializationSettings(
-      '@mipmap/ic_launcher');
-
-  final DarwinInitializationSettings _iosSettings = const DarwinInitializationSettings(
-    requestSoundPermission: true,
-    requestBadgePermission: true,
-    requestAlertPermission: true,
-  );
-
-  InitializationSettings get _settings =>
-      InitializationSettings(
-        android: _androidSettings,
-        iOS: _iosSettings,
-      );
+  String? get fcmToken => state;
 
   Future<void> initialFcmToken() async {
-    if(fcmToken != null) return;
+    if(state != null) return;
     final SharedPreferences spf = await SharedPreferences.getInstance();
-    fcmToken = spf.getString(TokenType.fcmToken.name);
-    if(fcmToken == null) {
+    state = spf.getString(TokenType.fcmToken.name);
+    if(state == null) {
       try {
         if(Platform.isAndroid) {
           final String? token = await _fcm.getToken();
@@ -67,31 +59,23 @@ class NotificationController extends ChangeNotifier{
 
   Future<void> _setFcmToken(String token) async {
     final SharedPreferences spf = await SharedPreferences.getInstance();
-    if(await spf.setString(TokenType.fcmToken.name, token)) fcmToken = token;
+    if(await spf.setString(TokenType.fcmToken.name, token)) state = token;
   }
 
-  Future<void> firebasePushSetting() async{
-    await _fcm.setForegroundNotificationPresentationOptions(
-        alert: true,
-        badge: true,
-        sound: true
-    );
-    if(Platform.isAndroid) {
-      await _createAndroidChannel(ANDROID_CHANNEL_ID, ANDROID_CHANNEL_NAME,
-          description: ANDROID_CHANNEL_DESCRIPTION);
-    }
-  }
+  final AndroidInitializationSettings _androidSettings = const AndroidInitializationSettings(
+      '@mipmap/ic_launcher');
 
-  Future<void> _createAndroidChannel(String id, String name, {
-    String? description,
-    Importance importance = Importance.max,
-    String? groupId
-  }) async{
-    final AndroidNotificationChannel channel = AndroidNotificationChannel(id, name, description: description, importance: importance, groupId: groupId);
-    await _localNotifications
-        .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
-        ?.createNotificationChannel(channel);
-  }
+  final DarwinInitializationSettings _iosSettings = const DarwinInitializationSettings(
+    requestSoundPermission: true,
+    requestBadgePermission: true,
+    requestAlertPermission: true,
+  );
+
+  InitializationSettings get _settings =>
+      InitializationSettings(
+        android: _androidSettings,
+        iOS: _iosSettings,
+      );
 
   Future<void> firebasePushListener(InAppWebViewController? ctr) async{
     log("LISTENING FIREBASE PUSH");
@@ -188,5 +172,34 @@ class NotificationController extends ChangeNotifier{
         await ctr?.loadUrl(urlRequest: URLRequest(url: WebUri(url), body: utf8.encode(jsonEncode(uri.queryParameters))));
       }
     }
+  }
+}
+
+class NotificationService {
+  static final NotificationService instance = NotificationService();
+
+  final FirebaseMessaging _fcm = FirebaseMessaging.instance;
+
+  Future<void> firebasePushSetting() async{
+    await _fcm.setForegroundNotificationPresentationOptions(
+        alert: true,
+        badge: true,
+        sound: true
+    );
+    if(Platform.isAndroid) {
+      await _createAndroidChannel(ANDROID_CHANNEL_ID, ANDROID_CHANNEL_NAME,
+          description: ANDROID_CHANNEL_DESCRIPTION);
+    }
+  }
+
+  Future<void> _createAndroidChannel(String id, String name, {
+    String? description,
+    Importance importance = Importance.max,
+    String? groupId
+  }) async{
+    final AndroidNotificationChannel channel = AndroidNotificationChannel(id, name, description: description, importance: importance, groupId: groupId);
+    await _localNotifications
+        .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
+        ?.createNotificationChannel(channel);
   }
 }

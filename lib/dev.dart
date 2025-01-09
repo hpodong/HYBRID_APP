@@ -1,18 +1,22 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'app.dart';
-import 'controllers/notification.controller.dart';
+import 'providers/notification_provider.dart';
 
 void main() async{
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
   widgetsBinding;
   await dotenv.load(fileName: 'dev.env');
   await Firebase.initializeApp();
-  await NotificationController.instance.firebasePushSetting();
+  await NotificationService.instance.firebasePushSetting();
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
-  runApp((App()));
+  await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+  SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.dark);
+  runApp(const ProviderScope(child: (App())));
 }
 
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {

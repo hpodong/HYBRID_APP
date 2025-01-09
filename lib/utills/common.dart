@@ -25,25 +25,6 @@ const MethodChannel platform = MethodChannel('method_channel');
 
 EdgeInsets baseAllPadding(BuildContext context) => EdgeInsets.all(basePadding(context));
 
-Future<dynamic> movePage(BuildContext context, Widget page, {
-  String? routeName,
-  Object? arguments,
-  RouteSettings? settings,
-  bool maintainState = true,
-  bool fullscreenDialog = false,
-}) async{
-
-  settings = RouteSettings(name: routeName, arguments: arguments);
-
-  return Navigator.push(context, MaterialPageRoute(builder: (context) => page, settings: settings, maintainState: maintainState, fullscreenDialog: fullscreenDialog));
-}
-
-Future<dynamic> movePageToNamed(BuildContext context, String routeName, {
-  Object? arguments
-}) async{
-  return Navigator.pushNamed(context, routeName, arguments: arguments);
-}
-
 Future permissionCheck(List<Permission> permissions) async{
   permissions.request().then((statuses) {
     String message = "";

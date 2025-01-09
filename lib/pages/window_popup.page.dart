@@ -1,32 +1,37 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../configs/config/config.dart';
-import '../controllers/overlay.controller.dart';
+import '../providers/overlay_provider.dart';
 import '../utills/common.dart';
 
-class WindowPopupPage extends StatefulWidget {
+class WindowPopupPage extends ConsumerStatefulWidget {
+
+  static const String path = "/window";
+  static const String routeName = "windowPopupPage";
+
   final CreateWindowAction action;
   const WindowPopupPage(this.action, {super.key});
 
   @override
-  State<WindowPopupPage> createState() => _WindowPopupPageState();
+  WindowPopupPageState createState() => WindowPopupPageState();
 }
 
-class _WindowPopupPageState extends State<WindowPopupPage> {
+class WindowPopupPageState extends ConsumerState<WindowPopupPage> {
 
   String? _title;
 
   InAppWebViewController? _controller;
-  late final OverlayController _overlayCtr = OverlayController.of(context);
+
+  late final OverlayStateNotifier _overlayStateNotifier = ref.read(overlayProvider.notifier);
 
   Future<void> _onPopInvokedWithResult(bool canPop, dynamic result) async{
-    if(mounted && _overlayCtr.entry != null) {
-      _overlayCtr.remove();
+    if(mounted && _overlayStateNotifier.isShowingOverlay) {
+      _overlayStateNotifier.remove();
     } else if(await _controller?.canGoBack() == true) {
       await _controller?.goBack();
-    } else {
-      if(mounted && Navigator.canPop(context)) Navigator.pop(context);
     }
   }
 
@@ -36,14 +41,14 @@ class _WindowPopupPageState extends State<WindowPopupPage> {
   }
 
   Future<void> _onCloseWindow(InAppWebViewController controller) async {
-    Navigator.pop(context);
+    context.pop();
   }
 
   @override
   Widget build(BuildContext context) {
     return PopScope(
-      canPop: false,
       onPopInvokedWithResult: _onPopInvokedWithResult,
+      canPop: false,
       child: Scaffold(
         appBar: AppBar(
           backgroundColor: Colors.white,
@@ -51,7 +56,7 @@ class _WindowPopupPageState extends State<WindowPopupPage> {
           centerTitle: true,
           automaticallyImplyLeading: false,
           title: Text(_title ?? ""),
-          titleTextStyle: TextStyle(fontWeight: FontWeight.bold, color: Colors.black, fontSize: 16),
+          titleTextStyle: const TextStyle(fontWeight: FontWeight.bold, color: Colors.black, fontSize: 16),
           actions: [
             CloseButton(
                 onPressed: _closeWindow
@@ -77,7 +82,6 @@ class _WindowPopupPageState extends State<WindowPopupPage> {
               cacheMode: CacheMode.LOAD_DEFAULT,
               cacheEnabled: true,
               mediaPlaybackRequiresUserGesture: true,
-              allowsBackForwardNavigationGestures: true,
             ),
             onTitleChanged: (ctr, title) {
               if(mounted) setState(() => _title = title);
@@ -85,11 +89,11 @@ class _WindowPopupPageState extends State<WindowPopupPage> {
             onWebViewCreated: _onWebViewCreated,
             onCloseWindow: _onCloseWindow,
             onLoadStart: (ctr, uri) {
-              _overlayCtr.show(context);
+              _overlayStateNotifier.show(context);
             },
-            onLoadStop: (ctr, uri) => _overlayCtr.remove(),
-            onReceivedHttpError: (ctr, req, err) => _overlayCtr.remove(),
-            onReceivedError: (ctr, req, err) => _overlayCtr.remove(),
+            onLoadStop: (ctr, uri) => _overlayStateNotifier.remove(),
+            onReceivedHttpError: (ctr, req, err) => _overlayStateNotifier.remove(),
+            onReceivedError: (ctr, req, err) => _overlayStateNotifier.remove(),
             shouldOverrideUrlLoading: _shouldOverrideUrlLoading,
           ),
         ),
@@ -103,7 +107,7 @@ class _WindowPopupPageState extends State<WindowPopupPage> {
     if(webUri != null) {
       final String url = webUri.toString();
       if(!webUri.scheme.startsWith("http")){
-        if(mounted) OverlayController.of(context).showIndicator(context, openURL(url));
+        if(mounted) _overlayStateNotifier.showIndicator(context, openURL(url));
         return NavigationActionPolicy.CANCEL;
       } else {
         return NavigationActionPolicy.ALLOW;

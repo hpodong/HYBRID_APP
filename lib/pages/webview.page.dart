@@ -4,47 +4,46 @@ import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
+import 'package:go_router/go_router.dart';
 import 'package:flutter_naver_login_plus/flutter_naver_login_plus.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
 import 'package:open_filex/open_filex.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:provider/provider.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'package:uni_links/uni_links.dart';
 import '../configs/config/config.dart';
 import '../configs/socials/apple.config.dart';
 import '../configs/socials/kakao.config.dart';
 import '../configs/socials/naver.config.dart';
-import '../controllers/device.controller.dart';
-import '../controllers/notification.controller.dart';
-import '../controllers/overlay.controller.dart';
 import 'package:http/http.dart' as http;
 
-import '../controllers/version.controller.dart';
-import '../customs/custom.dart';
+import '../providers/device_provider.dart';
+import '../providers/notification_provider.dart';
+import '../providers/overlay_provider.dart';
+import '../providers/version_provider.dart';
 import '../utills/common.dart';
 import 'window_popup.page.dart';
 
-class WebViewPage extends StatefulWidget {
+class WebViewPage extends ConsumerStatefulWidget {
 
-  static const String routeName = '/webViewPage';
+  static const String path = '/webview';
+  static const String routeName = 'webViewPage';
 
   final URLRequest? request;
 
   const WebViewPage({this.request, super.key});
 
   @override
-  State<WebViewPage> createState() => _WebViewPageState();
+  WebViewPageState createState() => WebViewPageState();
 }
 
-class _WebViewPageState extends State<WebViewPage> {
+class WebViewPageState extends ConsumerState<WebViewPage> {
 
-  bool _loadCompleted = false;
-
-  late final DeviceController _deviceCtr = DeviceController.of(context);
-  late final OverlayController _overlayCtr = OverlayController.of(context);
-  late final NotificationController _notificationCtr = NotificationController.of(context);
-  late final VersionController _versionController = VersionController.of(context);
+  late final OverlayStateNotifier _overlayStateNotifier = ref.read(overlayProvider.notifier);
+  late final DeviceStateNotifier _deviceStateNotifier = ref.read(deviceProvider.notifier);
+  late final VersionStateNotifier _versionStateNotifier = ref.read(versionProvider.notifier);
+  late final FcmTokenStateNotifier _fcmTokenStateNotifier = ref.read(notificationProvider.notifier);
 
   final CookieManager _cookieManager = CookieManager.instance();
 
@@ -64,10 +63,11 @@ class _WebViewPageState extends State<WebViewPage> {
     }
   }
 
-  final List<String> _allowHosts = <String>[
+  static final List<String> _allowHosts = <String>[
     HOST_NAME,
     "www.youtube.com",
     "www.payapp.kr",
+    "www.pinkage.co.kr",
     /*"nid.naver.com",
     "kauth.kakao.com",
     "talk-apps.kakao.com",
@@ -75,7 +75,7 @@ class _WebViewPageState extends State<WebViewPage> {
     "logins.daum.net",*/
   ];
 
-  final List<String> _allowFiles = <String>[
+  static final List<String> _allowFiles = <String>[
     "png",
     "jpg",
     "jpeg",
@@ -89,19 +89,13 @@ class _WebViewPageState extends State<WebViewPage> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) async{
-      _overlayCtr.showOverlayWidget(context, (context) => _buildSplash(context));
-      if(mounted) await NotificationController.of(context).initialFcmToken();
-      if(mounted) await DeviceController.of(context).getDeviceInfo();
-      if(mounted) await _setInitialData();
-      if(mounted) await VersionController.of(context).getVersion(context);
-    });
+    _setInitialData();
   }
 
   Future<void> _setInitialData() async {
-    final String? fcmToken = _notificationCtr.fcmToken;
-    final String? deviceId = _deviceCtr.deviceId;
-    final String? version = _versionController.info?.version;
+    final String? fcmToken = _fcmTokenStateNotifier.fcmToken;
+    final String? deviceId = _deviceStateNotifier.deviceId;
+    final String? version = _versionStateNotifier.version;
     final DateTime expiredAt = DateTime.now().add(const Duration(days: 365));
     if(fcmToken != null) await _setCookie("FCM_TOKEN", fcmToken, expiredAt: expiredAt);
     if(deviceId != null) await _setCookie("DEVICE_ID", deviceId, expiredAt: expiredAt);
@@ -111,7 +105,6 @@ class _WebViewPageState extends State<WebViewPage> {
   final InAppWebViewSettings _webViewSettings = InAppWebViewSettings(
     applicationNameForUserAgent: USERAGENT,
     javaScriptEnabled: true,
-    transparentBackground: true,
     javaScriptCanOpenWindowsAutomatically: true,
     supportMultipleWindows: true,
     iframeAllowFullscreen: true,
@@ -126,7 +119,6 @@ class _WebViewPageState extends State<WebViewPage> {
     allowFileAccess: true,
     allowContentAccess: true,
     mediaPlaybackRequiresUserGesture: true,
-    allowsBackForwardNavigationGestures: true,
     supportZoom: false
   );
 
@@ -137,8 +129,8 @@ class _WebViewPageState extends State<WebViewPage> {
   Future<void> _onWillPop(bool didPop, dynamic data) async{
     final bool? canGoBack = await _controller?.canGoBack();
 
-    if(mounted && _overlayCtr.entry != null) {
-      _overlayCtr.remove();
+    if(mounted && _overlayStateNotifier.isShowingOverlay) {
+      _overlayStateNotifier.remove();
     } else if(canGoBack == true) {
       _canClose = false;
       setState((){});
@@ -158,59 +150,29 @@ class _WebViewPageState extends State<WebViewPage> {
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: _onWillPop,
-      child: Consumer<VersionController>(
-          builder: (context, controller, child) {
-            if(!controller.isChecked) {
-              // if(false) {
-              return _buildSplash(context);
-            } else {
-              return Scaffold(
-                  backgroundColor: Colors.white,
-                  body: _buildBody(context)
-              );
-            }
-          }
-      ),
-    );
-  }
-
-  Widget _buildBody(BuildContext context) {
-    return SafeArea(
-      child: InAppWebView(
-        shouldOverrideUrlLoading: _shouldOverrideUrlLoading,
-        keepAlive: InAppWebViewKeepAlive(),
-        onConsoleMessage: _onConsoleMessage,
-        onDownloadStartRequest: _onDownloadStartRequest,
-        onCreateWindow: _onCreateWindow,
-        onWebViewCreated: _onWebViewCreated,
-        onLoadStart: _onLoadStart,
-        onLoadStop: _onLoadStop,
-        onPermissionRequest: _onPermissionRequest,
-        onReceivedHttpError: _onReceivedHttpError,
-        onReceivedError: _onReceivedError,
-        onWebContentProcessDidTerminate: _onWebContentProcessDidTerminate,
-        initialUrlRequest: widget.request ?? URLRequest(
-          url: WebUri(Config.instance.getUrl(INITIAL_PATH)),
-        ),
-        initialSettings: _webViewSettings,
-      ),
-    );
-  }
-
-  Widget _buildSplash(BuildContext context) {
-    return Scaffold(
-      backgroundColor: CustomColors.splash,
-      body: Container(
-        height: double.infinity,
-        width: double.infinity,
-        decoration: BoxDecoration(
-            color: CustomColors.splash,
-            image: DecorationImage(
-                image: AssetImage(SPLASH_IMAGE),
-                fit: BoxFit.cover
-            )
-        ),
-      ),
+      child: Scaffold(
+          backgroundColor: Colors.white,
+          body: SafeArea(
+            child: InAppWebView(
+              shouldOverrideUrlLoading: _shouldOverrideUrlLoading,
+              keepAlive: InAppWebViewKeepAlive(),
+              onConsoleMessage: _onConsoleMessage,
+              onDownloadStartRequest: _onDownloadStartRequest,
+              onCreateWindow: _onCreateWindow,
+              onWebViewCreated: _onWebViewCreated,
+              onLoadStart: _onLoadStart,
+              onLoadStop: _onLoadStop,
+              onPermissionRequest: _onPermissionRequest,
+              onReceivedHttpError: _onReceivedHttpError,
+              onReceivedError: _onReceivedError,
+              onWebContentProcessDidTerminate: _onWebContentProcessDidTerminate,
+              initialUrlRequest: widget.request ?? URLRequest(
+                url: WebUri(Config.instance.getUrl(INITIAL_PATH)),
+              ),
+              initialSettings: _webViewSettings,
+            ),
+          )
+      )
     );
   }
 
@@ -219,7 +181,7 @@ class _WebViewPageState extends State<WebViewPage> {
   }
 
   void _onReceivedHttpError(InAppWebViewController ctr, WebResourceRequest req, WebResourceResponse res) {
-    _overlayCtr.remove();
+    _overlayStateNotifier.remove();
   }
 
   void _onReceivedError(InAppWebViewController ctr, WebResourceRequest req, WebResourceError err) {
@@ -228,11 +190,11 @@ class _WebViewPageState extends State<WebViewPage> {
     if(type == WebResourceErrorType.NOT_CONNECTED_TO_INTERNET) {
       showToast("인터넷 연결이 필요합니다.");
     }
-    _overlayCtr.remove();
+    _overlayStateNotifier.remove();
   }
 
   void _onDownloadStartRequest(InAppWebViewController ctr, DownloadStartRequest req) {
-    _overlayCtr.showIndicator(context, _fileDownload(req));
+    _overlayStateNotifier.showIndicator(context, _fileDownload(req));
   }
 
   Future<PermissionResponse?> _onPermissionRequest(InAppWebViewController ctr, PermissionRequest req) async{
@@ -241,8 +203,7 @@ class _WebViewPageState extends State<WebViewPage> {
 
   Future<bool?> _onCreateWindow(InAppWebViewController ctr, CreateWindowAction action) async{
     log(action, title: "WINDOW.OPEN");
-    // await ctr.loadUrl(urlRequest: action.request);
-    await movePage(context, WindowPopupPage(action), fullscreenDialog: true);
+    context.pushNamed(WindowPopupPage.routeName, extra: action);
     return true;
   }
 
@@ -289,20 +250,15 @@ class _WebViewPageState extends State<WebViewPage> {
     final String? path = uri?.path;
     if(mounted && INITIAL_PATH == path) await clearHistory();
 
-    if(mounted && !_loadCompleted) {
-      _overlayCtr.showOverlayWidget(context, _buildSplash);
-    } else if(mounted) {
-      _overlayCtr.show(context);
-    }
+    if(mounted) _overlayStateNotifier.show(context);
   }
 
   void _onLoadStop(InAppWebViewController ctr, Uri? uri) async{
-    if(IS_SHOW_OVERLAY && _loadCompleted) _overlayCtr.remove();
+    if(IS_SHOW_OVERLAY) _overlayStateNotifier.remove();
 
-    if(!_loadCompleted && _versionController.isChecked) {
-      _overlayCtr.remove();
-      _loadCompleted = true;
-      if(mounted) await _notificationCtr.firebasePushListener(_controller);
+    if(_versionStateNotifier.isChecked) {
+      _overlayStateNotifier.remove();
+      if(mounted) await _fcmTokenStateNotifier.firebasePushListener(_controller);
       _deepLinkListener();
     }
   }
@@ -310,9 +266,9 @@ class _WebViewPageState extends State<WebViewPage> {
   void _onConsoleMessage(InAppWebViewController ctr, ConsoleMessage cm) async{
     final String msg = cm.message;
     switch(msg) {
-      case "kakao_login": return _overlayCtr.showIndicator(context, _kakaoLogin());
-      case "naver_login": return _overlayCtr.showIndicator(context, _naverLogin());
-      case "apple_login": return _overlayCtr.showIndicator(context, _appleLogin());
+      case "kakao_login": return _overlayStateNotifier.showIndicator(context, _kakaoLogin());
+      case "naver_login": return _overlayStateNotifier.showIndicator(context, _naverLogin());
+      case "apple_login": return _overlayStateNotifier.showIndicator(context, _appleLogin());
     }
     log(msg);
   }

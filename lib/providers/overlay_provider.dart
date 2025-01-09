@@ -2,17 +2,12 @@ import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class OverlayController extends ChangeNotifier {
-  static OverlayController of(BuildContext context) => context.read<OverlayController>();
+final overlayProvider = StateNotifierProvider((ref) => OverlayStateNotifier());
 
-  OverlayEntry? _entry;
-  OverlayEntry? get entry => _entry;
-  set entry(OverlayEntry? entry) {
-    _entry = entry;
-    notifyListeners();
-  }
+class OverlayStateNotifier extends StateNotifier<OverlayEntry?> {
+  OverlayStateNotifier(): super(null);
 
   static Widget _buildIndicator(BuildContext context) {
     return ColoredBox(
@@ -26,11 +21,11 @@ class OverlayController extends ChangeNotifier {
   Future<T> showIndicator<T>(BuildContext context, Future<T> future) {
     remove();
 
-    entry = OverlayEntry(builder: _buildIndicator);
+    state = OverlayEntry(builder: _buildIndicator);
 
     OverlayState? overlayState = Overlay.of(context);
 
-    if(entry != null) overlayState.insert(entry!);
+    if(state != null) overlayState.insert(state!);
 
     return future.then((result) {
       return result;
@@ -41,29 +36,31 @@ class OverlayController extends ChangeNotifier {
     });
   }
 
+  bool get isShowingOverlay => state != null;
+
   void showOverlayWidget(BuildContext context, Widget Function(BuildContext) builder) {
     remove();
 
-    entry = OverlayEntry(builder: builder);
+    state = OverlayEntry(builder: builder);
 
     OverlayState? overlayState = Overlay.of(context);
 
-    if(entry != null) overlayState.insert(entry!);
+    if(state != null) overlayState.insert(state!);
   }
 
   void remove() {
-    entry?.remove();
-    entry = null;
+    state?.remove();
+    state = null;
   }
 
   void show(BuildContext context) {
 
     remove();
 
-    entry = OverlayEntry(builder: _buildIndicator);
+    state = OverlayEntry(builder: _buildIndicator);
 
     final OverlayState overlayState = Overlay.of(context);
 
-    if(entry != null) overlayState.insert(entry!);
+    if(state != null) overlayState.insert(state!);
   }
 }
