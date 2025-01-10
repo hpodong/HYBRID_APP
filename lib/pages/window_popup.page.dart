@@ -68,37 +68,43 @@ class WindowPopupPageState extends ConsumerState<WindowPopupPage> {
             keepAlive: InAppWebViewKeepAlive(),
             windowId: widget.action.windowId,
             initialSettings: InAppWebViewSettings(
-              applicationNameForUserAgent: USERAGENT,
-              javaScriptEnabled: true,
-              javaScriptCanOpenWindowsAutomatically: true,
-              supportMultipleWindows: true,
-              iframeAllowFullscreen: true,
-              useOnDownloadStart: true,
-              useShouldOverrideUrlLoading: true,
-              allowFileAccessFromFileURLs: true,
-              useHybridComposition: true,
-              domStorageEnabled: true,
-              underPageBackgroundColor: Colors.white,
-              cacheMode: CacheMode.LOAD_DEFAULT,
-              cacheEnabled: true,
-              mediaPlaybackRequiresUserGesture: true,
+                applicationNameForUserAgent: USERAGENT,
+                javaScriptEnabled: true,
+                javaScriptCanOpenWindowsAutomatically: true,
+                supportMultipleWindows: true,
+                iframeAllowFullscreen: true,
+                useOnDownloadStart: true,
+                useShouldOverrideUrlLoading: true,
+                allowFileAccessFromFileURLs: true,
+                useHybridComposition: true,
+                domStorageEnabled: true,
+                underPageBackgroundColor: Colors.white,
+                cacheMode: CacheMode.LOAD_DEFAULT,
+                cacheEnabled: true,
+                mediaPlaybackRequiresUserGesture: true,
+                interceptOnlyAsyncAjaxRequests: true,
+                useShouldInterceptAjaxRequest: true
             ),
-            onTitleChanged: (ctr, title) {
-              if(mounted) setState(() => _title = title);
-            },
+            onTitleChanged: _onTitleChanged,
             onWebViewCreated: _onWebViewCreated,
             onCloseWindow: _onCloseWindow,
-            onLoadStart: (ctr, uri) {
-              _overlayStateNotifier.show(context);
-            },
-            onLoadStop: (ctr, uri) => _overlayStateNotifier.remove(),
-            onReceivedHttpError: (ctr, req, err) => _overlayStateNotifier.remove(),
-            onReceivedError: (ctr, req, err) => _overlayStateNotifier.remove(),
+            onPermissionRequest: _onPermissionRequest,
+            onReceivedHttpError: _onReceivedHttpError,
+            onReceivedError: _onReceivedError,
+            onWebContentProcessDidTerminate: _onWebContentProcessDidTerminate,
+            onAjaxProgress: _onAjaxProgress,
+            onAjaxReadyStateChange: _onAjaxReadyStateChange,
+            onLoadStart: _onLoadStart,
+            onLoadStop: _onLoadStop,
             shouldOverrideUrlLoading: _shouldOverrideUrlLoading,
           ),
         ),
       ),
     );
+  }
+
+  void _onTitleChanged(InAppWebViewController ctr, String? title) {
+    if(mounted) setState(() => _title = title);
   }
 
   Future<NavigationActionPolicy?> _shouldOverrideUrlLoading(InAppWebViewController ctr, NavigationAction action) async {
@@ -119,5 +125,46 @@ class WindowPopupPageState extends ConsumerState<WindowPopupPage> {
 
   void _closeWindow() async{
     await _controller?.evaluateJavascript(source: "window.close();");
+  }
+
+  void _onLoadStart(InAppWebViewController ctr, Uri? uri) {
+    log(uri, title: "CURRENT_URL");
+    if(IS_SHOW_OVERLAY && mounted) _overlayStateNotifier.show(context);
+  }
+
+  void _onLoadStop(InAppWebViewController ctr, Uri? uri) {
+    if(IS_SHOW_OVERLAY) _overlayStateNotifier.remove();
+    log("STOP");
+  }
+
+  void _onReceivedHttpError(InAppWebViewController ctr, WebResourceRequest req, WebResourceResponse res) {
+    if(IS_SHOW_OVERLAY) _overlayStateNotifier.remove();
+  }
+
+  Future<PermissionResponse?> _onPermissionRequest(InAppWebViewController ctr, PermissionRequest req) async{
+    return PermissionResponse(resources: req.resources, action: PermissionResponseAction.GRANT);
+  }
+
+  void _onReceivedError(InAppWebViewController ctr, WebResourceRequest req, WebResourceError err) {
+    log(err, title: "ERROR");
+    final WebResourceErrorType type = err.type;
+    if(type == WebResourceErrorType.NOT_CONNECTED_TO_INTERNET) {
+      showToast("인터넷 연결이 필요합니다.");
+    }
+    if(IS_SHOW_OVERLAY) _overlayStateNotifier.remove();
+  }
+
+  void _onWebContentProcessDidTerminate(InAppWebViewController ctr) {
+    ctr.reload();
+  }
+
+  Future<AjaxRequestAction> _onAjaxProgress(InAppWebViewController ctr, AjaxRequest request) {
+    if(IS_SHOW_OVERLAY) _overlayStateNotifier.show(context);
+    return Future.value(AjaxRequestAction.PROCEED);
+  }
+
+  Future<AjaxRequestAction> _onAjaxReadyStateChange(InAppWebViewController ctr, AjaxRequest request) {
+    if(IS_SHOW_OVERLAY) _overlayStateNotifier.remove();
+    return Future.value(AjaxRequestAction.PROCEED);
   }
 }

@@ -103,23 +103,25 @@ class WebViewPageState extends ConsumerState<WebViewPage> {
   }
 
   final InAppWebViewSettings _webViewSettings = InAppWebViewSettings(
-    applicationNameForUserAgent: USERAGENT,
-    javaScriptEnabled: true,
-    javaScriptCanOpenWindowsAutomatically: true,
-    supportMultipleWindows: true,
-    iframeAllowFullscreen: true,
-    useOnDownloadStart: true,
-    useShouldOverrideUrlLoading: true,
-    allowFileAccessFromFileURLs: true,
-    useHybridComposition: true,
-    domStorageEnabled: true,
-    underPageBackgroundColor: Colors.white,
-    cacheMode: CacheMode.LOAD_DEFAULT,
-    cacheEnabled: true,
-    allowFileAccess: true,
-    allowContentAccess: true,
-    mediaPlaybackRequiresUserGesture: true,
-    supportZoom: false
+      applicationNameForUserAgent: USERAGENT,
+      javaScriptEnabled: true,
+      javaScriptCanOpenWindowsAutomatically: true,
+      supportMultipleWindows: true,
+      iframeAllowFullscreen: true,
+      useOnDownloadStart: true,
+      useShouldOverrideUrlLoading: true,
+      allowFileAccessFromFileURLs: true,
+      useHybridComposition: true,
+      domStorageEnabled: true,
+      underPageBackgroundColor: Colors.white,
+      cacheMode: CacheMode.LOAD_DEFAULT,
+      cacheEnabled: true,
+      allowFileAccess: true,
+      allowContentAccess: true,
+      mediaPlaybackRequiresUserGesture: true,
+      supportZoom: false,
+      useShouldInterceptAjaxRequest: true,
+      interceptOnlyAsyncAjaxRequests: true
   );
 
   Timer? _closeTimer;
@@ -148,32 +150,44 @@ class WebViewPageState extends ConsumerState<WebViewPage> {
   @override
   Widget build(BuildContext context) {
     return PopScope(
-      canPop: false,
-      onPopInvokedWithResult: _onWillPop,
-      child: Scaffold(
-          backgroundColor: Colors.white,
-          body: SafeArea(
-            child: InAppWebView(
-              shouldOverrideUrlLoading: _shouldOverrideUrlLoading,
-              keepAlive: InAppWebViewKeepAlive(),
-              onConsoleMessage: _onConsoleMessage,
-              onDownloadStartRequest: _onDownloadStartRequest,
-              onCreateWindow: _onCreateWindow,
-              onWebViewCreated: _onWebViewCreated,
-              onLoadStart: _onLoadStart,
-              onLoadStop: _onLoadStop,
-              onPermissionRequest: _onPermissionRequest,
-              onReceivedHttpError: _onReceivedHttpError,
-              onReceivedError: _onReceivedError,
-              onWebContentProcessDidTerminate: _onWebContentProcessDidTerminate,
-              initialUrlRequest: widget.request ?? URLRequest(
-                url: WebUri(Config.instance.getUrl(INITIAL_PATH)),
+        canPop: false,
+        onPopInvokedWithResult: _onWillPop,
+        child: Scaffold(
+            backgroundColor: Colors.white,
+            body: SafeArea(
+              child: InAppWebView(
+                shouldOverrideUrlLoading: _shouldOverrideUrlLoading,
+                keepAlive: InAppWebViewKeepAlive(),
+                onConsoleMessage: _onConsoleMessage,
+                onDownloadStartRequest: _onDownloadStartRequest,
+                onCreateWindow: _onCreateWindow,
+                onWebViewCreated: _onWebViewCreated,
+                onLoadStart: _onLoadStart,
+                onLoadStop: _onLoadStop,
+                onPermissionRequest: _onPermissionRequest,
+                onReceivedHttpError: _onReceivedHttpError,
+                onReceivedError: _onReceivedError,
+                onWebContentProcessDidTerminate: _onWebContentProcessDidTerminate,
+                onAjaxProgress: _onAjaxProgress,
+                onAjaxReadyStateChange: _onAjaxReadyStateChange,
+                initialUrlRequest: widget.request ?? URLRequest(
+                  url: WebUri(Config.instance.getUrl(INITIAL_PATH)),
+                ),
+                initialSettings: _webViewSettings,
               ),
-              initialSettings: _webViewSettings,
-            ),
-          )
-      )
+            )
+        )
     );
+  }
+
+  Future<AjaxRequestAction> _onAjaxProgress(InAppWebViewController ctr, AjaxRequest request) {
+    if(IS_SHOW_OVERLAY) _overlayStateNotifier.show(context);
+    return Future.value(AjaxRequestAction.PROCEED);
+  }
+
+  Future<AjaxRequestAction> _onAjaxReadyStateChange(InAppWebViewController ctr, AjaxRequest request) {
+    if(IS_SHOW_OVERLAY) _overlayStateNotifier.remove();
+    return Future.value(AjaxRequestAction.PROCEED);
   }
 
   void _onWebContentProcessDidTerminate(InAppWebViewController ctr) {
@@ -181,7 +195,7 @@ class WebViewPageState extends ConsumerState<WebViewPage> {
   }
 
   void _onReceivedHttpError(InAppWebViewController ctr, WebResourceRequest req, WebResourceResponse res) {
-    _overlayStateNotifier.remove();
+    if(IS_SHOW_OVERLAY) _overlayStateNotifier.remove();
   }
 
   void _onReceivedError(InAppWebViewController ctr, WebResourceRequest req, WebResourceError err) {
@@ -190,11 +204,11 @@ class WebViewPageState extends ConsumerState<WebViewPage> {
     if(type == WebResourceErrorType.NOT_CONNECTED_TO_INTERNET) {
       showToast("인터넷 연결이 필요합니다.");
     }
-    _overlayStateNotifier.remove();
+    if(IS_SHOW_OVERLAY) _overlayStateNotifier.remove();
   }
 
   void _onDownloadStartRequest(InAppWebViewController ctr, DownloadStartRequest req) {
-    _overlayStateNotifier.showIndicator(context, _fileDownload(req));
+    if(IS_SHOW_OVERLAY) _overlayStateNotifier.showIndicator(context, _fileDownload(req));
   }
 
   Future<PermissionResponse?> _onPermissionRequest(InAppWebViewController ctr, PermissionRequest req) async{
@@ -204,6 +218,7 @@ class WebViewPageState extends ConsumerState<WebViewPage> {
   Future<bool?> _onCreateWindow(InAppWebViewController ctr, CreateWindowAction action) async{
     log(action, title: "WINDOW.OPEN");
     context.pushNamed(WindowPopupPage.routeName, extra: action);
+    if(IS_SHOW_OVERLAY) _overlayStateNotifier.remove();
     return true;
   }
 
@@ -228,7 +243,7 @@ class WebViewPageState extends ConsumerState<WebViewPage> {
         await ka.logout();
       }
 
-      if((!webUri.isScheme("http") && !webUri.isScheme("https")) || !_allowHosts.any((ah) => host == ah)){
+      if((!webUri.isScheme("http") && !webUri.isScheme("https"))/* || !_allowHosts.any((ah) => host == ah)*/){
         if(mounted) await openURL(url);
         return NavigationActionPolicy.CANCEL;
       } else if(_allowFiles.any((type) => url.endsWith(".$type"))){
@@ -250,7 +265,7 @@ class WebViewPageState extends ConsumerState<WebViewPage> {
     final String? path = uri?.path;
     if(mounted && INITIAL_PATH == path) await clearHistory();
 
-    if(mounted) _overlayStateNotifier.show(context);
+    if(IS_SHOW_OVERLAY && mounted) _overlayStateNotifier.show(context);
   }
 
   void _onLoadStop(InAppWebViewController ctr, Uri? uri) async{
