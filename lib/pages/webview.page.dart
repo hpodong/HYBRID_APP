@@ -84,6 +84,7 @@ class WebViewPageState extends ConsumerState<WebViewPage> {
     "docx",
     "xlsx",
     "hwpx",
+    "svg",
   ];
 
   @override
@@ -103,8 +104,6 @@ class WebViewPageState extends ConsumerState<WebViewPage> {
   }
 
   final InAppWebViewSettings _webViewSettings = InAppWebViewSettings(
-    allowUniversalAccessFromFileURLs: true,
-    mixedContentMode: MixedContentMode.MIXED_CONTENT_ALWAYS_ALLOW,
     applicationNameForUserAgent: USERAGENT,
     javaScriptEnabled: true,
     javaScriptCanOpenWindowsAutomatically: true,
@@ -112,7 +111,6 @@ class WebViewPageState extends ConsumerState<WebViewPage> {
     iframeAllowFullscreen: true,
     useOnDownloadStart: true,
     useShouldOverrideUrlLoading: true,
-    allowFileAccessFromFileURLs: true,
     useHybridComposition: true,
     domStorageEnabled: true,
     underPageBackgroundColor: Colors.white,
@@ -120,9 +118,10 @@ class WebViewPageState extends ConsumerState<WebViewPage> {
     cacheEnabled: true,
     allowFileAccess: true,
     allowContentAccess: true,
+    allowFileAccessFromFileURLs: true,
+    allowUniversalAccessFromFileURLs: true,
     mediaPlaybackRequiresUserGesture: true,
     supportZoom: false,
-    interceptOnlyAsyncAjaxRequests: true,
   );
 
   Timer? _closeTimer;
@@ -173,25 +172,10 @@ class WebViewPageState extends ConsumerState<WebViewPage> {
                   url: WebUri(Config.instance.getUrl(INITIAL_PATH)),
                 ),
                 initialSettings: _webViewSettings,
-                onAjaxReadyStateChange: _onAjaxReadyStateChange,
               ),
             )
         )
     );
-  }
-
-  Future<AjaxRequestAction?> _onAjaxReadyStateChange(InAppWebViewController ctr, AjaxRequest request) async {
-    if (IS_SHOW_OVERLAY && request.isAsync == true) {
-      switch(request.readyState) {
-        case AjaxRequestReadyState.LOADING:
-          _overlayStateNotifier.show(context);
-          break;
-        case AjaxRequestReadyState.DONE:
-          _overlayStateNotifier.remove();
-          break;
-      }
-    }
-    return request.action;
   }
 
   void _onWebContentProcessDidTerminate(InAppWebViewController ctr) {
@@ -247,9 +231,7 @@ class WebViewPageState extends ConsumerState<WebViewPage> {
       }
 
       if((!webUri.isScheme("http") && !webUri.isScheme("https"))/* || !_allowHosts.any((ah) => host == ah)*/){
-        if(Platform.isAndroid) await ctr.stopLoading();
         if(mounted) await _overlayStateNotifier.showIndicator(context, openURL(url));
-        if(Platform.isAndroid) await ctr.reload();
 
         return NavigationActionPolicy.CANCEL;
       } else if(_allowFiles.any((type) => url.endsWith(".$type"))){
@@ -278,7 +260,7 @@ class WebViewPageState extends ConsumerState<WebViewPage> {
     if(IS_SHOW_OVERLAY) _overlayStateNotifier.remove();
 
     if(_versionStateNotifier.isChecked) {
-      _overlayStateNotifier.remove();
+      if(IS_SHOW_OVERLAY) _overlayStateNotifier.remove();
       if(!_firstLoad) setState(() => _firstLoad = true);
       if(mounted && _firstLoad) await _fcmTokenStateNotifier.firebasePushListener(_controller);
       _deepLinkListener();
@@ -292,7 +274,7 @@ class WebViewPageState extends ConsumerState<WebViewPage> {
       case "naver_login": return _overlayStateNotifier.showIndicator(context, _naverLogin());
       case "apple_login": return _overlayStateNotifier.showIndicator(context, _appleLogin());
     }
-    log(msg);
+    log(msg, title: "CONSOLE_MESSAGE");
   }
 
   Future<void> _kakaoLogin() async{

@@ -94,7 +94,6 @@ class WindowPopupPageState extends ConsumerState<WindowPopupPage> {
               cacheMode: CacheMode.LOAD_DEFAULT,
               cacheEnabled: true,
               mediaPlaybackRequiresUserGesture: true,
-              interceptOnlyAsyncAjaxRequests: true,
             ),
             onTitleChanged: _onTitleChanged,
             onWebViewCreated: _onWebViewCreated,
@@ -107,7 +106,6 @@ class WindowPopupPageState extends ConsumerState<WindowPopupPage> {
             onLoadStop: _onLoadStop,
             shouldOverrideUrlLoading: _shouldOverrideUrlLoading,
             onCreateWindow: _onCreateWindow,
-            onAjaxReadyStateChange: _onAjaxReadyStateChange,
           ),
         ),
       ),
@@ -180,19 +178,5 @@ class WindowPopupPageState extends ConsumerState<WindowPopupPage> {
 
   void _onWebContentProcessDidTerminate(InAppWebViewController ctr) {
     ctr.reload();
-  }
-
-  Future<AjaxRequestAction?> _onAjaxReadyStateChange(InAppWebViewController ctr, AjaxRequest request) async {
-    if (IS_SHOW_OVERLAY && request.isAsync == true) {
-      switch(request.readyState) {
-        case AjaxRequestReadyState.LOADING:
-          _overlayStateNotifier.show(context);
-          break;
-        case AjaxRequestReadyState.DONE:
-          _overlayStateNotifier.remove();
-          break;
-      }
-    }
-    return request.action;
   }
 }
