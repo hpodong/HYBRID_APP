@@ -1,11 +1,10 @@
 import 'dart:async';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:permission_handler/permission_handler.dart';
 
-import '../pages/permission_check.page.dart';
-import '../pages/webview.page.dart';
+import '../utills/common.dart';
 
 final permissionProvider = StateNotifierProvider<PermissionStateNotifier, bool>((ref) => PermissionStateNotifier());
 
@@ -23,18 +22,28 @@ class PermissionNotifier extends ChangeNotifier {
 class PermissionStateNotifier extends StateNotifier<bool> {
   PermissionStateNotifier() : super(false);
 
-  static const List<Permission> _permissions = [
+  static const List<Permission> _androidPermissions = [
+    Permission.camera,
+    Permission.microphone,
+    Permission.mediaLibrary,
+    Permission.notification,
+  ];
+
+  static const List<Permission> _iosPermissions = [
     Permission.camera,
     Permission.microphone,
     Permission.photos,
     Permission.notification,
   ];
 
+  static List<Permission> get _permissions => Platform.isAndroid ? _androidPermissions : _iosPermissions;
+
   Future<void> requestPermissions() async{
     /*final Map<Permission, PermissionStatus> statuses = await _permissions.request();*/
     for (Permission permission in _permissions) {
       final PermissionStatus status = await permission.request();
       if (!status.isGranted) {
+        log(permission, title: "DISABLED");
         await openAppSettings();
         break;
       }

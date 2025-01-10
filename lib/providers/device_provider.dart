@@ -1,5 +1,5 @@
 import 'dart:io';
-import 'package:HYBRID_APP/models/device.dart';
+import '../models/device.dart';
 import 'package:android_id/android_id.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/cupertino.dart';

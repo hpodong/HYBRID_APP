@@ -44,6 +44,17 @@ class WindowPopupPageState extends ConsumerState<WindowPopupPage> {
     context.pop();
   }
 
+  static final List<String> _allowFiles = <String>[
+    "png",
+    "jpg",
+    "jpeg",
+    "pdf",
+    "hwp",
+    "docx",
+    "xlsx",
+    "hwpx",
+  ];
+
   @override
   Widget build(BuildContext context) {
     return PopScope(
@@ -68,22 +79,22 @@ class WindowPopupPageState extends ConsumerState<WindowPopupPage> {
             keepAlive: InAppWebViewKeepAlive(),
             windowId: widget.action.windowId,
             initialSettings: InAppWebViewSettings(
-                applicationNameForUserAgent: USERAGENT,
-                javaScriptEnabled: true,
-                javaScriptCanOpenWindowsAutomatically: true,
-                supportMultipleWindows: true,
-                iframeAllowFullscreen: true,
-                useOnDownloadStart: true,
-                useShouldOverrideUrlLoading: true,
-                allowFileAccessFromFileURLs: true,
-                useHybridComposition: true,
-                domStorageEnabled: true,
-                underPageBackgroundColor: Colors.white,
-                cacheMode: CacheMode.LOAD_DEFAULT,
-                cacheEnabled: true,
-                mediaPlaybackRequiresUserGesture: true,
-                interceptOnlyAsyncAjaxRequests: true,
-                useShouldInterceptAjaxRequest: true
+              allowUniversalAccessFromFileURLs: true,
+              applicationNameForUserAgent: USERAGENT,
+              javaScriptEnabled: true,
+              javaScriptCanOpenWindowsAutomatically: true,
+              supportMultipleWindows: true,
+              iframeAllowFullscreen: true,
+              useOnDownloadStart: true,
+              useShouldOverrideUrlLoading: true,
+              allowFileAccessFromFileURLs: true,
+              useHybridComposition: true,
+              domStorageEnabled: true,
+              underPageBackgroundColor: Colors.white,
+              cacheMode: CacheMode.LOAD_DEFAULT,
+              cacheEnabled: true,
+              mediaPlaybackRequiresUserGesture: true,
+              interceptOnlyAsyncAjaxRequests: true,
             ),
             onTitleChanged: _onTitleChanged,
             onWebViewCreated: _onWebViewCreated,
@@ -92,29 +103,42 @@ class WindowPopupPageState extends ConsumerState<WindowPopupPage> {
             onReceivedHttpError: _onReceivedHttpError,
             onReceivedError: _onReceivedError,
             onWebContentProcessDidTerminate: _onWebContentProcessDidTerminate,
-            onAjaxProgress: _onAjaxProgress,
-            onAjaxReadyStateChange: _onAjaxReadyStateChange,
             onLoadStart: _onLoadStart,
             onLoadStop: _onLoadStop,
             shouldOverrideUrlLoading: _shouldOverrideUrlLoading,
+            onCreateWindow: _onCreateWindow,
+            onAjaxReadyStateChange: _onAjaxReadyStateChange,
           ),
         ),
       ),
     );
   }
 
+  Future<bool?> _onCreateWindow(InAppWebViewController ctr, CreateWindowAction action) async{
+    log(action, title: "WINDOW.OPEN");
+    context.pushNamed(WindowPopupPage.routeName, extra: action);
+    return true;
+  }
+
   void _onTitleChanged(InAppWebViewController ctr, String? title) {
     if(mounted) setState(() => _title = title);
   }
 
-  Future<NavigationActionPolicy?> _shouldOverrideUrlLoading(InAppWebViewController ctr, NavigationAction action) async {
+  Future<NavigationActionPolicy?> _shouldOverrideUrlLoading(InAppWebViewController ctr, NavigationAction action) async{
     final WebUri? webUri = action.request.url;
 
     if(webUri != null) {
-      final String url = webUri.toString();
-      if(!webUri.scheme.startsWith("http")){
-        if(mounted) _overlayStateNotifier.showIndicator(context, openURL(url));
+      String url = webUri.toString();
+      final String host = webUri.host;
+
+      log(url, title: "SHOULD OVERRIDE URL");
+      log(host, title: "HOST");
+
+      if((!webUri.isScheme("http") && !webUri.isScheme("https"))/* || !_allowHosts.any((ah) => host == ah)*/){
+        if(mounted) await _overlayStateNotifier.showIndicator(context, openURL(url));
         return NavigationActionPolicy.CANCEL;
+      } else if(_allowFiles.any((type) => url.endsWith(".$type"))){
+        return NavigationActionPolicy.DOWNLOAD;
       } else {
         return NavigationActionPolicy.ALLOW;
       }
@@ -158,13 +182,17 @@ class WindowPopupPageState extends ConsumerState<WindowPopupPage> {
     ctr.reload();
   }
 
-  Future<AjaxRequestAction> _onAjaxProgress(InAppWebViewController ctr, AjaxRequest request) {
-    if(IS_SHOW_OVERLAY) _overlayStateNotifier.show(context);
-    return Future.value(AjaxRequestAction.PROCEED);
-  }
-
-  Future<AjaxRequestAction> _onAjaxReadyStateChange(InAppWebViewController ctr, AjaxRequest request) {
-    if(IS_SHOW_OVERLAY) _overlayStateNotifier.remove();
-    return Future.value(AjaxRequestAction.PROCEED);
+  Future<AjaxRequestAction?> _onAjaxReadyStateChange(InAppWebViewController ctr, AjaxRequest request) async {
+    if (IS_SHOW_OVERLAY && request.isAsync == true) {
+      switch(request.readyState) {
+        case AjaxRequestReadyState.LOADING:
+          _overlayStateNotifier.show(context);
+          break;
+        case AjaxRequestReadyState.DONE:
+          _overlayStateNotifier.remove();
+          break;
+      }
+    }
+    return request.action;
   }
 }

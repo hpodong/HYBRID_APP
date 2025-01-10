@@ -1,4 +1,4 @@
-package com.hpodong.hybrid
+package com.sanggong.misung
 
 import io.flutter.embedding.android.FlutterFragmentActivity
 import android.content.ActivityNotFoundException
@@ -32,6 +32,7 @@ class MainActivity: FlutterActivity() {
                     if (success) {
                         result.success("App launched")
                     } else {
+                        startSchemeIntent("https://play.google.com/store/apps/details?id=${getPackageName(url)}&hl=ko");
                         result.error("ERROR", "Failed to launch app", null)
                     }
                 }

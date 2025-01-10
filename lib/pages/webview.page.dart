@@ -49,6 +49,8 @@ class WebViewPageState extends ConsumerState<WebViewPage> {
 
   InAppWebViewController? _controller;
 
+  bool _firstLoad = false;
+
   Future<void> _deepLinkListener() async{
     final Uri? initUri = await getInitialUri();
     await _deepLinkHandler(initUri);
@@ -66,8 +68,6 @@ class WebViewPageState extends ConsumerState<WebViewPage> {
   static final List<String> _allowHosts = <String>[
     HOST_NAME,
     "www.youtube.com",
-    "www.payapp.kr",
-    "www.pinkage.co.kr",
     /*"nid.naver.com",
     "kauth.kakao.com",
     "talk-apps.kakao.com",
@@ -103,25 +103,26 @@ class WebViewPageState extends ConsumerState<WebViewPage> {
   }
 
   final InAppWebViewSettings _webViewSettings = InAppWebViewSettings(
-      applicationNameForUserAgent: USERAGENT,
-      javaScriptEnabled: true,
-      javaScriptCanOpenWindowsAutomatically: true,
-      supportMultipleWindows: true,
-      iframeAllowFullscreen: true,
-      useOnDownloadStart: true,
-      useShouldOverrideUrlLoading: true,
-      allowFileAccessFromFileURLs: true,
-      useHybridComposition: true,
-      domStorageEnabled: true,
-      underPageBackgroundColor: Colors.white,
-      cacheMode: CacheMode.LOAD_DEFAULT,
-      cacheEnabled: true,
-      allowFileAccess: true,
-      allowContentAccess: true,
-      mediaPlaybackRequiresUserGesture: true,
-      supportZoom: false,
-      useShouldInterceptAjaxRequest: true,
-      interceptOnlyAsyncAjaxRequests: true
+    allowUniversalAccessFromFileURLs: true,
+    mixedContentMode: MixedContentMode.MIXED_CONTENT_ALWAYS_ALLOW,
+    applicationNameForUserAgent: USERAGENT,
+    javaScriptEnabled: true,
+    javaScriptCanOpenWindowsAutomatically: true,
+    supportMultipleWindows: true,
+    iframeAllowFullscreen: true,
+    useOnDownloadStart: true,
+    useShouldOverrideUrlLoading: true,
+    allowFileAccessFromFileURLs: true,
+    useHybridComposition: true,
+    domStorageEnabled: true,
+    underPageBackgroundColor: Colors.white,
+    cacheMode: CacheMode.LOAD_DEFAULT,
+    cacheEnabled: true,
+    allowFileAccess: true,
+    allowContentAccess: true,
+    mediaPlaybackRequiresUserGesture: true,
+    supportZoom: false,
+    interceptOnlyAsyncAjaxRequests: true,
   );
 
   Timer? _closeTimer;
@@ -168,26 +169,29 @@ class WebViewPageState extends ConsumerState<WebViewPage> {
                 onReceivedHttpError: _onReceivedHttpError,
                 onReceivedError: _onReceivedError,
                 onWebContentProcessDidTerminate: _onWebContentProcessDidTerminate,
-                onAjaxProgress: _onAjaxProgress,
-                onAjaxReadyStateChange: _onAjaxReadyStateChange,
                 initialUrlRequest: widget.request ?? URLRequest(
                   url: WebUri(Config.instance.getUrl(INITIAL_PATH)),
                 ),
                 initialSettings: _webViewSettings,
+                onAjaxReadyStateChange: _onAjaxReadyStateChange,
               ),
             )
         )
     );
   }
 
-  Future<AjaxRequestAction> _onAjaxProgress(InAppWebViewController ctr, AjaxRequest request) {
-    if(IS_SHOW_OVERLAY) _overlayStateNotifier.show(context);
-    return Future.value(AjaxRequestAction.PROCEED);
-  }
-
-  Future<AjaxRequestAction> _onAjaxReadyStateChange(InAppWebViewController ctr, AjaxRequest request) {
-    if(IS_SHOW_OVERLAY) _overlayStateNotifier.remove();
-    return Future.value(AjaxRequestAction.PROCEED);
+  Future<AjaxRequestAction?> _onAjaxReadyStateChange(InAppWebViewController ctr, AjaxRequest request) async {
+    if (IS_SHOW_OVERLAY && request.isAsync == true) {
+      switch(request.readyState) {
+        case AjaxRequestReadyState.LOADING:
+          _overlayStateNotifier.show(context);
+          break;
+        case AjaxRequestReadyState.DONE:
+          _overlayStateNotifier.remove();
+          break;
+      }
+    }
+    return request.action;
   }
 
   void _onWebContentProcessDidTerminate(InAppWebViewController ctr) {
@@ -218,7 +222,6 @@ class WebViewPageState extends ConsumerState<WebViewPage> {
   Future<bool?> _onCreateWindow(InAppWebViewController ctr, CreateWindowAction action) async{
     log(action, title: "WINDOW.OPEN");
     context.pushNamed(WindowPopupPage.routeName, extra: action);
-    if(IS_SHOW_OVERLAY) _overlayStateNotifier.remove();
     return true;
   }
 
@@ -244,7 +247,10 @@ class WebViewPageState extends ConsumerState<WebViewPage> {
       }
 
       if((!webUri.isScheme("http") && !webUri.isScheme("https"))/* || !_allowHosts.any((ah) => host == ah)*/){
-        if(mounted) await openURL(url);
+        if(Platform.isAndroid) await ctr.stopLoading();
+        if(mounted) await _overlayStateNotifier.showIndicator(context, openURL(url));
+        if(Platform.isAndroid) await ctr.reload();
+
         return NavigationActionPolicy.CANCEL;
       } else if(_allowFiles.any((type) => url.endsWith(".$type"))){
         return NavigationActionPolicy.DOWNLOAD;
@@ -273,7 +279,8 @@ class WebViewPageState extends ConsumerState<WebViewPage> {
 
     if(_versionStateNotifier.isChecked) {
       _overlayStateNotifier.remove();
-      if(mounted) await _fcmTokenStateNotifier.firebasePushListener(_controller);
+      if(!_firstLoad) setState(() => _firstLoad = true);
+      if(mounted && _firstLoad) await _fcmTokenStateNotifier.firebasePushListener(_controller);
       _deepLinkListener();
     }
   }

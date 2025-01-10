@@ -23,6 +23,7 @@ class NotificationNotifier extends ChangeNotifier{
 
   NotificationNotifier(this.ref) {
     ref.listen(notificationProvider, (prev, next) {
+      log(next, title: "FCM_TOKEN");
       if(prev != next) notifyListeners();
     });
     ref.read(notificationProvider.notifier).initialFcmToken();
