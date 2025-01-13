@@ -212,10 +212,6 @@ class WebViewPageState extends ConsumerState<WebViewPage> {
   Future<NavigationActionPolicy?> _shouldOverrideUrlLoading(InAppWebViewController ctr, NavigationAction action) async{
     final WebUri? webUri = action.request.url;
 
-    final String? path = action.request.url?.path;
-
-    if(path != null) if(path.startsWith("/index.php") || path == "/") await clearHistory();
-
     if(webUri != null) {
       String url = webUri.toString();
       final String host = webUri.host;
@@ -254,6 +250,8 @@ class WebViewPageState extends ConsumerState<WebViewPage> {
     if(mounted && INITIAL_PATH == path) await clearHistory();
 
     if(IS_SHOW_OVERLAY && mounted) _overlayStateNotifier.show(context);
+
+    if(path != null) if(path.startsWith("/index.php") || path == "/" || path == "/main") await clearHistory();
   }
 
   void _onLoadStop(InAppWebViewController ctr, Uri? uri) async{
@@ -261,9 +259,11 @@ class WebViewPageState extends ConsumerState<WebViewPage> {
 
     if(_versionStateNotifier.isChecked) {
       if(IS_SHOW_OVERLAY) _overlayStateNotifier.remove();
-      if(!_firstLoad) setState(() => _firstLoad = true);
-      if(mounted && _firstLoad) await _fcmTokenStateNotifier.firebasePushListener(_controller);
-      _deepLinkListener();
+      if(!_firstLoad) {
+        setState(() => _firstLoad = true);
+        await _fcmTokenStateNotifier.firebasePushListener(_controller);
+        _deepLinkListener();
+      }
     }
   }
 
