@@ -19,6 +19,20 @@ final Provider<GoRouter> routerProvider = Provider<GoRouter>((ref) {
   DeviceNotifier(ref);
   NotificationNotifier(ref);
 
+  String? redirectLogic(BuildContext _, GoRouterState state) {
+
+    if(state.matchedLocation == SplashPage.path) {
+      if(ref.read(versionProvider)) {
+        if(ref.read(permissionProvider)) {
+          return WebViewPage.path;
+        } else {
+          return PermissionCheckPage.path;
+        }
+      }
+    }
+    return null;
+  }
+
   return GoRouter(
       routes: [
         GoRoute(
@@ -46,7 +60,7 @@ final Provider<GoRouter> routerProvider = Provider<GoRouter>((ref) {
             ]
         ),
       ],
-      redirect: versionNotifier.redirectLogic,
+      redirect: redirectLogic,
       refreshListenable: Listenable.merge([
         versionNotifier,
         permissionNotifier

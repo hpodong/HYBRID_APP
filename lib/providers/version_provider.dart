@@ -26,24 +26,6 @@ class VersionNotifier extends ChangeNotifier {
     });
     ref.read(versionProvider.notifier).versionCheck();
   }
-
-  String? redirectLogic(BuildContext _, GoRouterState state) {
-    final bool isVersionChecked = ref.read(versionProvider);
-
-    if(isVersionChecked) {
-      final bool isPermissionChecked = ref.read(permissionProvider);
-      if(state.fullPath == SplashPage.path) {
-        if(isPermissionChecked) {
-          return WebViewPage.path;
-        } else {
-          return PermissionCheckPage.path;
-        }
-      } else if(state.fullPath == PermissionCheckPage.path && isPermissionChecked) {
-        return WebViewPage.path;
-      }
-    }
-    return null;
-  }
 }
 
 class VersionStateNotifier extends StateNotifier<bool> {
