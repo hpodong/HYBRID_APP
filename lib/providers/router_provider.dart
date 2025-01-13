@@ -21,14 +21,9 @@ final Provider<GoRouter> routerProvider = Provider<GoRouter>((ref) {
 
   String? redirectLogic(BuildContext _, GoRouterState state) {
 
-    if(state.matchedLocation == SplashPage.path) {
-      if(ref.read(versionProvider)) {
-        if(ref.read(permissionProvider)) {
-          return WebViewPage.path;
-        } else {
-          return PermissionCheckPage.path;
-        }
-      }
+    if(ref.read(versionProvider)) {
+      if((state.fullPath == SplashPage.path || state.fullPath == PermissionCheckPage.path) && ref.read(permissionProvider)) return WebViewPage.path;
+      if(!ref.read(permissionProvider)) return PermissionCheckPage.path;
     }
     return null;
   }
