@@ -51,7 +51,7 @@ class PermissionStateNotifier extends StateNotifier<bool> {
       final PermissionStatus status = await permission.request();
       if (!status.isGranted) {
         log(permission, title: "DISABLED");
-        await openAppSettings();
+        if(_requiredPermissions.contains(permission)) await openAppSettings();
         break;
       }
     }

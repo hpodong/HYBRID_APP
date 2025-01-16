@@ -1,4 +1,4 @@
-import 'package:HYBRID_APP/extensions/StringExtension.dart';
+import '/extensions/StringExtension.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -28,7 +28,7 @@ class PermissionCheckPage extends ConsumerWidget {
               const SizedBox(height: PADDING_VALUE),
               _buildButton("사진(필수)", const Text("게시글, 댓글 이미지 업로드")),
               const SizedBox(height: PADDING_VALUE),
-              _buildButton("알림(필수)", const Text("이벤트 알림, 기타 알림")),
+              _buildButton("알림(선택)", const Text("이벤트 알림, 기타 알림")),
               const SizedBox(height: PADDING_VALUE),
               CupertinoButton(
                 color: CustomColors.main,
