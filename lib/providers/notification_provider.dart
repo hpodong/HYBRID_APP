@@ -7,6 +7,7 @@ import 'package:flutter_app_badger/flutter_app_badger.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../configs/config/config.dart';
@@ -79,45 +80,32 @@ class FcmTokenStateNotifier extends StateNotifier<String?> {
       );
 
   Future<void> firebasePushListener(InAppWebViewController? ctr) async{
-    log("LISTENING FIREBASE PUSH");
-    final NotificationSettings settings = await _fcm.requestPermission(
+    /*final NotificationSettings settings = await _fcm.requestPermission(
         alert: true,
         badge: true,
         sound: true
-    );
+    );*/
 
-    String desc = '';
-    switch(settings.authorizationStatus) {
-      case AuthorizationStatus.authorized:
-        _localNotifications.initialize(_settings,
-            onDidReceiveNotificationResponse: (res) => _onTapNotification(ctr, res.payload)
-        );
-        desc = '허용됨';
-        final NotificationAppLaunchDetails? details = await _localNotifications.getNotificationAppLaunchDetails();
-        if(details?.didNotificationLaunchApp == true) {
-          _onTapNotification(ctr, details?.notificationResponse?.payload);
-        }
-        final RemoteMessage? message = await FirebaseMessaging.instance.getInitialMessage();
-        if(message != null) {
-          _onTapNotification(ctr, message.data.isEmpty ? null : jsonEncode(message.data));
-        }
-        FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-          _notificationHandler(message);
-        });
-        FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-          _onTapNotification(ctr, message.data.isEmpty ? "" : jsonEncode(message.data));
-        });
-        break;
-      case AuthorizationStatus.denied:
-        desc = '허용되지 않음';
-        break;
-      case AuthorizationStatus.notDetermined:
-        desc = '결정되지 않음';
-        break;
-      case AuthorizationStatus.provisional:
-        desc = '임시로 허용됨';
+    if(await Permission.notification.isGranted) {
+      log("LISTENING FIREBASE PUSH");
+      _localNotifications.initialize(_settings,
+          onDidReceiveNotificationResponse: (res) => _onTapNotification(ctr, res.payload)
+      );
+      final NotificationAppLaunchDetails? details = await _localNotifications.getNotificationAppLaunchDetails();
+      if(details?.didNotificationLaunchApp == true) {
+        _onTapNotification(ctr, details?.notificationResponse?.payload);
+      }
+      final RemoteMessage? message = await FirebaseMessaging.instance.getInitialMessage();
+      if(message != null) {
+        _onTapNotification(ctr, message.data.isEmpty ? null : jsonEncode(message.data));
+      }
+      FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+        _notificationHandler(message);
+      });
+      FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+        _onTapNotification(ctr, message.data.isEmpty ? "" : jsonEncode(message.data));
+      });
     }
-    log(desc, title: "알림 액세스");
   }
 
   void _notificationHandler(RemoteMessage rm) async{
