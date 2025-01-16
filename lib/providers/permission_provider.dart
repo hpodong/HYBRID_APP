@@ -22,25 +22,32 @@ class PermissionNotifier extends ChangeNotifier {
 class PermissionStateNotifier extends StateNotifier<bool> {
   PermissionStateNotifier() : super(false);
 
-  static const List<Permission> _androidPermissions = [
+  static const List<Permission> _androidRequiredPermissions = [
     Permission.camera,
     Permission.microphone,
     Permission.mediaLibrary,
-    Permission.notification,
   ];
 
-  static const List<Permission> _iosPermissions = [
+  static const List<Permission> _iosRequiredPermissions = [
     Permission.camera,
     Permission.microphone,
     Permission.photos,
+  ];
+
+  static const List<Permission> _androidSelectPermissions = [
     Permission.notification,
   ];
 
-  static List<Permission> get _permissions => Platform.isAndroid ? _androidPermissions : _iosPermissions;
+  static const List<Permission> _iosSelectPermissions = [
+    Permission.notification,
+  ];
+
+  static List<Permission> get _requiredPermissions => Platform.isAndroid ? _androidRequiredPermissions : _iosRequiredPermissions;
+  static List<Permission> get _selectPermissions => Platform.isAndroid ? _androidSelectPermissions : _iosSelectPermissions;
 
   Future<void> requestPermissions() async{
     /*final Map<Permission, PermissionStatus> statuses = await _permissions.request();*/
-    for (Permission permission in _permissions) {
+    for (Permission permission in [..._requiredPermissions, ..._selectPermissions]) {
       final PermissionStatus status = await permission.request();
       if (!status.isGranted) {
         log(permission, title: "DISABLED");
@@ -54,7 +61,7 @@ class PermissionStateNotifier extends StateNotifier<bool> {
 
   Future<void> permissionHandler() async{
     bool value = true;
-    for(Permission permission in _permissions) {
+    for(Permission permission in _requiredPermissions) {
       final PermissionStatus status = await permission.status;
       final bool isGranted = status.isGranted;
       if(!isGranted) {
