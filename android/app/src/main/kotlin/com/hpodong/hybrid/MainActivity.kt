@@ -1,4 +1,4 @@
-package com.sanggong.misung
+package com.hpodong.hybrid
 
 import io.flutter.embedding.android.FlutterFragmentActivity
 import android.content.ActivityNotFoundException
