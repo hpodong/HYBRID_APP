@@ -44,6 +44,13 @@
         </intent>
     </queries>-->
 
+    <!-- 정밀한 위치 (GPS & 네트워크) -->
+    <!--<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    &lt;!&ndash; 대략적인 위치 (Wi-Fi & 네트워크) &ndash;&gt;
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    &lt;!&ndash; 백그라운드 위치 권한 (Android 10 이상 필요) &ndash;&gt;
+    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />-->
+
     <!--인터넷 액세스 허용-->
     <uses-permission android:name="android.permission.INTERNET" />
     <!--파일 읽기 엑세스 허용-->
@@ -70,9 +77,9 @@
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <!--네트워크 상태 엑세스 허용-->
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
+    <!--<uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
     <uses-permission android:name="android.permission.VIDEO_CAPTURE" />
-    <uses-permission android:name="android.permission.AUDIO_CAPTURE" />
+    <uses-permission android:name="android.permission.AUDIO_CAPTURE" />-->
 
     <application
         android:usesCleartextTraffic="true"
