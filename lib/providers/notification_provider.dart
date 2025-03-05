@@ -1,9 +1,9 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:app_badge_plus/app_badge_plus.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_app_badger/flutter_app_badger.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -147,7 +147,7 @@ class FcmTokenStateNotifier extends StateNotifier<String?> {
 
   Future<void> _updateBadge() async{
     final List<ActiveNotification> notifications = await _localNotifications.getActiveNotifications();
-    await FlutterAppBadger.updateBadgeCount(notifications.length);
+    await AppBadgePlus.updateBadge(notifications.length);
   }
 
   void _onTapNotification(InAppWebViewController? ctr, String? payload) async{
