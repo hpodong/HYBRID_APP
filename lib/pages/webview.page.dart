@@ -94,10 +94,12 @@ class WebViewPageState extends ConsumerState<WebViewPage> {
   }
 
   Future<void> _setInitialData() async {
+    await _deviceStateNotifier.setDeviceInfo();
     final String? fcmToken = _fcmTokenStateNotifier.fcmToken;
     final String? deviceId = _deviceStateNotifier.deviceId;
     final String? version = _versionStateNotifier.version;
     final DateTime expiredAt = DateTime.now().add(const Duration(days: 365));
+    log(deviceId, title: "DEVICE_ID");
     if(fcmToken != null) await _setCookie("FCM_TOKEN", fcmToken, expiredAt: expiredAt);
     if(deviceId != null) await _setCookie("DEVICE_ID", deviceId, expiredAt: expiredAt);
     if(version != null) await _setCookie("APP_VERSION", version, expiredAt: expiredAt);
