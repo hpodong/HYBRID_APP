@@ -34,6 +34,7 @@ class Config {
   static Config get instance => Config();
 
   Future SET_TOKEN(TokenType tokenType, String? jwt) async{
+
     final SharedPreferences spf = await SharedPreferences.getInstance();
     if(jwt != null){
       return spf.setString(tokenType.name, jwt);

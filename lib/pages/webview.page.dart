@@ -99,7 +99,7 @@ class WebViewPageState extends ConsumerState<WebViewPage> {
     final String? deviceId = _deviceStateNotifier.deviceId;
     final String? version = _versionStateNotifier.version;
     final DateTime expiredAt = DateTime.now().add(const Duration(days: 365));
-    log(deviceId, title: "DEVICE_ID");
+
     if(fcmToken != null) await _setCookie("FCM_TOKEN", fcmToken, expiredAt: expiredAt);
     if(deviceId != null) await _setCookie("DEVICE_ID", deviceId, expiredAt: expiredAt);
     if(version != null) await _setCookie("APP_VERSION", version, expiredAt: expiredAt);
@@ -228,9 +228,8 @@ class WebViewPageState extends ConsumerState<WebViewPage> {
         await ka.logout();
       }
 
-      if((!webUri.isScheme("http") && !webUri.isScheme("https"))/* || !_allowHosts.any((ah) => host == ah)*/){
-        if(mounted) await _overlayStateNotifier.showIndicator(context, openURL(url));
-
+      if(!webUri.isScheme("https") && !webUri.isScheme("http")/* || !_allowHosts.any((ah) => host == ah)*/){
+        if(mounted) _overlayStateNotifier.showIndicator(context, openURL(url));
         return NavigationActionPolicy.CANCEL;
       } else if(_allowFiles.any((type) => url.endsWith(".$type"))){
         return NavigationActionPolicy.DOWNLOAD;
@@ -331,5 +330,6 @@ class WebViewPageState extends ConsumerState<WebViewPage> {
     DateTime? expiredAt
   }) async {
     await _cookieManager.setCookie(url: WebUri.uri(Uri.parse(Config.instance.getUrl())), name: name, value: value, expiresDate: expiredAt?.millisecondsSinceEpoch);
+    log("NAME : $name, VALUE : $value");
   }
 }

@@ -1,8 +1,11 @@
 import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import '../utills/common.dart';
 
 final overlayProvider = StateNotifierProvider((ref) => OverlayStateNotifier());
 
@@ -18,7 +21,7 @@ class OverlayStateNotifier extends StateNotifier<OverlayEntry?> {
     );
   }
 
-  Future<T> showIndicator<T>(BuildContext context, Future<T> future) {
+  Future<T> showIndicator<T>(BuildContext context, Future<T> future) async {
     remove();
 
     state = OverlayEntry(builder: _buildIndicator);
@@ -26,6 +29,14 @@ class OverlayStateNotifier extends StateNotifier<OverlayEntry?> {
     OverlayState? overlayState = Overlay.of(context);
 
     if(state != null) overlayState.insert(state!);
+
+    return compute((data) {
+      log(data, title: "DATA");
+      remove();
+      return data;
+    }, await future)
+      .catchError((err) => throw Exception(err))
+      .whenComplete(remove);
 
     return future.then((result) {
       return result;

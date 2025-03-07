@@ -1,4 +1,4 @@
-import '/extensions/StringExtension.dart';
+import '/extensions/string_extension.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

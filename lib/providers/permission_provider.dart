@@ -43,11 +43,11 @@ class PermissionStateNotifier extends StateNotifier<bool> {
   ];
 
   static const List<Permission> _androidCheckingPermissions = [
-    Permission.locationWhenInUse
+    Permission.camera, Permission.microphone, Permission.photos
   ];
 
   static const List<Permission> _iosCheckingPermissions = [
-    Permission.locationWhenInUse
+    Permission.camera, Permission.microphone
   ];
 
   static List<Permission> get _requestPermissions => Platform.isAndroid ? _androidRequestPermissions : _iosRequestPermissions;
@@ -72,5 +72,6 @@ class PermissionStateNotifier extends StateNotifier<bool> {
       }
     }
     state = value;
+    if(!state) openAppSettings();
   }
 }
