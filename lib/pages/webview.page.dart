@@ -2,7 +2,9 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:isolate';
 
+import 'package:HYBRID_APP/models/webview_xy.dart';
 import 'package:HYBRID_APP/utills/native_channel.dart';
+import 'package:HYBRID_APP/widgets/buttons/primary_button.dart';
 import 'package:app_links/app_links.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -53,8 +55,6 @@ class WebViewPageState extends ConsumerState<WebViewPage> {
 
   Future<void> _deepLinkListener() async{
     final AppLinks appLinks = AppLinks();
-
-    log(await NativeChannel.getBundle("Bundle name"), title: "DISPLAY NAME");
 
     final Uri? initUri = await appLinks.getInitialLink();
     await _deepLinkHandler(initUri);
@@ -134,6 +134,11 @@ class WebViewPageState extends ConsumerState<WebViewPage> {
 
   bool _canClose = false;
 
+  bool _isSaving = false;
+  bool _isRunning = false;
+
+
+
   Future<void> _onWillPop(bool didPop, dynamic data) async{
     final bool? canGoBack = await _controller?.canGoBack();
 
@@ -161,23 +166,47 @@ class WebViewPageState extends ConsumerState<WebViewPage> {
         child: Scaffold(
             backgroundColor: Colors.white,
             body: SafeArea(
-              child: InAppWebView(
-                shouldOverrideUrlLoading: _shouldOverrideUrlLoading,
-                keepAlive: InAppWebViewKeepAlive(),
-                onConsoleMessage: _onConsoleMessage,
-                onDownloadStartRequest: _onDownloadStartRequest,
-                onCreateWindow: _onCreateWindow,
-                onWebViewCreated: _onWebViewCreated,
-                onLoadStart: _onLoadStart,
-                onLoadStop: _onLoadStop,
-                onPermissionRequest: _onPermissionRequest,
-                onReceivedHttpError: _onReceivedHttpError,
-                onReceivedError: _onReceivedError,
-                onWebContentProcessDidTerminate: _onWebContentProcessDidTerminate,
-                initialUrlRequest: widget.request ?? URLRequest(
-                  url: WebUri(Config.instance.getUrl(INITIAL_PATH)),
-                ),
-                initialSettings: _webViewSettings,
+              child: Column(
+                children: [
+                  Expanded(
+                    child: InAppWebView(
+                      shouldOverrideUrlLoading: _shouldOverrideUrlLoading,
+                      keepAlive: InAppWebViewKeepAlive(),
+                      onConsoleMessage: _onConsoleMessage,
+                      onDownloadStartRequest: _onDownloadStartRequest,
+                      onCreateWindow: _onCreateWindow,
+                      onWebViewCreated: _onWebViewCreated,
+                      onLoadStart: _onLoadStart,
+                      onLoadStop: _onLoadStop,
+                      onPermissionRequest: _onPermissionRequest,
+                      onReceivedHttpError: _onReceivedHttpError,
+                      onReceivedError: _onReceivedError,
+                      onWebContentProcessDidTerminate: _onWebContentProcessDidTerminate,
+                      initialUrlRequest: widget.request ?? URLRequest(
+                        url: WebUri(Config.instance.getUrl(INITIAL_PATH)),
+                      ),
+                      initialSettings: _webViewSettings,
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20).add(const EdgeInsets.only(top: 20)),
+                    child: Row(
+                      children: [
+                        Expanded(child: PrimaryButton(text: "저장", onTap: _isRunning ? null : (){
+                          setState(() => _isSaving = !_isSaving);
+                        })),
+                        const SizedBox(width: 20),
+                        Expanded(child: PrimaryButton(text: "실행", onTap: _isSaving || _isRunning ? null : (){
+                          setState(() => _isRunning = true);
+                        })),
+                        const SizedBox(width: 20),
+                        Expanded(child: PrimaryButton(text: "정지", onTap: _isSaving || !_isRunning ? null : (){
+                          setState(() => _isRunning = false);
+                        })),
+                      ],
+                    ),
+                  )
+                ],
               ),
             )
         )
@@ -242,9 +271,23 @@ class WebViewPageState extends ConsumerState<WebViewPage> {
       return NavigationActionPolicy.CANCEL;
     }
   }
+  
+  final List<WebviewXY> _xys = <WebviewXY>[];
 
   void _onWebViewCreated(InAppWebViewController ctr) {
-    _controller = ctr;
+    _controller = ctr
+        ..addJavaScriptHandler(
+          handlerName: 'coordinateHandler',
+          callback: (args) {
+            if(_isSaving) {
+              final x = args[0];
+              final y = args[1];
+              setState(() {
+                _xys.add(WebviewXY(x, y));
+              });
+            }
+          },
+        );
   }
 
   void _onLoadStart(InAppWebViewController ctr, Uri? uri) async{
@@ -259,10 +302,6 @@ class WebViewPageState extends ConsumerState<WebViewPage> {
 
   void _onLoadStop(InAppWebViewController ctr, Uri? uri) async{
     if(IS_SHOW_OVERLAY) _overlayStateNotifier.remove();
-    /*final String? path = uri?.path;
-    if(path != null) {
-      await ctr.evaluateJavascript(source: "document.elementFromPoint(200, 200)?.click();");
-    }*/
 
     if(_versionStateNotifier.isChecked) {
       if(IS_SHOW_OVERLAY) _overlayStateNotifier.remove();
@@ -272,6 +311,22 @@ class WebViewPageState extends ConsumerState<WebViewPage> {
         _deepLinkListener();
       }
     }
+
+    /*final String? path = uri?.path;
+    if(path != null) {
+      await _onClickFromXY(134, 140);
+    }*/
+
+    _injectCoordinateJS();
+  }
+
+  // JavaScript 코드 삽입
+  void _injectCoordinateJS() async {
+    await _controller?.evaluateJavascript(source: """
+      document.addEventListener('click', function(event) {
+        window.flutter_inappwebview.callHandler('coordinateHandler', event.clientX, event.clientY);
+      });
+    """);
   }
 
   Future<void> _onClickFromXY(double x, double y) async{
