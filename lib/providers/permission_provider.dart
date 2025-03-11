@@ -23,20 +23,13 @@ class PermissionStateNotifier extends StateNotifier<bool> {
   PermissionStateNotifier() : super(true);
 
   static const List<Permission> _androidRequestPermissions = [
-    Permission.notification,
-    Permission.location,
-    Permission.locationAlways,
-    Permission.locationWhenInUse,
     Permission.camera,
     Permission.microphone,
     Permission.storage,
-    Permission.phone
+    Permission.notification,
   ];
 
   static const List<Permission> _iosRequestPermissions = [
-    Permission.location,
-    Permission.locationAlways,
-    Permission.locationWhenInUse,
     Permission.camera,
     Permission.microphone,
     Permission.photos,
@@ -44,16 +37,15 @@ class PermissionStateNotifier extends StateNotifier<bool> {
   ];
 
   static const List<Permission> _androidCheckingPermissions = [
-    Permission.notification,
     Permission.camera,
-    Permission.mediaLibrary,
-    Permission.location,
+    Permission.microphone,
     Permission.storage,
-    Permission.phone,
   ];
 
   static const List<Permission> _iosCheckingPermissions = [
-    Permission.locationWhenInUse
+    Permission.camera,
+    Permission.microphone,
+    Permission.photos,
   ];
 
   static List<Permission> get _requestPermissions => Platform.isAndroid ? _androidRequestPermissions : _iosRequestPermissions;
@@ -90,6 +82,6 @@ class PermissionStateNotifier extends StateNotifier<bool> {
   Future<bool> _isHigh30SDK() async{
     final DeviceInfoPlugin infoPlugin = DeviceInfoPlugin();
     final AndroidDeviceInfo info = await infoPlugin.androidInfo;
-    return info.version.sdkInt >= 30;
+    return info.version.sdkInt >= 32;
   }
 }
