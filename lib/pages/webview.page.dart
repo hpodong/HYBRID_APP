@@ -8,7 +8,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:go_router/go_router.dart';
-import 'package:flutter_naver_login_plus/flutter_naver_login_plus.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
 import 'package:open_filex/open_filex.dart';
@@ -17,7 +16,6 @@ import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import '../configs/config/config.dart';
 import '../configs/socials/apple.config.dart';
 import '../configs/socials/kakao.config.dart';
-import '../configs/socials/naver.config.dart';
 import 'package:http/http.dart' as http;
 
 import '../providers/device_provider.dart';
@@ -228,9 +226,7 @@ class WebViewPageState extends ConsumerState<WebViewPage> {
       log(host, title: "HOST");
 
       if(webUri.path == LOGOUT_PAGE) {
-        final NaverConfig na = NaverConfig();
         final KakaoConfig ka = KakaoConfig();
-        await na.logout();
         await ka.logout();
       }
 
@@ -286,7 +282,6 @@ class WebViewPageState extends ConsumerState<WebViewPage> {
     final String msg = cm.message;
     switch(msg) {
       case "kakao_login": return _overlayStateNotifier.showIndicator(context, _kakaoLogin());
-      case "naver_login": return _overlayStateNotifier.showIndicator(context, _naverLogin());
       case "apple_login": return _overlayStateNotifier.showIndicator(context, _appleLogin());
     }
     log(msg, title: "CONSOLE_MESSAGE");
@@ -309,15 +304,6 @@ class WebViewPageState extends ConsumerState<WebViewPage> {
       if(user.familyName != null && user.givenName != null) {
         name = "${user.familyName}${user.givenName}";
       }
-    }
-  }
-
-  Future<void> _naverLogin() async{
-    final NaverConfig nc = NaverConfig();
-    final NaverAccountResult? user = await nc.login();
-
-    if(user != null && mounted) {
-
     }
   }
 
