@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:HYBRID_APP/utills/native_channel.dart';
 import 'package:app_links/app_links.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -53,6 +54,8 @@ class WebViewPageState extends ConsumerState<WebViewPage> {
 
   Future<void> _deepLinkListener() async{
     final AppLinks appLinks = AppLinks();
+
+    log(await NativeChannel.getBundle("Bundle name"), title: "DISPLAY NAME");
 
     final Uri? initUri = await appLinks.getInitialLink();
     await _deepLinkHandler(initUri);
