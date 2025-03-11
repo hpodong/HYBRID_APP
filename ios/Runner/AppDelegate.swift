@@ -18,33 +18,37 @@ import app_links
     let launchMethodChannel = FlutterMethodChannel(name: LAUNCH_CHANNEL, binaryMessenger: controller.binaryMessenger)
 
     launchMethodChannel.setMethodCallHandler { (call: FlutterMethodCall, result: @escaping FlutterResult) -> Void in
-        if call.method == "openURL" {
-            if let args = call.arguments as? Dictionary<String, Any>,
-               let urlStr = args["url"] as? String,
-               let url = URL(string: urlStr) {
+        
+        switch call.method {
+            case "openURL": {
+                if let args = call.arguments as? Dictionary<String, Any>,
+                   let urlStr = args["url"] as? String,
+                   let url = URL(string: urlStr) {
 
-                if url.scheme != "http" && url.scheme != "https" {
-                    UIApplication.shared.open(url, options: [:], completionHandler:{ (success) in
-                        if !(success){
-                            if let scheme = url.scheme,
-                               let appStoreURLString = Constant.appStoreURL[scheme],
-                               let appStoreURL = URL(string: appStoreURLString) {
-                                UIApplication.shared.open(appStoreURL)
-                            } else {
-                                result(FlutterError(code: "UNAVAILABLE", message: "URL cannot be opened", details: nil))
+                    if url.scheme != "http" && url.scheme != "https" {
+                        UIApplication.shared.open(url, options: [:], completionHandler:{ (success) in
+                            if !(success){
+                                if let scheme = url.scheme,
+                                   let appStoreURLString = Constant.appStoreURL[scheme],
+                                   let appStoreURL = URL(string: appStoreURLString) {
+                                    UIApplication.shared.open(appStoreURL)
+                                } else {
+                                    result(FlutterError(code: "UNAVAILABLE", message: "URL cannot be opened", details: nil))
+                                }
                             }
-                        }
-                    })
-                    // `decisionHandler`를 제거한 부분입니다.
+                        })
+                        // `decisionHandler`를 제거한 부분입니다.
+                    } else {
+                        // 웹뷰에서 링크로 이동하는 경우
+                        result(true) // 링크가 허용되면 `true`를 반환
+                    }
                 } else {
-                    // 웹뷰에서 링크로 이동하는 경우
-                    result(true) // 링크가 허용되면 `true`를 반환
+                    result(FlutterError(code: "INVALID_ARGUMENT", message: "Invalid URL", details: nil))
                 }
-            } else {
-                result(FlutterError(code: "INVALID_ARGUMENT", message: "Invalid URL", details: nil))
             }
-        } else {
-            result(FlutterMethodNotImplemented)
+            default : {
+                result(FlutterMethodNotImplemented)
+            }
         }
     }
 

@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:app_links/app_links.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
@@ -11,7 +12,6 @@ import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
 import 'package:open_filex/open_filex.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
-import 'package:uni_links/uni_links.dart';
 import '../configs/config/config.dart';
 import '../configs/socials/apple.config.dart';
 import '../configs/socials/kakao.config.dart';
@@ -52,14 +52,16 @@ class WebViewPageState extends ConsumerState<WebViewPage> {
   bool _firstLoad = false;
 
   Future<void> _deepLinkListener() async{
-    final Uri? initUri = await getInitialUri();
+    final AppLinks appLinks = AppLinks();
+
+    final Uri? initUri = await appLinks.getInitialLink();
     await _deepLinkHandler(initUri);
-    uriLinkStream.listen(_deepLinkHandler);
+    appLinks.uriLinkStream.listen(_deepLinkHandler);
   }
 
   Future<void> _deepLinkHandler(Uri? event) async {
     if(event != null) {
-      log("DEEP LINK: ${event.toString()}");
+      log(event, title: "DEEP LINK");
       final String? url = event.queryParameters["url"];
       if(url != null) await _controller?.loadUrl(urlRequest: URLRequest(url: WebUri.uri(Uri.parse(url))));
     }

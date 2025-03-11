@@ -26,7 +26,7 @@ dependencies:
   permission_handler: ^11.3.1
   logger: ^2.5.0
   kakao_flutter_sdk: ^1.9.6
-  uni_links: ^0.5.1
+  app_links: ^6.4.0
   google_sign_in: ^6.2.2
   sign_in_with_apple: ^6.1.4
   flutter_naver_login_plus: ^1.0.2
