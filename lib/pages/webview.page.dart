@@ -262,6 +262,12 @@ class WebViewPageState extends ConsumerState<WebViewPage> {
 
   void _onLoadStop(InAppWebViewController ctr, Uri? uri) async{
     if(IS_SHOW_OVERLAY) _overlayStateNotifier.remove();
+    /*final String? path = uri?.path;
+    
+    if(path != null) {
+      final location = await ctr.evaluateJavascript(source: "document.elementFromPoint(200, 200)?.click();");
+      log(location, title: "LOCATION");
+    }*/
 
     if(_versionStateNotifier.isChecked) {
       if(IS_SHOW_OVERLAY) _overlayStateNotifier.remove();
