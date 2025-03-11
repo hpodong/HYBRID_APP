@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'dart:isolate';
 
 import 'package:HYBRID_APP/utills/native_channel.dart';
 import 'package:app_links/app_links.dart';
@@ -263,10 +264,8 @@ class WebViewPageState extends ConsumerState<WebViewPage> {
   void _onLoadStop(InAppWebViewController ctr, Uri? uri) async{
     if(IS_SHOW_OVERLAY) _overlayStateNotifier.remove();
     /*final String? path = uri?.path;
-    
     if(path != null) {
-      final location = await ctr.evaluateJavascript(source: "document.elementFromPoint(200, 200)?.click();");
-      log(location, title: "LOCATION");
+      await ctr.evaluateJavascript(source: "document.elementFromPoint(200, 200)?.click();");
     }*/
 
     if(_versionStateNotifier.isChecked) {
@@ -277,6 +276,10 @@ class WebViewPageState extends ConsumerState<WebViewPage> {
         _deepLinkListener();
       }
     }
+  }
+
+  Future<void> _onClickFromXY(double x, double y) async{
+    await _controller?.evaluateJavascript(source: "document.elementFromPoint($x, $y)?.click();");
   }
 
   void _onConsoleMessage(InAppWebViewController ctr, ConsoleMessage cm) async{
