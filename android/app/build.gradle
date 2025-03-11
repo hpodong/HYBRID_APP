@@ -46,7 +46,7 @@ if (flutterVersionName == null) {
 
 android {
     namespace "com.hpodong.hybrid"
-    compileSdkVersion 34
+    compileSdkVersion 35
     ndkVersion flutter.ndkVersion
 
     compileOptions {
