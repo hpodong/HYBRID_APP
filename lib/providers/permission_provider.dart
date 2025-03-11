@@ -1,10 +1,10 @@
 import 'dart:async';
 import 'dart:io';
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:permission_handler/permission_handler.dart';
 
-import '../utills/common.dart';
 
 final permissionProvider = StateNotifierProvider<PermissionStateNotifier, bool>((ref) => PermissionStateNotifier());
 
@@ -15,21 +15,22 @@ class PermissionNotifier extends ChangeNotifier {
     ref.listen<bool>(permissionProvider, (prev, next) {
       if(prev != next) notifyListeners();
     });
-    ref.read(permissionProvider.notifier).permissionHandler();
+    ref.read(permissionProvider.notifier).permissionHandler(false);
   }
 }
 
 class PermissionStateNotifier extends StateNotifier<bool> {
-  PermissionStateNotifier() : super(false);
+  PermissionStateNotifier() : super(true);
 
   static const List<Permission> _androidRequestPermissions = [
+    Permission.notification,
     Permission.location,
     Permission.locationAlways,
     Permission.locationWhenInUse,
     Permission.camera,
     Permission.microphone,
-    Permission.mediaLibrary,
-    Permission.notification,
+    Permission.storage,
+    Permission.phone
   ];
 
   static const List<Permission> _iosRequestPermissions = [
@@ -43,11 +44,16 @@ class PermissionStateNotifier extends StateNotifier<bool> {
   ];
 
   static const List<Permission> _androidCheckingPermissions = [
-    Permission.camera, Permission.microphone, Permission.photos
+    Permission.notification,
+    Permission.camera,
+    Permission.mediaLibrary,
+    Permission.location,
+    Permission.storage,
+    Permission.phone,
   ];
 
   static const List<Permission> _iosCheckingPermissions = [
-    Permission.camera, Permission.microphone
+    Permission.locationWhenInUse
   ];
 
   static List<Permission> get _requestPermissions => Platform.isAndroid ? _androidRequestPermissions : _iosRequestPermissions;
@@ -55,15 +61,21 @@ class PermissionStateNotifier extends StateNotifier<bool> {
 
   Future<void> requestPermissions() async{
     for(Permission permission in _requestPermissions) {
+      if(permission == Permission.storage && Platform.isAndroid && await _isHigh30SDK()) {
+        permission = Permission.manageExternalStorage;
+      }
       PermissionStatus status = await permission.status;
       if(!status.isGranted) status = await permission.request();
     }
-    await permissionHandler();
+    await permissionHandler(true);
   }
 
-  Future<void> permissionHandler() async{
+  Future<void> permissionHandler(bool openSettings) async{
     bool value = true;
     for(Permission permission in _checkingPermissions) {
+      if(permission == Permission.storage && Platform.isAndroid && await _isHigh30SDK()) {
+        permission = Permission.manageExternalStorage;
+      }
       final PermissionStatus status = await permission.status;
       final bool isGranted = status.isGranted;
       if(!isGranted) {
@@ -71,7 +83,13 @@ class PermissionStateNotifier extends StateNotifier<bool> {
         break;
       }
     }
+    if(!value && openSettings) await openAppSettings();
     state = value;
-    if(!state) openAppSettings();
+  }
+
+  Future<bool> _isHigh30SDK() async{
+    final DeviceInfoPlugin infoPlugin = DeviceInfoPlugin();
+    final AndroidDeviceInfo info = await infoPlugin.androidInfo;
+    return info.version.sdkInt >= 30;
   }
 }

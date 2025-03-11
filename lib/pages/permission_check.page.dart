@@ -27,13 +27,12 @@ class PermissionCheckPage extends ConsumerWidget {
               Text("하이브리드앱을 이용하기 위해서 아래의 권한이 필요합니다".insertZwj(), style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20), textAlign: TextAlign.center),
               const SizedBox(height: PADDING_VALUE),
               _buildButton("사진(필수)", const Text("게시글, 댓글 이미지 업로드")),
-              const SizedBox(height: PADDING_VALUE),
               _buildButton("알림(선택)", const Text("이벤트 알림, 기타 알림")),
               const SizedBox(height: PADDING_VALUE),
               CupertinoButton(
                 color: CustomColors.main,
                 onPressed: ref.read(permissionProvider.notifier).requestPermissions,
-                child: const Center(child: Text("확인", style: TextStyle(fontWeight: FontWeight.bold))),
+                child: const Center(child: Text("확인", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white))),
               )
             ],
           ),
