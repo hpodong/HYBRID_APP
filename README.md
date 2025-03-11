@@ -26,7 +26,7 @@ echo ${SHA1 인증 지문} | xxd -r -p | openssl base64
   flutter clean && flutter pub get && cd ios && pod install && cd .. && flutter build apk --flavor prod -t lib/prod.dart
 
 # 개발 버전 앱 빌드
-- appbundle
-  flutter clean && flutter pub get && cd ios && pod install && cd .. && flutter build appbundle --flavor dev -t lib/dev.dart
+flutter clean && flutter pub get && cd ios
+- appbundle && pod install && cd .. && flutter build appbundle --flavor dev -t lib/dev.dart
 - apk
   flutter clean && flutter pub get && cd ios && pod install && cd .. && flutter build apk --flavor dev -t lib/dev.dart
