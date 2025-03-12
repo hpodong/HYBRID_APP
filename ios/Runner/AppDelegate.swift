@@ -1,7 +1,6 @@
 import UIKit
 import Flutter
 import FirebaseCore
-import NaverThirdPartyLogin
 import app_links
 
 @main
@@ -60,17 +59,6 @@ import app_links
     }
 
     return super.application(application, didFinishLaunchingWithOptions: launchOptions)
-  }
-
-  override func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
-      // 네이버 로그인 URL 처리
-      if NaverThirdPartyLoginConnection.getSharedInstance().application(app, open: url, options: options) {
-          return true
-      }
-
-      // 기타 앱에서 처리해야 할 URL을 여기에 추가
-
-      return super.application(app, open: url, options: options)
   }
 }
 

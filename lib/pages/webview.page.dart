@@ -1,9 +1,7 @@
 import 'dart:async';
 import 'dart:io';
-import 'dart:isolate';
 
 import 'package:HYBRID_APP/models/webview_xy.dart';
-import 'package:HYBRID_APP/utills/native_channel.dart';
 import 'package:HYBRID_APP/widgets/buttons/primary_button.dart';
 import 'package:app_links/app_links.dart';
 import 'package:flutter/cupertino.dart';
@@ -52,6 +50,8 @@ class WebViewPageState extends ConsumerState<WebViewPage> {
   InAppWebViewController? _controller;
 
   bool _firstLoad = false;
+
+  DateTime? _latestClickedAt;
 
   Future<void> _deepLinkListener() async{
     final AppLinks appLinks = AppLinks();
@@ -138,7 +138,6 @@ class WebViewPageState extends ConsumerState<WebViewPage> {
   bool _isRunning = false;
 
 
-
   Future<void> _onWillPop(bool didPop, dynamic data) async{
     final bool? canGoBack = await _controller?.canGoBack();
 
@@ -194,10 +193,14 @@ class WebViewPageState extends ConsumerState<WebViewPage> {
                       children: [
                         Expanded(child: PrimaryButton(text: "저장", onTap: _isRunning ? null : (){
                           setState(() => _isSaving = !_isSaving);
+                          if(_isSaving) setState(_xys.clear);
+                          log(_xys);
                         })),
                         const SizedBox(width: 20),
                         Expanded(child: PrimaryButton(text: "실행", onTap: _isSaving || _isRunning ? null : (){
                           setState(() => _isRunning = true);
+                          final WebviewXY data = _xys.first;
+                          _onClickFromXY(data.x, data.y);
                         })),
                         const SizedBox(width: 20),
                         Expanded(child: PrimaryButton(text: "정지", onTap: _isSaving || !_isRunning ? null : (){
@@ -282,8 +285,10 @@ class WebViewPageState extends ConsumerState<WebViewPage> {
             if(_isSaving) {
               final x = args[0];
               final y = args[1];
+              log(x);
+              log(y);
               setState(() {
-                _xys.add(WebviewXY(x, y));
+                _xys.add(WebviewXY(x, y, DateTime.now()));
               });
             }
           },
@@ -323,13 +328,14 @@ class WebViewPageState extends ConsumerState<WebViewPage> {
   // JavaScript 코드 삽입
   void _injectCoordinateJS() async {
     await _controller?.evaluateJavascript(source: """
-      document.addEventListener('click', function(event) {
+      const onScreenTouch = (event) => {
         window.flutter_inappwebview.callHandler('coordinateHandler', event.clientX, event.clientY);
-      });
+      }
+      document.addEventListener('click', onScreenTouch);
     """);
   }
 
-  Future<void> _onClickFromXY(double x, double y) async{
+  Future<void> _onClickFromXY(int x, int y) async{
     await _controller?.evaluateJavascript(source: "document.elementFromPoint($x, $y)?.click();");
   }
 

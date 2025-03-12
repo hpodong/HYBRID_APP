@@ -4,8 +4,10 @@ class WebviewXY extends Equatable{
   final int x;
   final int y;
 
-  const WebviewXY(this.x, this.y);
+  final DateTime clickedAt;
+
+  const WebviewXY(this.x, this.y, this.clickedAt);
 
   @override
-  List<Object?> get props => [x, y];
+  List<Object?> get props => [x, y, clickedAt];
 }
