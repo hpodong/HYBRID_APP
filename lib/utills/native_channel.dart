@@ -1,4 +1,4 @@
-import 'package:HYBRID_APP/utills/common.dart';
+import '../utills/common.dart';
 import 'package:flutter/services.dart';
 
 class NativeChannel {

@@ -1,8 +1,7 @@
 import 'dart:async';
 import 'dart:io';
-import 'dart:isolate';
 
-import 'package:HYBRID_APP/utills/native_channel.dart';
+import '../utills/native_channel.dart';
 import 'package:app_links/app_links.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
