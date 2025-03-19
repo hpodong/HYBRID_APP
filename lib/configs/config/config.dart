@@ -22,6 +22,7 @@ final String SPLASH_IMAGE = dotenv.get('SPLASH_IMAGE');
 final String APPLE_CLIENT_ID = dotenv.get('APPLE_CLIENT_ID');
 final String APPLE_LOGIN_CALLBACK = dotenv.get('APPLE_LOGIN_CALLBACK');
 final String INITIAL_PATH = dotenv.get('INITIAL_PATH');
+final String VERSION_PATH = dotenv.get('VERSION_PATH');
 const double PADDING_VALUE = 20;
 
 final bool VERSION_CHECK = bool.parse(dotenv.get('VERSION_CHECK'));

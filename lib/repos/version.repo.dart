@@ -16,6 +16,6 @@ class VersionRepo extends Config{
       "build": buildNumber,
       "os": Platform.isAndroid ? "AOS" : "IOS"
     };
-    return Request.post('${getUrl()}/api/app/versioncheck', body: body);
+    return Request.post('${getUrl()}$VERSION_PATH', body: body);
   }
 }
