@@ -30,3 +30,9 @@ flutter clean && flutter pub get && cd ios
 - appbundle && pod install && cd .. && flutter build appbundle --flavor dev -t lib/dev.dart
 - apk
   flutter clean && flutter pub get && cd ios && pod install && cd .. && flutter build apk --flavor dev -t lib/dev.dart
+
+# 버전 관리
+- 200: 성공
+- 400: 업데이트 푸시
+- 401: 강제 업데이트
+- 500: 서버 점검중
