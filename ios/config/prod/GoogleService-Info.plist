@@ -3,17 +3,17 @@
 <plist version="1.0">
 <dict>
 	<key>API_KEY</key>
-	<string>AIzaSyAfEuRlsU44T0u6d61sPDdAtE0yD0OkLBQ</string>
+	<string>AIzaSyBEJuD2gJoUQBcHYJfyuhzPiwD_ZsGEVlM</string>
 	<key>GCM_SENDER_ID</key>
-	<string>566402399821</string>
+	<string>195528322454</string>
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>com.hpodong.hybrid</string>
+	<string>com.sanggong.app</string>
 	<key>PROJECT_ID</key>
-	<string>hybrid-app-9fb28</string>
+	<string>sanggong-e09ed</string>
 	<key>STORAGE_BUCKET</key>
-	<string>hybrid-app-9fb28.appspot.com</string>
+	<string>sanggong-e09ed.firebasestorage.app</string>
 	<key>IS_ADS_ENABLED</key>
 	<false></false>
 	<key>IS_ANALYTICS_ENABLED</key>
@@ -25,6 +25,6 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:566402399821:ios:b6a4cf054437dfce39a604</string>
+	<string>1:195528322454:ios:1ce7a5e031b5abcbbac1b7</string>
 </dict>
 </plist>

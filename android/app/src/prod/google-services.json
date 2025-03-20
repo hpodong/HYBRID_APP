@@ -1,21 +1,21 @@
 {
   "project_info": {
-    "project_number": "566402399821",
-    "project_id": "hybrid-app-9fb28",
-    "storage_bucket": "hybrid-app-9fb28.appspot.com"
+    "project_number": "195528322454",
+    "project_id": "sanggong-e09ed",
+    "storage_bucket": "sanggong-e09ed.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:566402399821:android:ba4b20c8d22b1ca939a604",
+        "mobilesdk_app_id": "1:195528322454:android:90a0b5db0e4b1d92bac1b7",
         "android_client_info": {
-          "package_name": "com.hpodong.hybrid"
+          "package_name": "com.sanggong.app"
         }
       },
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyBjTCQQxjF3JlCI-SRdecxbg694I0Jtp-s"
+          "current_key": "AIzaSyA8VCibl3-X8hpb4mEt9sofke0dCK-j7Bk"
         }
       ],
       "services": {

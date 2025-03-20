@@ -53,35 +53,15 @@
 
     <!--인터넷 액세스 허용-->
     <uses-permission android:name="android.permission.INTERNET" />
-    <!--파일 읽기 엑세스 허용-->
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <!--파일 쓰기 액세스 허용-->
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <!--파일 액세스 허용-->
-    <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" />
-    <!--오디오 읽기 액세스 허용-->
-    <uses-permission android:name="android.permission.READ_MEDIA_AUDIO" />
-    <!--이미지 읽기 액세스 허용-->
-    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
-    <!--비디오 읽기 액세스 허용-->
-    <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" />
     <!--카메라 액세스 허용-->
     <uses-permission android:name="android.permission.CAMERA" />
-    <!--파일 위치 액세스 허용-->
-    <uses-permission android:name="android.permission.ACCESS_MEDIA_LOCATION" />
     <!--진동 액세스 허용-->
     <uses-permission android:name="android.permission.VIBRATE" />
     <!--화면 깨우기 액세스 허용-->
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <!--백그라운드 부팅 엑세스 액세스 허용-->
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
-    <!--오디오 기록 액세스 허용-->
-    <uses-permission android:name="android.permission.RECORD_AUDIO" />
-    <!--네트워크 상태 엑세스 허용-->
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <!--<uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
-    <uses-permission android:name="android.permission.VIDEO_CAPTURE" />
-    <uses-permission android:name="android.permission.AUDIO_CAPTURE" />-->
+    <!--알림 액세스 허용-->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
 
     <!-- 앱 뱃지 -->
