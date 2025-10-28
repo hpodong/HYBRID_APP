@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/legacy.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -27,7 +28,6 @@ class NotificationNotifier extends ChangeNotifier{
       log(next, title: "FCM_TOKEN");
       if(prev != next) notifyListeners();
     });
-    ref.read(notificationProvider.notifier).initialFcmToken();
   }
 }
 
@@ -40,6 +40,7 @@ class FcmTokenStateNotifier extends StateNotifier<String?> {
   String? get fcmToken => state;
 
   Future<void> initialFcmToken() async {
+    if(!USE_NOTIFICATION) return;
     if(state != null) return;
     final SharedPreferences spf = await SharedPreferences.getInstance();
     state = spf.getString(TokenType.fcmToken.name);

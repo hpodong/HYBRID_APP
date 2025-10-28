@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:HYBRID_APP/providers/notification_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../extensions/string_extension.dart';
@@ -28,6 +29,7 @@ class _SplashPageState extends ConsumerState<SplashPage> {
   }
 
   void _versionCheck() async {
+    await ref.read(notificationProvider.notifier).initialFcmToken();
     await ref.read(versionProvider.notifier).versionCheck(
         onFailed: (statusCode, storeUrl) {
           switch(statusCode) {

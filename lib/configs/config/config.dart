@@ -7,7 +7,8 @@ import '../../utills/enums.dart';
 
 final String HOST_NAME = dotenv.get('HOST_NAME');
 final String API_KEY = dotenv.get("API_KEY");
-final bool USE_SSL = dotenv.get("USE_SSL") == "1";
+final bool USE_SSL = bool.parse(dotenv.get('USE_SSL'));
+final bool USE_NOTIFICATION = bool.parse(dotenv.get('USE_NOTIFICATION'));
 final String PORT = dotenv.get("PORT");
 final String APP_STORE_ID = dotenv.get('APP_STORE_ID');
 final String LOGIN_PAGE = dotenv.get('LOGIN_PAGE');
@@ -67,12 +68,12 @@ class Config {
     };
   }
 
-  String getUrl([String? add_path]) {
+  String getUrl([String? path]) {
     String url = "http://";
     if(USE_SSL) url = "https://";
     url += HOST_NAME;
-    if(!USE_SSL) url += ":$PORT";
-    if(add_path != null) url += add_path;
+    if(PORT.isNotEmpty) url += ":$PORT";
+    if(path != null) url += path;
     return url;
   }
 }

@@ -13,8 +13,6 @@ import 'package:open_filex/open_filex.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import '../configs/config/config.dart';
-import '../configs/socials/apple.config.dart';
-import '../configs/socials/kakao.config.dart';
 import 'package:http/http.dart' as http;
 
 import '../providers/device_provider.dart';
@@ -224,9 +222,15 @@ class WebViewPageState extends ConsumerState<WebViewPage> {
       log(url, title: "SHOULD OVERRIDE URL");
       log(host, title: "HOST");
 
-      if(webUri.path == LOGOUT_PAGE) {
-        final KakaoConfig ka = KakaoConfig();
-        await ka.logout();
+      if(USE_NOTIFICATION && url.endsWith(LOGIN_PAGE)) {
+        final String? fcmToken = ref.read(notificationProvider);
+        log(fcmToken, title: "FCM TOKEN");
+        if(fcmToken != null) {
+          await ctr.evaluateJavascript(source: """
+          let fcmTokenInput = document.getElementById("fcmToken");
+          fcmTokenInput.value = "$fcmToken";
+          """);
+        }
       }
 
       if(!webUri.isScheme("https") && !webUri.isScheme("http")/* || !_allowHosts.any((ah) => host == ah)*/){
@@ -258,10 +262,6 @@ class WebViewPageState extends ConsumerState<WebViewPage> {
 
   void _onLoadStop(InAppWebViewController ctr, Uri? uri) async{
     if(IS_SHOW_OVERLAY) _overlayStateNotifier.remove();
-    /*final String? path = uri?.path;
-    if(path != null) {
-      await ctr.evaluateJavascript(source: "document.elementFromPoint(200, 200)?.click();");
-    }*/
 
     if(_versionStateNotifier.isChecked) {
       if(IS_SHOW_OVERLAY) _overlayStateNotifier.remove();
@@ -273,36 +273,11 @@ class WebViewPageState extends ConsumerState<WebViewPage> {
     }
   }
 
-  Future<void> _onClickFromXY(double x, double y) async{
-    await _controller?.evaluateJavascript(source: "document.elementFromPoint($x, $y)?.click();");
-  }
-
   void _onConsoleMessage(InAppWebViewController ctr, ConsoleMessage cm) async{
     final String msg = cm.message;
-    switch(msg) {
-      case "kakao_login": return _overlayStateNotifier.showIndicator(context, _kakaoLogin());
-      case "apple_login": return _overlayStateNotifier.showIndicator(context, _appleLogin());
-    }
     log(msg, title: "CONSOLE_MESSAGE");
-  }
 
-  Future<void> _kakaoLogin() async{
-    final KakaoConfig kc = KakaoConfig();
-    final User? user = await kc.login();
-    log(user, title: "USER");
-    if(user != null) {
-
-    }
-  }
-
-  Future<void> _appleLogin() async{
-    final AppleConfig kc = AppleConfig();
-    final AuthorizationCredentialAppleID? user = await kc.login();
-    if(user != null) {
-      String name = "";
-      if(user.familyName != null && user.givenName != null) {
-        name = "${user.familyName}${user.givenName}";
-      }
+    switch(msg) {
     }
   }
 
