@@ -89,7 +89,8 @@ class FcmTokenStateNotifier extends StateNotifier<String?> {
 
     if(await Permission.notification.isGranted) {
       log("LISTENING FIREBASE PUSH");
-      _localNotifications.initialize(_settings,
+      _localNotifications.initialize(
+          settings: _settings,
           onDidReceiveNotificationResponse: (res) => _onTapNotification(ctr, res.payload)
       );
       final NotificationAppLaunchDetails? details = await _localNotifications.getNotificationAppLaunchDetails();
@@ -141,7 +142,7 @@ class FcmTokenStateNotifier extends StateNotifier<String?> {
     log(rm.data, title: "MESSAGE");
 
     if(notification != null && android != null) {
-      await _localNotifications.show(notification.hashCode, notification.title, notification.body, notificationDetails, payload: rm.data.isEmpty ? null : jsonEncode(rm.data));
+      await _localNotifications.show(id: notification.hashCode, title: notification.title, body:  notification.body, notificationDetails: notificationDetails, payload: rm.data.isEmpty ? null : jsonEncode(rm.data));
       await _updateBadge();
     }
   }

@@ -10,7 +10,6 @@ import 'device_provider.dart';
 import 'notification_provider.dart';
 import 'permission_provider.dart';
 import 'version_provider.dart';
-import 'package:flutter_riverpod/legacy.dart';
 
 final Provider<GoRouter> routerProvider = Provider<GoRouter>((ref) {
 
@@ -20,6 +19,7 @@ final Provider<GoRouter> routerProvider = Provider<GoRouter>((ref) {
   NotificationNotifier(ref);
 
   String? redirectLogic(BuildContext _, GoRouterState state) {
+    if(ref.watch(versionProvider)) return WebViewPage.path;
     return null;
   }
 

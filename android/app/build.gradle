@@ -41,7 +41,7 @@ if (flutterVersionCode == null) {
 def flutterVersionName = localProperties.getProperty('flutter.versionName')
 if (flutterVersionName == null) {
     flutterVersionName = '1.0'
-}
+}ㄷ
 
 android {
     namespace "com.hpodong.hybrid"

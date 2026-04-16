@@ -9,7 +9,7 @@ import '../utills/common.dart';
 
 class WindowPopupPage extends ConsumerStatefulWidget {
 
-  static const String path = "/window";
+  static const String path = "/webview/window";
   static const String routeName = "windowPopupPage";
 
   final CreateWindowAction action;
@@ -57,6 +57,9 @@ class WindowPopupPageState extends ConsumerState<WindowPopupPage> {
 
   @override
   Widget build(BuildContext context) {
+
+    log(widget.action, title: "ACTION");
+
     return PopScope(
       onPopInvokedWithResult: _onPopInvokedWithResult,
       canPop: false,
@@ -81,19 +84,12 @@ class WindowPopupPageState extends ConsumerState<WindowPopupPage> {
             initialSettings: InAppWebViewSettings(
               allowUniversalAccessFromFileURLs: true,
               applicationNameForUserAgent: USERAGENT,
-              javaScriptEnabled: true,
-              javaScriptCanOpenWindowsAutomatically: true,
-              supportMultipleWindows: true,
               iframeAllowFullscreen: true,
               useOnDownloadStart: true,
               useShouldOverrideUrlLoading: true,
               allowFileAccessFromFileURLs: true,
-              useHybridComposition: true,
-              domStorageEnabled: true,
               underPageBackgroundColor: Colors.white,
               cacheMode: CacheMode.LOAD_DEFAULT,
-              cacheEnabled: true,
-              mediaPlaybackRequiresUserGesture: true,
             ),
             onTitleChanged: _onTitleChanged,
             onWebViewCreated: _onWebViewCreated,
@@ -105,17 +101,10 @@ class WindowPopupPageState extends ConsumerState<WindowPopupPage> {
             onLoadStart: _onLoadStart,
             onLoadStop: _onLoadStop,
             shouldOverrideUrlLoading: _shouldOverrideUrlLoading,
-            onCreateWindow: _onCreateWindow,
           ),
         ),
       ),
     );
-  }
-
-  Future<bool?> _onCreateWindow(InAppWebViewController ctr, CreateWindowAction action) async{
-    log(action, title: "WINDOW.OPEN");
-    context.pushNamed(WindowPopupPage.routeName, extra: action);
-    return true;
   }
 
   void _onTitleChanged(InAppWebViewController ctr, String? title) {
@@ -124,7 +113,7 @@ class WindowPopupPageState extends ConsumerState<WindowPopupPage> {
 
   Future<NavigationActionPolicy?> _shouldOverrideUrlLoading(InAppWebViewController ctr, NavigationAction action) async{
     final WebUri? webUri = action.request.url;
-
+    log(webUri, title: "WebUri");
     if(webUri != null) {
       String url = webUri.toString();
       final String host = webUri.host;
@@ -141,7 +130,8 @@ class WindowPopupPageState extends ConsumerState<WindowPopupPage> {
         return NavigationActionPolicy.ALLOW;
       }
     } else {
-      return NavigationActionPolicy.CANCEL;
+      return NavigationActionPolicy.ALLOW;
+
     }
   }
 

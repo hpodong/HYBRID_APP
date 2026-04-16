@@ -1,17 +1,16 @@
 import 'dart:async';
 import 'dart:io';
 
-import '../utills/native_channel.dart';
+import 'package:geolocator/geolocator.dart';
+
 import 'package:app_links/app_links.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart';
 import 'package:open_filex/open_filex.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import '../configs/config/config.dart';
 import 'package:http/http.dart' as http;
 
@@ -50,8 +49,6 @@ class WebViewPageState extends ConsumerState<WebViewPage> {
 
   Future<void> _deepLinkListener() async{
     final AppLinks appLinks = AppLinks();
-
-    log(await NativeChannel.getBundle("Bundle name"), title: "DISPLAY NAME");
 
     final Uri? initUri = await appLinks.getInitialLink();
     await _deepLinkHandler(initUri);
@@ -108,22 +105,15 @@ class WebViewPageState extends ConsumerState<WebViewPage> {
 
   final InAppWebViewSettings _webViewSettings = InAppWebViewSettings(
     applicationNameForUserAgent: USERAGENT,
-    javaScriptEnabled: true,
     javaScriptCanOpenWindowsAutomatically: true,
     supportMultipleWindows: true,
     iframeAllowFullscreen: true,
     useOnDownloadStart: true,
     useShouldOverrideUrlLoading: true,
-    useHybridComposition: true,
-    domStorageEnabled: true,
     underPageBackgroundColor: Colors.white,
     cacheMode: CacheMode.LOAD_DEFAULT,
-    cacheEnabled: true,
-    allowFileAccess: true,
-    allowContentAccess: true,
     allowFileAccessFromFileURLs: true,
     allowUniversalAccessFromFileURLs: true,
-    mediaPlaybackRequiresUserGesture: true,
     supportZoom: false,
   );
 
@@ -208,7 +198,8 @@ class WebViewPageState extends ConsumerState<WebViewPage> {
 
   Future<bool?> _onCreateWindow(InAppWebViewController ctr, CreateWindowAction action) async{
     log(action, title: "WINDOW.OPEN");
-    context.pushNamed(WindowPopupPage.routeName, extra: action);
+    /*if(mounted) context.pushNamed(WindowPopupPage.routeName, extra: action);*/
+    Navigator.of(context).push(MaterialPageRoute(builder: (context) => WindowPopupPage(action)));
     return true;
   }
 
@@ -218,20 +209,6 @@ class WebViewPageState extends ConsumerState<WebViewPage> {
     if(webUri != null) {
       String url = webUri.toString();
       final String host = webUri.host;
-
-      log(url, title: "SHOULD OVERRIDE URL");
-      log(host, title: "HOST");
-
-      if(USE_NOTIFICATION && url.endsWith(LOGIN_PAGE)) {
-        final String? fcmToken = ref.read(notificationProvider);
-        log(fcmToken, title: "FCM TOKEN");
-        if(fcmToken != null) {
-          await ctr.evaluateJavascript(source: """
-          let fcmTokenInput = document.getElementById("fcmToken");
-          fcmTokenInput.value = "$fcmToken";
-          """);
-        }
-      }
 
       if(!webUri.isScheme("https") && !webUri.isScheme("http")/* || !_allowHosts.any((ah) => host == ah)*/){
         if(mounted) _overlayStateNotifier.showIndicator(context, openURL(url));
@@ -247,7 +224,52 @@ class WebViewPageState extends ConsumerState<WebViewPage> {
   }
 
   void _onWebViewCreated(InAppWebViewController ctr) {
-    _controller = ctr;
+    _controller = ctr
+      ..addJavaScriptHandler(
+          handlerName: "getLocation",
+          callback: (args) async{
+            final bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+            if (!serviceEnabled) {
+              return {"status": "LOCATION_DISABLED"};
+            }
+
+            LocationPermission permission = await Geolocator.checkPermission();
+            if (permission == LocationPermission.denied) {
+              permission = await Geolocator.requestPermission();
+            }
+
+            if (permission == LocationPermission.denied) {
+              return {"status": "DENIED"};
+            }
+
+            if (permission == LocationPermission.deniedForever) {
+              return {"status": "DENIED_FOREVER"};
+            }
+
+            if (permission == LocationPermission.unableToDetermine) {
+              return {"status": "UNABLE_TO_DETERMINE"};
+            }
+
+            final LocationSettings settings = const LocationSettings(
+                timeLimit: Duration(seconds: 5)
+            );
+            try {
+              final Position position = await Geolocator.getCurrentPosition(
+                  locationSettings: settings
+              );
+              return {
+                "status": "SUCCESS",
+                "latitude": position.latitude,
+                "longitude": position.longitude,
+              };
+            } catch(e) {
+              return {
+                "status": "ERROR",
+                "message": e.toString()
+              };
+            }
+          }
+      );
   }
 
   void _onLoadStart(InAppWebViewController ctr, Uri? uri) async{
@@ -269,6 +291,18 @@ class WebViewPageState extends ConsumerState<WebViewPage> {
         setState(() => _firstLoad = true);
         await _fcmTokenStateNotifier.firebasePushListener(_controller);
         _deepLinkListener();
+      }
+    }
+
+    if(USE_NOTIFICATION && LOGIN_PAGE == uri?.path) {
+      final String? fcmToken = ref.read(notificationProvider);
+      await ctr.evaluateJavascript(source: """
+      window.open('https://naver.com','_blank')
+      """);
+      if(fcmToken != null) {
+        await ctr.evaluateJavascript(source: """
+          document.getElementById('fcmToken').value = '$fcmToken';
+          """);
       }
     }
   }
