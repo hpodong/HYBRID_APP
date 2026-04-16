@@ -114,7 +114,6 @@ class WindowPopupPageState extends ConsumerState<WindowPopupPage> {
   Future<NavigationActionPolicy?> _shouldOverrideUrlLoading(InAppWebViewController ctr, NavigationAction action) async{
     final WebUri? webUri = action.request.url;
     log(webUri, title: "WebUri");
-    if(webUri != null) {
       String url = webUri.toString();
       final String host = webUri.host;
 

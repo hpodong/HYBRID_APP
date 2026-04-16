@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:neighborhood/utills/common.dart';
 
 import '../pages/splash.page.dart';
 import '../pages/webview.page.dart';
@@ -29,6 +30,7 @@ final Provider<GoRouter> routerProvider = Provider<GoRouter>((ref) {
             path: SplashPage.path,
             name: SplashPage.routeName,
             builder: (_, state) => const SplashPage(),
+            redirect: redirectLogic,
             routes: [
               GoRoute(
                 path: WebViewPage.path,
@@ -38,14 +40,15 @@ final Provider<GoRouter> routerProvider = Provider<GoRouter>((ref) {
                   GoRoute(
                     path: WindowPopupPage.path,
                     name: WindowPopupPage.routeName,
-                    pageBuilder: (_, state) => MaterialPage(child: WindowPopupPage(state.extra as CreateWindowAction), fullscreenDialog: true),
+                    pageBuilder: (_, state) {
+                      return MaterialPage(child: WindowPopupPage(state.extra as CreateWindowAction), fullscreenDialog: true);
+                    },
                   )
                 ],
               ),
             ]
         ),
       ],
-      redirect: redirectLogic,
       refreshListenable: Listenable.merge([
         versionNotifier,
         permissionNotifier
